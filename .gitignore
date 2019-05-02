@@ -2,3 +2,4 @@
 **/*.rs.bk
 /sandbox
 .idea/
+*.iml
