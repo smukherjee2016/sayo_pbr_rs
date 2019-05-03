@@ -1,0 +1,57 @@
+[camera]
+#tonemap = "filmic"
+resolution = [
+  1280.0,
+  720.0
+]
+type = "pinhole"
+fov = 90.0
+
+  [camera.transform]
+  position = [
+    5.105184555053711,
+    0.7310651540756226,
+    -2.3178906440734863
+  ]
+  look_at = [
+    1.452592134475708,
+    1.0136401653289795,
+    -1.3172874450683594
+  ]
+  up = [
+    0.0,
+    1.0,
+    0.0
+  ]
+
+[integrator]
+max_bounces = 64.0
+#enable_two_sided_shading = true
+type = "path_tracer"
+#enable_light_sampling = true
+
+[renderer]
+overwrite_output_files = true
+spp = 64.0
+output_file = "living-room.png"
+hdr_output_file = "living-room.exr"
+
+[[bsdfs]]
+name = "somediffuse"
+albedo = [
+  0.0,
+  0.3,
+  0.6
+]
+type = "lambert"
+
+[[primitives]]
+type = "sphere"
+center = [
+    1.452592134475708,
+    1.0136401653289795,
+    -1.3172874450683594
+]
+radius = 1.0
+bsdf = "somediffuse"
+  [primitives.transform]

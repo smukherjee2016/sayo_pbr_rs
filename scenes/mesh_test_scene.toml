@@ -1,0 +1,97 @@
+#Conversion of Living Room scene Tungsten Renderer config file
+media = []
+
+[camera]
+tonemap = "filmic"
+resolution = [
+  1280.0,
+  720.0
+]
+reconstruction_filter = "tent"
+type = "pinhole"
+fov = 90.0
+
+  [camera.transform]
+  position = [
+    5.105184555053711,
+    0.7310651540756226,
+    -2.3178906440734863
+  ]
+  look_at = [
+    1.452592134475708,
+    1.0136401653289795,
+    -1.3172874450683594
+  ]
+  up = [
+    0.0,
+    1.0,
+    0.0
+  ]
+
+[integrator]
+min_bounces = 0.0
+max_bounces = 64.0
+enable_consistency_checks = false
+enable_two_sided_shading = true
+type = "path_tracer"
+enable_light_sampling = true
+enable_volume_light_sampling = true
+
+[renderer]
+overwrite_output_files = true
+adaptive_sampling = true
+enable_resume_render = false
+stratified_sampler = true
+scene_bvh = true
+spp = 64.0
+spp_step = 16.0
+checkpoint_interval = "0"
+timeout = "0"
+output_file = "living-room.png"
+resume_render_file = "TungstenRenderState.dat"
+hdr_output_file = "living-room.exr"
+
+[[bsdfs]]
+name = "Dirt"
+albedo = [
+  0.09850399941205978,
+  0.04596799984574318,
+  0.03588699921965599
+]
+type = "lambert"
+
+[[bsdfs]]
+name = "Floor"
+albedo = "textures/wood.jpg"
+type = "rough_plastic"
+ior = 1.5
+thickness = 1.0
+sigma_a = 0.0
+distribution = "ggx"
+roughness = 0.15
+
+[[bsdfs]]
+name = "Walls"
+albedo = 0.1
+type = "lambert"
+
+[[primitives]]
+type = "mesh"
+smooth = true
+backface_culling = false
+recompute_normals = false
+file = "models/Mesh054.wo3"
+bsdf = "Walls"
+
+  [primitives.transform]
+
+
+[[primitives]]
+type = "mesh"
+smooth = true
+backface_culling = false
+recompute_normals = false
+file = "models/Mesh059.wo3"
+bsdf = "Walls"
+
+  [primitives.transform]
