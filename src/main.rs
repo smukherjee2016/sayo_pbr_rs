@@ -1,5 +1,7 @@
-use sayo_pbr_rs::{SceneConfig, run};
+use sayo_pbr_rs::{SceneConfig};
 use std::process;
+
+
 
 fn main() {
     let mut args : Vec<String> = std::env::args().collect();
@@ -12,14 +14,16 @@ fn main() {
     args.push(scene_file_path);
     println!("{:?}", args);
     println!("Executable path is: {:?}", std::env::current_exe());
-    let config = SceneConfig::parse_args(&args).unwrap_or_else(
+    let mut scene_config = SceneConfig::default();
+
+    let is_parse_okay = scene_config.parse_args(&args).unwrap_or_else(
       |err| {
           eprintln!("Problem parsing scene file: {}", err);
           process::exit(1);
       }
     );
 
-    if let Err(e) = run(config) {
+    if let Err(e) = scene_config.parse_scene() {
         eprintln!("Runtime error: {}", e);
         process::exit(1);
     }
