@@ -6,6 +6,7 @@ mod common;
 use crate::common::*;
 
 use toml::Value;
+use cgmath::Vector3;
 
 #[derive(Debug, Default)]
 pub  struct SceneConfig {
@@ -53,6 +54,7 @@ impl SceneConfig {
         let height = *(&parsed_scene_toml["camera"]["resolution"][1].as_float().unwrap()) as i32;
         self.width = width;
         self.height = height;
+        self.image.resize((width * height) as usize, Vector3::from((0.2, 0.5, 0.7)));
 
         //Output pfm
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"].as_str().unwrap().to_string();
