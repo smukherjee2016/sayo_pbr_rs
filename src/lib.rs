@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 use std::fs;
 mod utilities;
 mod common;
+use crate::common::*;
 
 use toml::Value;
 
@@ -10,7 +11,7 @@ use toml::Value;
 pub  struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file : PathBuf,
-
+    pub image : Vec<Color>
 }
 
 impl SceneConfig {
@@ -54,7 +55,7 @@ impl SceneConfig {
     }
 
     pub fn write_output(&self) {
-        utilities::imageutils::write_pfm(self.out_file.clone());
+        utilities::imageutils::write_pfm(self.out_file.clone(), self.image.clone());
     }
 }
 

@@ -5,13 +5,14 @@ use crate::common::*;
 
 #[derive(Debug, Default)]
 struct PfmInfo {
-    image : Vec<color<fp>>,
+    image : Vec<Color>,
     width : i32,
     height : i32
 
 }
 
-pub fn write_pfm(file : PathBuf) -> Result<(), String> {
+pub fn write_pfm(file : PathBuf, pixels : Vec<Color>) -> Result<(), String> {
+
 
 
     Ok(())
