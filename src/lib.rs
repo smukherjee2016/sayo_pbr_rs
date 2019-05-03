@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::fs;
+mod utilities;
 
 extern crate toml;
 
@@ -54,5 +55,8 @@ impl SceneConfig {
         Ok(())
     }
 
+    pub fn write_output(&self) {
+        utilities::imageutils::write_pfm(self.out_file.clone());
+    }
 }
 

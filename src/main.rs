@@ -29,4 +29,6 @@ fn main() {
         eprintln!("Runtime error: {}", e);
         process::exit(1);
     }
+
+    scene_config.write_output();
 }
