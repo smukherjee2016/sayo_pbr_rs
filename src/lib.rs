@@ -10,7 +10,7 @@ use toml::Value;
 #[derive(Debug, Default)]
 pub  struct SceneConfig {
     pub scene_file_name: PathBuf,
-    pub out_file_name : PathBuf,
+    pub out_file : PathBuf,
 
 }
 
@@ -38,14 +38,19 @@ impl SceneConfig {
 
     }
 
-    pub fn parse_scene(&self) -> Result<(), Box<dyn Error>> {
+    pub fn parse_scene(&mut self) -> Result<(), Box<dyn Error>> {
 
         let scene_file_contents = fs::read_to_string(&self.scene_file_name)?;
 
+        let parsed_scene_toml = scene_file_contents.parse::<Value>().unwrap();
 
-        let value = scene_file_contents.parse::<Value>().unwrap();
+        println!("{:?}", parsed_scene_toml);
 
-        println!("{:?}", value);
+
+        let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"].as_str().unwrap().to_string();
+        let output_file_full_path = "sandbox/".to_string() + output_file_name;
+        println!("{:?}", output_file_full_path);
+        self.out_file = PathBuf::from(output_file_full_path);
         //Return nothing if all okay, return error otherwise
         Ok(())
     }

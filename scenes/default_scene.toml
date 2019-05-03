@@ -34,7 +34,7 @@ type = "path_tracer"
 overwrite_output_files = true
 spp = 64.0
 output_file = "living-room.png"
-hdr_output_file = "living-room.exr"
+hdr_output_file = "living-room.pfm"
 
 [[bsdfs]]
 name = "somediffuse"
