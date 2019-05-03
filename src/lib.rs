@@ -2,7 +2,6 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::fs;
 
-#[macro_use]
 extern crate toml;
 
 use toml::Value;
