@@ -11,7 +11,9 @@ use toml::Value;
 pub  struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file : PathBuf,
-    pub image : Vec<Color>
+    pub image : Vec<Color>,
+    pub height: i32,
+    pub width : i32
 }
 
 impl SceneConfig {
@@ -46,6 +48,13 @@ impl SceneConfig {
 
         println!("{:?}", parsed_scene_toml);
 
+        //Film
+        let width = *(&parsed_scene_toml["camera"]["resolution"][0].as_float().unwrap()) as i32;
+        let height = *(&parsed_scene_toml["camera"]["resolution"][1].as_float().unwrap()) as i32;
+        self.width = width;
+        self.height = height;
+
+        //Output pfm
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"].as_str().unwrap().to_string();
         let output_file_full_path = "sandbox/".to_string() + output_file_name;
         println!("{:?}", output_file_full_path);
@@ -55,7 +64,7 @@ impl SceneConfig {
     }
 
     pub fn write_output(&self) {
-        utilities::imageutils::write_pfm(self.out_file.clone(), self.image.clone());
+        utilities::imageutils::write_pfm(self.out_file.clone(), self.image.clone(), self.width, self.height);
     }
 }
 
