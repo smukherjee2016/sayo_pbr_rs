@@ -2,8 +2,7 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::fs;
 mod utilities;
-
-extern crate toml;
+mod common;
 
 use toml::Value;
 
@@ -45,7 +44,6 @@ impl SceneConfig {
         let parsed_scene_toml = scene_file_contents.parse::<Value>().unwrap();
 
         println!("{:?}", parsed_scene_toml);
-
 
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"].as_str().unwrap().to_string();
         let output_file_full_path = "sandbox/".to_string() + output_file_name;
