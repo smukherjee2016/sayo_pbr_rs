@@ -2,9 +2,9 @@ use std::path::PathBuf;
 
 use crate::common::*;
 use std::fs::File;
-use std::io::{prelude, BufWriter, Write};
+use std::io::{BufWriter, Write};
 use std::error::Error;
-use byteorder::{ByteOrder, LittleEndian, BigEndian};
+use byteorder::{ByteOrder, LittleEndian};
 
 
 #[derive(Debug, Default)]
@@ -22,7 +22,7 @@ struct PfmPixel {
     b: f32
 }
 
-pub fn write_pfm(filepath : PathBuf, pixels : Vec<Color>, width : i32, height : i32) -> Result<(), String> {
+pub fn write_pfm(filepath : PathBuf, pixels : Vec<Color>, width : i32, height : i32) -> Result<(), Box<dyn Error>> {
 
     assert_eq!(pixels.len(), (width * height) as usize);
 
@@ -37,27 +37,27 @@ pub fn write_pfm(filepath : PathBuf, pixels : Vec<Color>, width : i32, height : 
 
     let mut buffer = BufWriter::new(file);
     //PFM Header
-    writeln!(buffer, "PF");
-    writeln!(buffer, "{} {}", width, height);
-    writeln!(buffer, "{}", -1.0 as f32);
+    writeln!(buffer, "PF")?;
+    writeln!(buffer, "{} {}", width, height)?;
+    writeln!(buffer, "{}", -1.0 as f32)?;
 
 
     for i in 0..(height) {
         for j in 0..(width) {
             let pixelvalue : Color = pixels[(i*width+j) as usize];
-            let r  = (pixelvalue.x as f32);
-            let g  = (pixelvalue.y as f32);
-            let b  = (pixelvalue.z as f32);
+            let r  = pixelvalue.x as f32;
+            let g  = pixelvalue.y as f32;
+            let b  = pixelvalue.z as f32;
 
             //https://docs.rs/byteorder/1.3.1/byteorder/trait.ByteOrder.html#method.write_f32
             //x86_64 is LittleEndian
             let mut buf = [0; 4];
             LittleEndian::write_f32(&mut buf, r);
-            buffer.write(&buf);
+            buffer.write(&buf)?;
             LittleEndian::write_f32(&mut buf, g);
-            buffer.write(&buf);
+            buffer.write(&buf)?;
             LittleEndian::write_f32(&mut buf, b);
-            buffer.write(&buf);
+            buffer.write(&buf)?;
 
         }
     }

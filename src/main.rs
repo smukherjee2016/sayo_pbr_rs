@@ -1,9 +1,9 @@
 use sayo_pbr_rs::{SceneConfig};
 use std::process;
+use std::error::Error;
 
 
-
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let mut args : Vec<String> = std::env::args().collect();
 
     let current_dir = std::env::current_dir().unwrap();
@@ -30,5 +30,7 @@ fn main() {
         process::exit(1);
     }
 
-    scene_config.write_output();
+    scene_config.write_output()?;
+
+    Ok(())
 }

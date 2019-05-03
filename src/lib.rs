@@ -65,8 +65,8 @@ impl SceneConfig {
         Ok(())
     }
 
-    pub fn write_output(&self) {
-        utilities::imageutils::write_pfm(self.out_file.clone(), self.image.clone(), self.width, self.height);
+    pub fn write_output(&self) -> Result<(), Box<dyn Error>> {
+        utilities::imageutils::write_pfm(self.out_file.clone(), self.image.clone(), self.width, self.height)
     }
 }
 
