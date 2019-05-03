@@ -7,7 +7,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut args : Vec<String> = std::env::args().collect();
 
     let current_dir = std::env::current_dir().unwrap();
-    println!("Current path: {:?}", std::fs::canonicalize(current_dir).unwrap());
+    dbg!(std::fs::canonicalize(current_dir).unwrap());
 
     //current_dir() is the root directory of the project, setting relative paths
     //If no arguments specified, try to use a default scene
@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let scene_file_path = "scenes/default_scene.toml".to_string();
         args.push(scene_file_path);
     }
-    println!("{:?}", args);
+    dbg!(&args);
     let mut scene_config = SceneConfig::default();
 
     let _is_parse_okay = scene_config.parse_args(&args).unwrap_or_else(

@@ -47,7 +47,7 @@ impl SceneConfig {
 
         let parsed_scene_toml = scene_file_contents.parse::<Value>().unwrap();
 
-        println!("{:?}", parsed_scene_toml);
+        //dbg!(&parsed_scene_toml);
 
         //Film
         let width = *(&parsed_scene_toml["camera"]["resolution"][0].as_float().unwrap()) as i32;
@@ -59,7 +59,7 @@ impl SceneConfig {
         //Output pfm
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"].as_str().unwrap().to_string();
         let output_file_full_path = "sandbox/".to_string() + output_file_name;
-        println!("{:?}", output_file_full_path);
+        dbg!(&output_file_full_path);
         self.out_file = PathBuf::from(output_file_full_path);
         //Return nothing if all okay, return error otherwise
         Ok(())
