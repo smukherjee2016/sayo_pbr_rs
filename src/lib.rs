@@ -3,18 +3,16 @@ use std::path::{Path, PathBuf};
 use std::fs;
 mod utilities;
 mod common;
-use crate::common::*;
+mod film;
 
 use toml::Value;
-use cgmath::Vector3;
+use crate::film::Film;
 
 #[derive(Debug, Default)]
 pub  struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file : PathBuf,
-    pub image : Vec<Color>,
-    pub height: i32,
-    pub width : i32
+    pub film : Film
 }
 
 impl SceneConfig {
@@ -52,9 +50,8 @@ impl SceneConfig {
         //Film
         let width = *(&parsed_scene_toml["camera"]["resolution"][0].as_float().unwrap()) as i32;
         let height = *(&parsed_scene_toml["camera"]["resolution"][1].as_float().unwrap()) as i32;
-        self.width = width;
-        self.height = height;
-        self.image.resize((width * height) as usize, Vector3::from((0.2, 0.5, 0.7)));
+        self.film.new(width, height);
+
 
         //Output pfm
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"].as_str().unwrap().to_string();
@@ -66,7 +63,7 @@ impl SceneConfig {
     }
 
     pub fn write_output(&self) -> Result<(), Box<dyn Error>> {
-        utilities::imageutils::write_pfm(self.out_file.clone(), self.image.clone(), self.width, self.height)
+        utilities::imageutils::write_pfm(self.out_file.clone(), self.film.image.clone(), self.film.width, self.film.height)
     }
 }
 
