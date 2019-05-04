@@ -3,6 +3,7 @@ pub use f64 as fp;
 pub type Color = cgmath::Vector3<fp>;
 pub type Point3 = cgmath::Vector3<fp>;
 pub type Vec3 = cgmath::Vector3<fp>;
+pub const EPSILON : fp = 1e-5;
 
 pub struct Ray {
     o : Point3,

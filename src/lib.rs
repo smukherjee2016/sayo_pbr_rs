@@ -11,6 +11,7 @@ use crate::film::Film;
 use crate::camera::Camera;
 use crate::common::*;
 
+#[derive(Debug, Default)]
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
