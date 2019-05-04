@@ -4,15 +4,18 @@ use std::fs;
 mod utilities;
 mod common;
 mod film;
+mod camera;
 
 use toml::Value;
 use crate::film::Film;
+use crate::camera::Camera;
+use crate::common::*;
 
-#[derive(Debug, Default)]
-pub  struct SceneConfig {
+pub struct SceneConfig {
     pub scene_file_name: PathBuf,
-    pub out_file : PathBuf,
-    pub film : Film
+    pub out_file: PathBuf,
+    pub film: Film,
+    pub camera: Box < Camera >,
 }
 
 impl SceneConfig {
@@ -50,7 +53,10 @@ impl SceneConfig {
         //Film
         let width = *(&parsed_scene_toml["camera"]["resolution"][0].as_float().unwrap()) as i32;
         let height = *(&parsed_scene_toml["camera"]["resolution"][1].as_float().unwrap()) as i32;
-        self.film.new(width, height);
+        let fov_degrees = *(&parsed_scene_toml["camera"]["fov"].as_float().unwrap()) as fp;
+        self.film.new(width, height, fov_degrees);
+
+        //Camera
 
 
         //Output pfm

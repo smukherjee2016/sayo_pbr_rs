@@ -4,7 +4,6 @@ pub type Color = cgmath::Vector3<fp>;
 pub type Point3 = cgmath::Vector3<fp>;
 pub type Vec3 = cgmath::Vector3<fp>;
 
-
 pub struct Ray {
     o : Point3,
     d: Vec3,
