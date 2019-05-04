@@ -28,7 +28,7 @@ pub fn write_pfm(filepath : PathBuf, pixels : Vec<Color>, width : i32, height : 
 
     let display = filepath.display();
     //Create directory if does not exist
-    std::fs::create_dir_all(PathBuf::from(filepath.clone().parent().unwrap()))?;
+    std::fs::create_dir_all(PathBuf::from(filepath.parent().unwrap()))?;
     // Open a file in write-only mode, returns `io::Result<File>`
     let file = match File::create(&filepath) {
         Err(why) => panic!("couldn't create {}: {}",
