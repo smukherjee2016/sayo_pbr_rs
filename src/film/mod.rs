@@ -16,6 +16,7 @@ impl Film {
 
         self.distancetofilm = 1.0;
         self.aspectratio = width as fp / height as fp;
+        self.fov = fovdegrees * std::f64::consts::PI / 360.0;
 
         self.width = width;
         self.height = height;
