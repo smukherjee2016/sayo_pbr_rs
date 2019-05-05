@@ -16,19 +16,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         args.push(scene_file_path);
     }
     dbg!(&args);
-    let mut scene_config = SceneConfig::default();
-
-    let _is_parse_okay = scene_config.parse_args(&args).unwrap_or_else(
+    let mut scene_config = SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(
       |err| {
           eprintln!("Problem parsing scene file: {}", err);
           process::exit(1);
       }
     );
-
-    if let Err(e) = scene_config.parse_scene() {
-        eprintln!("Runtime error: {}", e);
-        process::exit(1);
-    }
 
     scene_config.write_output()?;
 

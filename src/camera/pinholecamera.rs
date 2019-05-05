@@ -4,6 +4,7 @@ use std::rc::Rc;
 use crate::film::Film;
 use std::f32::INFINITY;
 
+#[derive(Debug)]
 pub struct PinholeCamera {
     origin : Point3,
     look_at: Point3, //look_at is a point, not direction
@@ -13,6 +14,20 @@ pub struct PinholeCamera {
     c_x: Vec3,
     c_y: Vec3,
     c_z: Vec3
+}
+
+impl Default for PinholeCamera {
+    fn default() -> Self {
+        PinholeCamera {
+            origin: ZERO_VECTOR,
+            look_at: ZERO_VECTOR,
+            up: ZERO_VECTOR,
+            direction_to_look_at: ZERO_VECTOR,
+            c_x: ZERO_VECTOR,
+            c_y: ZERO_VECTOR,
+            c_z: ZERO_VECTOR
+        }
+    }
 }
 
 fn make_basis_vectors( pinholecamera: &mut PinholeCamera) {
@@ -27,22 +42,22 @@ fn make_basis_vectors( pinholecamera: &mut PinholeCamera) {
     pinholecamera.c_z = pinholecamera.direction_to_look_at.normalize();
 }
 
-impl PinholeCamera {
 
+impl Camera for PinholeCamera {
+    fn new(origin_ : Point3, look_at: Point3, up_ : Vec3) ->  Self {
 
-    pub fn new(&mut self, origin_ : Point3, look_at: Point3, up_ : Vec3) {
-        self.origin = origin_;
-        self.look_at = look_at;
-        self.up  = up_;
+        let mut phc : PinholeCamera = PinholeCamera::default();
 
-        make_basis_vectors(self);
+        phc.origin = origin_;
+        phc.look_at = look_at;
+        phc.up  = up_;
+
+        make_basis_vectors(&mut phc);
+
+        phc
 
     }
 
-
-}
-
-impl Camera for PinholeCamera {
     fn generate_camera_ray(&mut self, x: i32, y: i32, film: Rc<Film>) -> Ray {
         //Find point inside pixel coordinates
         let u : fp = (x as fp + 0.5) / film.width as fp;
