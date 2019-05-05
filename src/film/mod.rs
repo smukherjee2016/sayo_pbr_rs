@@ -1,7 +1,7 @@
 use crate::common::*;
 use cgmath::Vector3;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct Film {
     pub image : Vec<Color>,
     pub height: i32,

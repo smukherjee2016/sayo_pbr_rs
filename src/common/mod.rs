@@ -6,6 +6,7 @@ pub type Vec3 = cgmath::Vector3<fp>;
 pub const EPSILON : fp = 1e-5;
 pub const ZERO_VECTOR: cgmath::Vector3<fp> = cgmath::Vector3{x: 0.0, y: 0.0, z :0.0};
 
+#[derive(Debug)]
 pub struct Ray {
     o : Point3,
     d: Vec3,
