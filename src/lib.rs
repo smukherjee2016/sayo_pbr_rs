@@ -81,7 +81,7 @@ impl SceneConfig {
             },
             _ => {
                 eprintln!("Warning: unknown or unsupported camera type, trying to fall back to pinhole camera");
-                let camera = Box::new(PinholeCamera::new(camera_position, camera_look_at, camera_up));
+                camera = Box::new(PinholeCamera::new(camera_position, camera_look_at, camera_up));
             }
         }
 
