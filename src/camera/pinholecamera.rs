@@ -30,16 +30,16 @@ impl Default for PinholeCamera {
     }
 }
 
-fn make_basis_vectors( pinholecamera: &mut PinholeCamera) {
-    pinholecamera.direction_to_look_at = cgmath::InnerSpace::normalize(
-        pinholecamera.look_at - pinholecamera.origin);
+fn make_basis_vectors( pinhole_camera: &mut PinholeCamera) {
+    pinhole_camera.direction_to_look_at = cgmath::InnerSpace::normalize(
+        pinhole_camera.look_at - pinhole_camera.origin);
 
     //Basis vectors at camera origin
-    pinholecamera.c_x =
-        pinholecamera.direction_to_look_at.cross(pinholecamera.up).normalize();
-    pinholecamera.c_y =
-        pinholecamera.c_x.cross(pinholecamera.direction_to_look_at).normalize();
-    pinholecamera.c_z = pinholecamera.direction_to_look_at.normalize();
+    pinhole_camera.c_x =
+        pinhole_camera.direction_to_look_at.cross(pinhole_camera.up).normalize();
+    pinhole_camera.c_y =
+        pinhole_camera.c_x.cross(pinhole_camera.direction_to_look_at).normalize();
+    pinhole_camera.c_z = pinhole_camera.direction_to_look_at.normalize();
 }
 
 
