@@ -74,7 +74,7 @@ impl SceneConfig {
         };
 
         let type_of_camera = &parsed_scene_toml["camera"]["type"].as_str().unwrap();
-        let mut camera : Box<Camera> = Box::new(PinholeCamera::default());
+        let mut camera: Box<Camera>;
         match *type_of_camera {
             "pinhole" => {
                 camera = Box::new(PinholeCamera::new(camera_position, camera_look_at, camera_up));
