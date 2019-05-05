@@ -39,7 +39,7 @@ impl SceneConfig {
         }
 
         //Parse scene
-        let scene_file_contents = fs::read_to_string(scene_filename)?;
+        let scene_file_contents = fs::read_to_string(scene_filename.clone())?;
 
         let parsed_scene_toml = scene_file_contents.parse::<Value>().unwrap();
 
