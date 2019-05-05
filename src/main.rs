@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         args.push(scene_file_path);
     }
     dbg!(&args);
-    let mut scene_config = SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(
+    let scene_config = SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(
       |err| {
           eprintln!("Problem parsing scene file: {}", err);
           process::exit(1);
