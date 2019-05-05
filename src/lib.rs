@@ -75,11 +75,11 @@ impl SceneConfig {
         let mut camera = Box::<Camera>;
         match *type_of_camera {
             "pinhole" => {
-                camera = PinholeCamera::new(camera_position, camera_look_at, camera_up);
+                camera = Box::new(PinholeCamera::new(camera_position, camera_look_at, camera_up));
             },
             _ => {
                 eprintln!("Warning: unknown or unsupported camera type, trying to fall back to pinhole camera");
-                let camera = PinholeCamera::new(camera_position, camera_look_at, camera_up);
+                let camera = Box::new(PinholeCamera::new(camera_position, camera_look_at, camera_up));
             }
         }
 
