@@ -1,29 +1,31 @@
 use std::path::PathBuf;
 
 use crate::common::*;
+use byteorder::{ByteOrder, LittleEndian};
+use std::error::Error;
 use std::fs::File;
 use std::io::{BufWriter, Write};
-use std::error::Error;
-use byteorder::{ByteOrder, LittleEndian};
-
 
 #[derive(Debug, Default)]
 struct PfmInfo {
-    image : Vec<Color>,
-    width : i32,
-    height : i32
-
+    image: Vec<Color>,
+    width: i32,
+    height: i32,
 }
 
 #[derive(Debug, Default)]
 struct PfmPixel {
-    r : f32,
+    r: f32,
     g: f32,
-    b: f32
+    b: f32,
 }
 
-pub fn write_pfm(file_path : PathBuf, pixels : Vec<Color>, width : i32, height : i32) -> Result<(), Box<dyn Error>> {
-
+pub fn write_pfm(
+    file_path: PathBuf,
+    pixels: Vec<Color>,
+    width: i32,
+    height: i32,
+) -> Result<(), Box<dyn Error>> {
     assert_eq!(pixels.len(), (width * height) as usize);
 
     let display = file_path.display();
@@ -31,9 +33,7 @@ pub fn write_pfm(file_path : PathBuf, pixels : Vec<Color>, width : i32, height :
     std::fs::create_dir_all(PathBuf::from(file_path.parent().unwrap()))?;
     // Open a file in write-only mode, returns `io::Result<File>`
     let file = match File::create(&file_path) {
-        Err(why) => panic!("couldn't create {}: {}",
-                           display,
-                           why.description()),
+        Err(why) => panic!("couldn't create {}: {}", display, why.description()),
         Ok(file) => file,
     };
 
@@ -43,13 +43,12 @@ pub fn write_pfm(file_path : PathBuf, pixels : Vec<Color>, width : i32, height :
     writeln!(buffer, "{} {}", width, height)?;
     writeln!(buffer, "{}", -1.0 as f32)?;
 
-
     for i in 0..(height) {
         for j in 0..(width) {
-            let pixelvalue : Color = pixels[(i*width+j) as usize];
-            let r  = pixelvalue.x as f32;
-            let g  = pixelvalue.y as f32;
-            let b  = pixelvalue.z as f32;
+            let pixelvalue: Color = pixels[(i * width + j) as usize];
+            let r = pixelvalue.x as f32;
+            let g = pixelvalue.y as f32;
+            let b = pixelvalue.z as f32;
 
             //https://docs.rs/byteorder/1.3.1/byteorder/trait.ByteOrder.html#method.write_f32
             //x86_64 is LittleEndian
@@ -60,10 +59,8 @@ pub fn write_pfm(file_path : PathBuf, pixels : Vec<Color>, width : i32, height :
             buffer.write(&buf)?;
             LittleEndian::write_f32(&mut buf, b);
             buffer.write(&buf)?;
-
         }
     }
-
 
     Ok(())
 }
