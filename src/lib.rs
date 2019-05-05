@@ -85,6 +85,10 @@ impl SceneConfig {
             }
         }
 
+        //Geometry
+        
+        //Material
+
         //Output pfm
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"].as_str().unwrap().to_string();
         let output_file_full_path = "sandbox/".to_string() + output_file_name;

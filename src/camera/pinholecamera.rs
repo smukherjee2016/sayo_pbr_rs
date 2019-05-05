@@ -1,8 +1,8 @@
 use crate::common::*;
 use crate::camera::Camera;
-use std::rc::Rc;
 use crate::film::Film;
 use std::f32::INFINITY;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct PinholeCamera {
@@ -58,15 +58,15 @@ impl Camera for PinholeCamera {
 
     }
 
-    fn generate_camera_ray(&mut self, x: i32, y: i32, film: Rc<Film>) -> Ray {
+    fn generate_camera_ray(&mut self, x: i32, y: i32, film: Arc<Film>) -> Ray {
         //Find point inside pixel coordinates
         let u : fp = (x as fp + 0.5) / film.width as fp;
         let v : fp = (y as fp + 0.5) / film.height as fp;
 
         //Find height and width of the image plane based on FOV, distance and aspect ratio
         //Use Y-FOV
-        let height_image_plane : fp = 2.0 * film.distancetofilm * (film.fov / 2.0).tan();
-        let width_image_plane : fp = height_image_plane * film.aspectratio;
+        let height_image_plane : fp = 2.0 * film.distance_to_film * (film.fov / 2.0).tan();
+        let width_image_plane : fp = height_image_plane * film.aspect_ratio;
 
         //Project u and v to image plane
         let x_image_plane = (u - 0.5) * width_image_plane;
@@ -75,7 +75,7 @@ impl Camera for PinholeCamera {
         //Project to world space
         let position_pixel_in_image_space: Point3 =
             self.origin
-        +   film.distancetofilm * self.direction_to_look_at
+        +   film.distance_to_film * self.direction_to_look_at
         +   x_image_plane * self.c_x
         +   y_image_plane * self.c_y;
 
