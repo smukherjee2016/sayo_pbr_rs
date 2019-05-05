@@ -52,6 +52,8 @@ impl SceneConfig {
         let mut film = Film::default();
         film.new(width, height, fov_degrees);
 
+
+
         //Camera
         let camera_position : Point3 = Point3{
             x: *(&parsed_scene_toml["camera.transform"]["position"][0].as_float().unwrap()) as fp,
@@ -72,7 +74,7 @@ impl SceneConfig {
         };
 
         let type_of_camera = &parsed_scene_toml["camera"]["type"].as_str().unwrap();
-        let mut camera = Box::<Camera>;
+        let mut camera : Box<Camera> = Box::new(PinholeCamera::default());
         match *type_of_camera {
             "pinhole" => {
                 camera = Box::new(PinholeCamera::new(camera_position, camera_look_at, camera_up));
