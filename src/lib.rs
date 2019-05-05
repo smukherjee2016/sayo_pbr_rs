@@ -56,21 +56,21 @@ impl SceneConfig {
 
         //Camera
         let camera_position : Point3 = Point3{
-            x: *(&parsed_scene_toml["camera.transform"]["position"][0].as_float().unwrap()) as fp,
-            y: *(&parsed_scene_toml["camera.transform"]["position"][1].as_float().unwrap()) as fp,
-            z: *(&parsed_scene_toml["camera.transform"]["position"][2].as_float().unwrap()) as fp
+            x: *(&parsed_scene_toml["camera"]["transform"]["position"][0].as_float().unwrap()) as fp,
+            y: *(&parsed_scene_toml["camera"]["transform"]["position"][1].as_float().unwrap()) as fp,
+            z: *(&parsed_scene_toml["camera"]["transform"]["position"][2].as_float().unwrap()) as fp
         };
 
         let camera_look_at : Point3 = Point3{
-            x: *(&parsed_scene_toml["camera.transform"]["look_at"][0].as_float().unwrap()) as fp,
-            y: *(&parsed_scene_toml["camera.transform"]["look_at"][1].as_float().unwrap()) as fp,
-            z: *(&parsed_scene_toml["camera.transform"]["look_at"][2].as_float().unwrap()) as fp
+            x: *(&parsed_scene_toml["camera"]["transform"]["look_at"][0].as_float().unwrap()) as fp,
+            y: *(&parsed_scene_toml["camera"]["transform"]["look_at"][1].as_float().unwrap()) as fp,
+            z: *(&parsed_scene_toml["camera"]["transform"]["look_at"][2].as_float().unwrap()) as fp
         };
 
         let camera_up : Point3 = Point3{
-            x: *(&parsed_scene_toml["camera.transform"]["up"][0].as_float().unwrap()) as fp,
-            y: *(&parsed_scene_toml["camera.transform"]["up"][1].as_float().unwrap()) as fp,
-            z: *(&parsed_scene_toml["camera.transform"]["up"][2].as_float().unwrap()) as fp
+            x: *(&parsed_scene_toml["camera"]["transform"]["up"][0].as_float().unwrap()) as fp,
+            y: *(&parsed_scene_toml["camera"]["transform"]["up"][1].as_float().unwrap()) as fp,
+            z: *(&parsed_scene_toml["camera"]["transform"]["up"][2].as_float().unwrap()) as fp
         };
 
         let type_of_camera = &parsed_scene_toml["camera"]["type"].as_str().unwrap();
