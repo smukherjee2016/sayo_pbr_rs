@@ -50,7 +50,7 @@ checkpoint_interval = "0"
 timeout = "0"
 output_file = "dragon.png"
 resume_render_file = "TungstenRenderState.dat"
-hdr_output_file = "dragon.exr"
+hdr_output_file = "dragon.pfm"
 
 [[bsdfs]]
 name = "GroundInner"
