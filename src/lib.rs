@@ -16,7 +16,7 @@ pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
     pub film: Film,
-    pub camera: Box < dyn Camera >,
+    pub camera: Box < Camera >,
 }
 
 impl SceneConfig {
