@@ -4,24 +4,25 @@ use std::path::{Path, PathBuf};
 mod camera;
 mod common;
 mod film;
-mod utilities;
 mod geometry;
+mod utilities;
 
 use crate::camera::pinholecamera::PinholeCamera;
 use crate::camera::Camera;
 use crate::common::*;
 use crate::film::Film;
-use toml::Value;
-use toml::value::Array;
-use crate::geometry::Geometry;
 use crate::geometry::triangle::TriangleMesh;
+use crate::geometry::Geometry;
+use log::{info, trace, warn};
+use toml::value::Array;
+use toml::Value;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
     pub film: Film,
     pub camera: Box<Camera>,
-    pub geometries : Vec<Box<Geometry>>
+    pub geometries: Vec<Box<Geometry>>,
 }
 
 impl SceneConfig {
@@ -106,7 +107,7 @@ impl SceneConfig {
                 ));
             }
             _ => {
-                eprintln!("Warning: unknown or unsupported camera type, trying to fall back to pinhole camera");
+                warn!("Warning: unknown or unsupported camera type, trying to fall back to pinhole camera");
                 camera = Box::new(PinholeCamera::new(
                     camera_position,
                     camera_look_at,
@@ -116,9 +117,8 @@ impl SceneConfig {
         }
 
         //Geometry
-        let mut geometries : Vec<Box<Geometry>> = vec![];
+        let mut geometries: Vec<Box<Geometry>> = vec![];
         for mut i in &parsed_scene_toml["primitives"].as_array() {
-
             for j in *i {
                 let type_of_geometry = j["type"].as_str().unwrap();
                 //Triangle mesh
@@ -132,13 +132,16 @@ impl SceneConfig {
                         //dbg!(mesh_absolute_path);
 
                         geometries.push(Box::new(TriangleMesh::new(mesh_absolute_path)));
-                    },
-                    _ => { eprintln!("Warning: found unsupported geometry type {}, skipping...", type_of_geometry);}
+                    }
+                    _ => {
+                        warn!(
+                            "Warning: found unsupported geometry type {}, skipping...",
+                            type_of_geometry
+                        );
+                    }
                 }
-
             }
         }
-
 
         //Material
 
@@ -156,7 +159,7 @@ impl SceneConfig {
             out_file: out_file,
             film: film,
             camera: camera,
-            geometries: vec![]
+            geometries: vec![],
         })
     }
 
