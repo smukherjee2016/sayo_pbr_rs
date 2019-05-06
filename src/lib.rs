@@ -5,6 +5,7 @@ mod camera;
 mod common;
 mod film;
 mod utilities;
+mod geometry;
 
 use crate::camera::pinholecamera::PinholeCamera;
 use crate::camera::Camera;
