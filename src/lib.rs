@@ -13,12 +13,15 @@ use crate::common::*;
 use crate::film::Film;
 use toml::Value;
 use toml::value::Array;
+use crate::geometry::Geometry;
+use crate::geometry::triangle::TriangleMesh;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
     pub film: Film,
     pub camera: Box<Camera>,
+    pub geometries : Vec<Box<Geometry>>
 }
 
 impl SceneConfig {
@@ -113,6 +116,7 @@ impl SceneConfig {
         }
 
         //Geometry
+        let mut geometries : Vec<Box<Geometry>> = vec![];
         for mut i in &parsed_scene_toml["primitives"].as_array() {
 
             for j in *i {
@@ -120,11 +124,14 @@ impl SceneConfig {
                 //Triangle mesh
                 match type_of_geometry {
                     "mesh" => {
+                        //Process the file path to ensure the meshes are found
                         let mut current_directory = PathBuf::from(scene_filename.parent().unwrap());
                         let mesh_location_and_name = j["file"].as_str().unwrap();
                         current_directory.push(mesh_location_and_name);
-                        let mesh_absolute_path = current_directory.canonicalize().unwrap();
-                        dbg!(mesh_absolute_path);
+                        let mesh_absolute_path = current_directory.canonicalize()?;
+                        //dbg!(mesh_absolute_path);
+
+                        geometries.push(Box::new(TriangleMesh::new(mesh_absolute_path)));
                     },
                     _ => { eprintln!("Warning: found unsupported geometry type {}, skipping...", type_of_geometry);}
                 }
@@ -149,6 +156,7 @@ impl SceneConfig {
             out_file: out_file,
             film: film,
             camera: camera,
+            geometries: vec![]
         })
     }
 
