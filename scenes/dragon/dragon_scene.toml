@@ -49,7 +49,6 @@ spp_step = 16.0
 checkpoint_interval = "0"
 timeout = "0"
 output_file = "dragon.png"
-resume_render_file = "TungstenRenderState.dat"
 hdr_output_file = "dragon.pfm"
 
 [[bsdfs]]
