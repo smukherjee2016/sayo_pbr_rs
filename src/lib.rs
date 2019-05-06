@@ -12,6 +12,7 @@ use crate::camera::Camera;
 use crate::common::*;
 use crate::film::Film;
 use toml::Value;
+use toml::value::Array;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
@@ -25,10 +26,7 @@ impl SceneConfig {
         let mut scene_filename = PathBuf::from("");
         for arg in args {
             if arg.contains(".toml") {
-                scene_filename = Path::new(arg).canonicalize().unwrap_or_else(|err| {
-                    eprintln!("Error for scene file: {} : {:?}", arg, err.to_string());
-                    PathBuf::from("")
-                });
+                scene_filename = PathBuf::from(Path::new(arg));
             }
         }
 
@@ -115,6 +113,25 @@ impl SceneConfig {
         }
 
         //Geometry
+        for mut i in &parsed_scene_toml["primitives"].as_array() {
+
+            for j in *i {
+                let type_of_geometry = j["type"].as_str().unwrap();
+                //Triangle mesh
+                match type_of_geometry {
+                    "mesh" => {
+                        let mut current_directory = PathBuf::from(scene_filename.parent().unwrap());
+                        let mesh_location_and_name = j["file"].as_str().unwrap();
+                        current_directory.push(mesh_location_and_name);
+                        let mesh_absolute_path = current_directory.canonicalize().unwrap();
+                        dbg!(mesh_absolute_path);
+                    },
+                    _ => { eprintln!("Warning: found unsupported geometry type {}, skipping...", type_of_geometry);}
+                }
+
+            }
+        }
+
 
         //Material
 
