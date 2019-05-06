@@ -3,6 +3,7 @@ pub use f64 as fp;
 pub type Color = cgmath::Vector3<fp>;
 pub type Point3 = cgmath::Vector3<fp>;
 pub type Vec3 = cgmath::Vector3<fp>;
+pub type Mat4 = cgmath::Matrix4<fp>;
 pub const EPSILON: fp = 1e-5;
 pub const ZERO_VECTOR: cgmath::Vector3<fp> = cgmath::Vector3 {
     x: 0.0,
