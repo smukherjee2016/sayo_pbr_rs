@@ -1,3 +1,4 @@
+pub use log::{info, trace, warn};
 pub use cgmath::prelude::*;
 pub use f64 as fp;
 pub type Spectrum = cgmath::Vector3<fp>;
