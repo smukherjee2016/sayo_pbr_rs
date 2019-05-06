@@ -15,7 +15,7 @@ impl TriangleMesh {
         let (models, materials) = mesh.unwrap();
         info!("Number of models: {}", models.len());
 
-        TriangleMesh{ triangles: vec![] }
+        TriangleMesh { triangles: vec![] }
     }
 }
 

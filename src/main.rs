@@ -1,9 +1,9 @@
 use flexi_logger::{with_thread, Logger};
+use log::warn;
 use sayo_pbr_rs::SceneConfig;
 use std::error::Error;
 use std::process;
 use std::time::{Duration, Instant};
-use log::warn;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
