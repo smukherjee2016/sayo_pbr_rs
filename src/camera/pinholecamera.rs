@@ -19,13 +19,13 @@ pub struct PinholeCamera {
 impl Default for PinholeCamera {
     fn default() -> Self {
         PinholeCamera {
-            origin: ZERO_VECTOR,
-            look_at: ZERO_VECTOR,
-            up: ZERO_VECTOR,
-            direction_to_look_at: ZERO_VECTOR,
-            c_x: ZERO_VECTOR,
-            c_y: ZERO_VECTOR,
-            c_z: ZERO_VECTOR,
+            origin: ZERO_VEC3,
+            look_at: ZERO_VEC3,
+            up: ZERO_VEC3,
+            direction_to_look_at: ZERO_VEC3,
+            c_x: ZERO_VEC3,
+            c_y: ZERO_VEC3,
+            c_z: ZERO_VEC3,
         }
     }
 }
