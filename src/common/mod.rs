@@ -1,6 +1,6 @@
 pub use cgmath::prelude::*;
 pub use f64 as fp;
-pub type Color = cgmath::Vector3<fp>;
+pub type Spectrum = cgmath::Vector3<fp>;
 pub type Point3 = cgmath::Vector3<fp>;
 pub type Vec3 = cgmath::Vector3<fp>;
 pub type Mat4 = cgmath::Matrix4<fp>;

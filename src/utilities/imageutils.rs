@@ -8,7 +8,7 @@ use std::io::{BufWriter, Write};
 
 #[derive(Debug, Default)]
 struct PfmInfo {
-    image: Vec<Color>,
+    image: Vec<Spectrum>,
     width: i32,
     height: i32,
 }
@@ -22,7 +22,7 @@ struct PfmPixel {
 
 pub fn write_pfm(
     file_path: PathBuf,
-    pixels: Vec<Color>,
+    pixels: Vec<Spectrum>,
     width: i32,
     height: i32,
 ) -> Result<(), Box<dyn Error>> {
@@ -45,7 +45,7 @@ pub fn write_pfm(
 
     for i in 0..(height) {
         for j in 0..(width) {
-            let pixelvalue: Color = pixels[(i * width + j) as usize];
+            let pixelvalue: Spectrum = pixels[(i * width + j) as usize];
             let r = pixelvalue.x as f32;
             let g = pixelvalue.y as f32;
             let b = pixelvalue.z as f32;

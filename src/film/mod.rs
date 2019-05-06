@@ -3,7 +3,7 @@ use cgmath::Vector3;
 
 #[derive(Debug, Default, Clone)]
 pub struct Film {
-    pub image: Vec<Color>,
+    pub image: Vec<Spectrum>,
     pub height: i32,
     pub width: i32,
     pub fov: fp,
