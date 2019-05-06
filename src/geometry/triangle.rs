@@ -9,8 +9,13 @@ pub struct TriangleMesh {
 struct Triangle {}
 
 impl TriangleMesh {
-    pub fn new(mesh: PathBuf) -> TriangleMesh {
-        TriangleMesh { triangles: vec![] }
+    pub fn new(mesh_name_and_path: PathBuf) -> TriangleMesh {
+        let mesh = tobj::load_obj(mesh_name_and_path.as_path());
+        assert!(mesh.is_ok());
+        let (models, materials) = mesh.unwrap();
+        info!("Number of models: {}", models.len());
+
+        TriangleMesh{ triangles: vec![] }
     }
 }
 

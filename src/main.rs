@@ -2,6 +2,8 @@ use flexi_logger::{with_thread, Logger};
 use sayo_pbr_rs::SceneConfig;
 use std::error::Error;
 use std::process;
+use std::time::{Duration, Instant};
+use log::warn;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
@@ -21,10 +23,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         args.push(scene_file_path);
     }
     dbg!(&args);
+
+    let start = Instant::now();
     let scene_config = SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(|err| {
         eprintln!("Problem parsing scene file: {}", err);
         process::exit(1);
     });
+
+    let duration = start.elapsed();
+    warn!("Total time taken: {:?}", duration);
 
     scene_config.write_output()?;
 
