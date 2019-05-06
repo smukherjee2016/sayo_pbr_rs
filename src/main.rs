@@ -1,8 +1,14 @@
+use flexi_logger::{with_thread, Logger};
 use sayo_pbr_rs::SceneConfig;
 use std::error::Error;
 use std::process;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    Logger::with_env_or_str("info")
+        .format(with_thread)
+        .start()
+        .unwrap();
+
     let mut args: Vec<String> = std::env::args().collect();
 
     let current_dir = std::env::current_dir().unwrap();

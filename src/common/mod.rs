@@ -18,13 +18,12 @@ pub const ZERO_VEC4: cgmath::Vector4<fp> = cgmath::Vector4 {
     w: 0.0,
 };
 
-pub const ZERO_MAT4 : cgmath::Matrix4<fp> = cgmath::Matrix4 {
+pub const ZERO_MAT4: cgmath::Matrix4<fp> = cgmath::Matrix4 {
     x: ZERO_VEC4,
     y: ZERO_VEC4,
     z: ZERO_VEC4,
     w: ZERO_VEC4,
 };
-
 
 #[derive(Debug)]
 pub struct Ray {
@@ -36,9 +35,9 @@ pub struct Ray {
 
 #[derive(Debug)]
 pub struct IntersectionInfo {
-   pub t_intersection : fp,
-   pub point_of_intersection : Point3,
-   pub normal : Vec3
+    pub t_intersection: fp,
+    pub point_of_intersection: Point3,
+    pub normal: Vec3,
 }
 
 impl Ray {

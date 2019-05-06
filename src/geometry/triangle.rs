@@ -3,16 +3,14 @@ use crate::geometry::Geometry;
 use std::path::PathBuf;
 
 pub struct TriangleMesh {
-    triangles : Vec<Triangle>
+    triangles: Vec<Triangle>,
 }
 
-struct Triangle {
-
-}
+struct Triangle {}
 
 impl TriangleMesh {
-    pub fn new(mesh : PathBuf) -> TriangleMesh {
-        TriangleMesh{ triangles: vec![] }
+    pub fn new(mesh: PathBuf) -> TriangleMesh {
+        TriangleMesh { triangles: vec![] }
     }
 }
 
@@ -21,7 +19,7 @@ impl Geometry for TriangleMesh {
         let intersection_info = IntersectionInfo {
             t_intersection: 0.0,
             point_of_intersection: ZERO_VEC3,
-            normal: ZERO_VEC3
+            normal: ZERO_VEC3,
         };
 
         Some(intersection_info)

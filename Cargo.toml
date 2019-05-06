@@ -10,3 +10,5 @@ toml = "*"
 cgmath = "*"
 byteorder = "1" #for writing pfm file
 tobj = "*"
+log = "0.4"
+flexi_logger = "^0.11.4"
