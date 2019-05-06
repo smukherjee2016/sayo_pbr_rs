@@ -11,7 +11,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //current_dir() is the root directory of the project, setting relative paths
     //If no arguments specified, try to use a default scene
     if args.len() == 1 {
-        let scene_file_path = "scenes/default_scene.toml".to_string();
+        let scene_file_path = "scenes/dragon/dragon_scene.toml".to_string();
         args.push(scene_file_path);
     }
     dbg!(&args);
