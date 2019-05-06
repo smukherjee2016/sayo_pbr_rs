@@ -1,7 +1,7 @@
 use crate::common::*;
 use crate::geometry::Geometry;
 
-struct TriangleMesh {
+pub struct TriangleMesh {
     triangles : Vec<Triangle>
 }
 
