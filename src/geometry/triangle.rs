@@ -29,7 +29,7 @@ impl TriangleMesh {
                 normals: model.mesh.normals,
                 texcoords: model.mesh.texcoords,
                 indices: model.mesh.indices,
-                material_id: None,
+                material_id: model.mesh.material_id,
             };
             meshes.push(mesh);
         }
