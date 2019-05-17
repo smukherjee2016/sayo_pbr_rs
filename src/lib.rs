@@ -11,10 +11,9 @@ use crate::camera::pinholecamera::PinholeCamera;
 use crate::camera::Camera;
 use crate::common::*;
 use crate::film::Film;
-use crate::geometry::triangle::TriangleMesh;
-use crate::geometry::Geometry;
+use crate::geometry::triangle::{Triangle, TriangleMesh};
+use crate::geometry::Hitable;
 use log::{info, trace, warn};
-use toml::value::Array;
 use toml::Value;
 
 pub struct SceneConfig {
@@ -22,7 +21,8 @@ pub struct SceneConfig {
     pub out_file: PathBuf,
     pub film: Film,
     pub camera: Box<Camera>,
-    pub geometries: Vec<Box<Geometry>>,
+    pub geometries: Vec<Box<Hitable>>,
+    pub meshes: Vec<TriangleMesh>,
 }
 
 impl SceneConfig {
@@ -117,8 +117,10 @@ impl SceneConfig {
         }
 
         //Geometry
-        let mut geometries: Vec<Box<Geometry>> = vec![];
-        for mut i in &parsed_scene_toml["primitives"].as_array() {
+        let mut geometries: Vec<Box<Hitable>> = vec![];
+        let mut meshes: Vec<TriangleMesh> = vec![];
+
+        for i in &parsed_scene_toml["primitives"].as_array() {
             for j in *i {
                 let type_of_geometry = j["type"].as_str().unwrap();
                 //Triangle mesh
@@ -130,8 +132,14 @@ impl SceneConfig {
                         current_directory.push(mesh_location_and_name);
                         let mesh_absolute_path = current_directory.canonicalize()?;
                         //dbg!(mesh_absolute_path);
-
-                        geometries.push(Box::new(TriangleMesh::new(mesh_absolute_path)));
+                        let mut input_meshes = TriangleMesh::new(mesh_absolute_path);
+                        meshes.append(&mut input_meshes);
+                        for input_mesh in input_meshes {
+                            let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
+                            for triangle in triangles {
+                                geometries.push(Box::new(triangle));
+                            }
+                        }
                     }
                     _ => {
                         warn!(
@@ -159,7 +167,8 @@ impl SceneConfig {
             out_file: out_file,
             film: film,
             camera: camera,
-            geometries: vec![],
+            geometries: geometries,
+            meshes: meshes,
         })
     }
 

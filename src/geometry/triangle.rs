@@ -1,25 +1,51 @@
 use crate::common::*;
-use crate::geometry::Geometry;
+use crate::geometry::Hitable;
 use std::path::PathBuf;
 
 pub struct TriangleMesh {
-    triangles: Vec<Triangle>,
+    //Same as tobj::Mesh
+    pub positions: Vec<f32>,
+    pub normals: Vec<f32>,
+    pub texcoords: Vec<f32>,
+    pub indices: Vec<u32>,
+    pub material_id: Option<usize>,
 }
 
-struct Triangle {}
+pub struct Triangle {
+    indices: Vec<u128>,
+    //mesh: Arc<TriangleMesh>,
+}
 
 impl TriangleMesh {
-    pub fn new(mesh_name_and_path: PathBuf) -> TriangleMesh {
-        let mesh = tobj::load_obj(mesh_name_and_path.as_path());
-        assert!(mesh.is_ok());
-        let (models, materials) = mesh.unwrap();
-        info!("Number of models: {}", models.len());
+    pub fn new(mesh_name_and_path: PathBuf) -> Vec<TriangleMesh> {
+        //Load in the .obj file. It might have multiple models(meshes) in it
+        let obj_mesh = tobj::load_obj(mesh_name_and_path.as_path());
+        assert!(obj_mesh.is_ok());
+        let (models, materials) = obj_mesh.unwrap();
+        let mut meshes: Vec<TriangleMesh> = Vec::new();
+        for model in models {
+            let mesh = TriangleMesh {
+                positions: model.mesh.positions,
+                normals: model.mesh.normals,
+                texcoords: model.mesh.texcoords,
+                indices: model.mesh.indices,
+                material_id: None,
+            };
+            meshes.push(mesh);
+        }
 
-        TriangleMesh { triangles: vec![] }
+        meshes
+    }
+
+    pub fn get_triangles_from_mesh(&self) -> Vec<Triangle> {
+        vec![Triangle {
+            indices: vec![],
+            // mesh: Arc::new(*self)
+        }]
     }
 }
 
-impl Geometry for TriangleMesh {
+impl Hitable for Triangle {
     fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
         let intersection_info = IntersectionInfo {
             t_intersection: 0.0,
