@@ -13,7 +13,6 @@ use crate::common::*;
 use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
-use log::{info, trace, warn};
 use toml::Value;
 
 pub struct SceneConfig {
@@ -21,7 +20,7 @@ pub struct SceneConfig {
     pub out_file: PathBuf,
     pub film: Film,
     pub camera: Box<Camera>,
-    pub geometries: Vec<Box<Hitable>>,
+    pub geometries: Vec<Arc<Hitable>>,
     pub meshes: Vec<TriangleMesh>,
 }
 
@@ -117,7 +116,7 @@ impl SceneConfig {
         }
 
         //Geometry
-        let mut geometries: Vec<Box<Hitable>> = vec![];
+        let mut geometries: Vec<Arc<Hitable>> = vec![];
         let mut meshes: Vec<TriangleMesh> = vec![];
 
         for i in &parsed_scene_toml["primitives"].as_array() {
@@ -137,7 +136,7 @@ impl SceneConfig {
                         for input_mesh in input_meshes {
                             let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
                             for triangle in triangles {
-                                geometries.push(Box::new(triangle));
+                                geometries.push(Arc::new(triangle));
                             }
                         }
                     }
