@@ -12,8 +12,13 @@ pub struct TriangleMesh {
 }
 
 pub struct Triangle {
-    indices: Vec<u128>,
+    //TODO Visit this implementation someday after leveling up
+    //indices: Vec<u128>,
     //mesh: Arc<TriangleMesh>,
+    pub positions: Vec<Point3>,
+    pub normals: Vec<Vec3>,
+    pub texcoords: Vec<Point2>,
+    
 }
 
 impl TriangleMesh {
@@ -39,8 +44,9 @@ impl TriangleMesh {
 
     pub fn get_triangles_from_mesh(&self) -> Vec<Triangle> {
         vec![Triangle {
-            indices: vec![],
-            // mesh: Arc::new(*self)
+            positions: vec![],
+            normals: vec![],
+            texcoords: vec![]
         }]
     }
 }

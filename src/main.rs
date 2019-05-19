@@ -29,13 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         eprintln!("Problem parsing scene file: {}", err);
         process::exit(1);
     });
-    for mesh in &scene_config.meshes {
-        warn!("Positions len: {}", mesh.positions.len());
-        warn!("Texcoords len: {}", mesh.texcoords.len());
-        warn!("Normals len: {}", mesh.normals.len());
-        warn!("Indices len: {}", mesh.indices.len());
-        warn!("Material id: {:?}", mesh.material_id);
-    }
+
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);

@@ -22,7 +22,6 @@ pub struct SceneConfig {
     pub film: Film,
     pub camera: Box<Camera>,
     pub geometries: Vec<Box<Hitable>>,
-    pub meshes: Vec<TriangleMesh>,
 }
 
 impl SceneConfig {
@@ -133,7 +132,6 @@ impl SceneConfig {
                         let mesh_absolute_path = current_directory.canonicalize()?;
                         //dbg!(mesh_absolute_path);
                         let mut input_meshes = TriangleMesh::new(mesh_absolute_path);
-                        meshes.append(&mut input_meshes);
                         for input_mesh in input_meshes {
                             let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
                             for triangle in triangles {
@@ -168,7 +166,6 @@ impl SceneConfig {
             film: film,
             camera: camera,
             geometries: geometries,
-            meshes: meshes,
         })
     }
 
