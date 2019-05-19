@@ -2,7 +2,6 @@ use crate::common::*;
 use crate::geometry::Hitable;
 use std::path::PathBuf;
 
-#[derive(Clone)]
 pub struct TriangleMesh {
     //Same as tobj::Mesh
     pub positions: Vec<f32>,
@@ -12,9 +11,9 @@ pub struct TriangleMesh {
     pub material_id: Option<usize>,
 }
 
-pub struct Triangle<'a> {
+pub struct Triangle {
     indices: Vec<u128>,
-    mesh: &'a TriangleMesh,
+    //mesh: Arc<TriangleMesh>,
 }
 
 impl TriangleMesh {
@@ -42,13 +41,11 @@ impl TriangleMesh {
         vec![Triangle {
             indices: vec![],
             // mesh: Arc::new(*self)
-            mesh: &self
         }]
     }
 }
 
-
-impl<'a> Hitable for Triangle<'a> {
+impl Hitable for Triangle {
     fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
         let intersection_info = IntersectionInfo {
             t_intersection: 0.0,

@@ -13,22 +13,19 @@ use crate::common::*;
 use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
+use log::{info, trace, warn};
 use toml::Value;
 
-pub struct SceneConfig<'a> {
+pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
     pub film: Film,
     pub camera: Box<Camera>,
-    pub geometries: Vec<Arc<Hitable + 'a>>,
-    pub geometry_data : GeometryData,
-}
-
-pub struct GeometryData {
+    pub geometries: Vec<Box<Hitable>>,
     pub meshes: Vec<TriangleMesh>,
 }
 
-impl<'a> SceneConfig<'a> {
+impl SceneConfig {
     pub fn parse_args_and_construct_scene(args: &[String]) -> Result<SceneConfig, Box<dyn Error>> {
         let mut scene_filename = PathBuf::from("");
         for arg in args {
@@ -120,7 +117,7 @@ impl<'a> SceneConfig<'a> {
         }
 
         //Geometry
-        let mut geometries: Vec<Arc<Hitable>> = vec![];
+        let mut geometries: Vec<Box<Hitable>> = vec![];
         let mut meshes: Vec<TriangleMesh> = vec![];
 
         for i in &parsed_scene_toml["primitives"].as_array() {
@@ -137,6 +134,12 @@ impl<'a> SceneConfig<'a> {
                         //dbg!(mesh_absolute_path);
                         let mut input_meshes = TriangleMesh::new(mesh_absolute_path);
                         meshes.append(&mut input_meshes);
+                        for input_mesh in input_meshes {
+                            let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
+                            for triangle in triangles {
+                                geometries.push(Box::new(triangle));
+                            }
+                        }
                     }
                     _ => {
                         warn!(
@@ -165,7 +168,7 @@ impl<'a> SceneConfig<'a> {
             film: film,
             camera: camera,
             geometries: geometries,
-            geometry_data: GeometryData {meshes}
+            meshes: meshes,
         })
     }
 

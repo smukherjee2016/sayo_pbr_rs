@@ -1,7 +1,6 @@
 pub use cgmath::prelude::*;
 pub use f64 as fp;
 pub use log::{info, trace, warn};
-pub use std::sync::Arc;
 pub type Spectrum = cgmath::Vector3<fp>;
 pub type Point3 = cgmath::Vector3<fp>;
 pub type Vec2 = cgmath::Vector2<fp>;
