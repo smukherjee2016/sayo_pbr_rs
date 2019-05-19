@@ -21,6 +21,10 @@ pub struct SceneConfig<'a> {
     pub film: Film,
     pub camera: Box<Camera>,
     pub geometries: Vec<Arc<Hitable + 'a>>,
+    pub geometry_data : GeometryData,
+}
+
+pub struct GeometryData {
     pub meshes: Vec<TriangleMesh>,
 }
 
@@ -161,7 +165,7 @@ impl<'a> SceneConfig<'a> {
             film: film,
             camera: camera,
             geometries: geometries,
-            meshes: meshes,
+            geometry_data: GeometryData {meshes}
         })
     }
 

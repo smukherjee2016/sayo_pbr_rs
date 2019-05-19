@@ -47,6 +47,7 @@ impl TriangleMesh {
     }
 }
 
+
 impl<'a> Hitable for Triangle<'a> {
     fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
         let intersection_info = IntersectionInfo {
