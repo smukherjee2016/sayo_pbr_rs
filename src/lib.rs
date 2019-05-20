@@ -117,7 +117,6 @@ impl SceneConfig {
 
         //Geometry
         let mut geometries: Vec<Box<Hitable>> = vec![];
-        let mut meshes: Vec<TriangleMesh> = vec![];
 
         for i in &parsed_scene_toml["primitives"].as_array() {
             for j in *i {
@@ -131,7 +130,7 @@ impl SceneConfig {
                         current_directory.push(mesh_location_and_name);
                         let mesh_absolute_path = current_directory.canonicalize()?;
                         //dbg!(mesh_absolute_path);
-                        let mut input_meshes = TriangleMesh::new(mesh_absolute_path);
+                        let input_meshes = TriangleMesh::new(mesh_absolute_path);
                         for input_mesh in input_meshes {
                             let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
                             for triangle in triangles {

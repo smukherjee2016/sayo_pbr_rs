@@ -45,7 +45,7 @@ impl TriangleMesh {
         let mut triangles: Vec<Triangle> = vec![];
 
         //Convert the indices to groups of 3
-        let mut triangle_indices: Vec<Vec<u32>> =
+        let triangle_indices: Vec<Vec<u32>> =
             self.indices.chunks(3).map(|x| x.to_vec()).collect();
         for index in &triangle_indices {
             let triangle = Triangle {

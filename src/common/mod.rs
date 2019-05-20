@@ -4,7 +4,6 @@ pub use log::{info, trace, warn};
 pub type Spectrum = cgmath::Vector3<fp>;
 pub type Point3 = cgmath::Vector3<fp>;
 pub type Point2 = cgmath::Vector2<fp>;
-pub type Vec2 = cgmath::Vector2<fp>;
 pub type Vec3 = cgmath::Vector3<fp>;
 pub type Mat4 = cgmath::Matrix4<fp>;
 pub const EPSILON: fp = 1e-5;
