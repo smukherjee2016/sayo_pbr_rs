@@ -30,7 +30,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         process::exit(1);
     });
 
-
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
 

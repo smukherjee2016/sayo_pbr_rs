@@ -18,7 +18,6 @@ pub struct Triangle {
     pub positions: Vec<Point3>,
     pub normals: Vec<Vec3>,
     pub texcoords: Vec<Point2>,
-    
 }
 
 impl TriangleMesh {
@@ -43,11 +42,34 @@ impl TriangleMesh {
     }
 
     pub fn get_triangles_from_mesh(&self) -> Vec<Triangle> {
-        vec![Triangle {
-            positions: vec![],
-            normals: vec![],
-            texcoords: vec![]
-        }]
+        let mut triangles: Vec<Triangle> = vec![];
+
+        //Convert the indices to groups of 3
+        let mut triangle_indices: Vec<Vec<u32>> =
+            self.indices.chunks(3).map(|x| x.to_vec()).collect();
+        for index in &triangle_indices {
+            let triangle = Triangle {
+                positions: vec![Point3::new(
+                    *self.positions.get(index[0] as usize).unwrap() as fp,
+                    *self.positions.get(index[1] as usize).unwrap() as fp,
+                    *self.positions.get(index[2] as usize).unwrap() as fp,
+                )],
+                normals: vec![Point3::new(
+                    *self.normals.get(index[0] as usize).unwrap() as fp,
+                    *self.normals.get(index[1] as usize).unwrap() as fp,
+                    *self.normals.get(index[2] as usize).unwrap() as fp,
+                )],
+                texcoords: vec![Point2::new(
+                    *self.texcoords.get(index[0] as usize).unwrap() as fp,
+                    *self.texcoords.get(index[1] as usize).unwrap() as fp,
+                )],
+            };
+            triangles.push(triangle);
+        }
+
+        //info!("Triangle 0: Positions: {:?}", triangles.get(0).unwrap().texcoords);
+
+        triangles
     }
 }
 
