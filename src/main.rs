@@ -1,6 +1,6 @@
 use flexi_logger::{with_thread, Logger};
 use log::warn;
-use sayo_pbr_rs::SceneConfig;
+use sayo_pbr_rs::scene::SceneConfig;
 use std::error::Error;
 use std::process;
 use std::time::Instant;

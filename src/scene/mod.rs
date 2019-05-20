@@ -1,11 +1,6 @@
 use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
-mod camera;
-mod common;
-mod film;
-mod geometry;
-mod utilities;
 
 use crate::camera::pinholecamera::PinholeCamera;
 use crate::camera::Camera;
@@ -14,6 +9,7 @@ use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use toml::Value;
+use crate::utilities;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
