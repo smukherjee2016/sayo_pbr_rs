@@ -13,7 +13,6 @@ use crate::common::*;
 use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
-use log::{info, trace, warn};
 use toml::Value;
 
 pub struct SceneConfig {
