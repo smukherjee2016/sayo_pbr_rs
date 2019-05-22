@@ -59,7 +59,7 @@ impl Camera for PinholeCamera {
         phc
     }
 
-    fn generate_camera_ray(&mut self, x: i32, y: i32, film: Arc<&Film>) -> Ray {
+    fn generate_camera_ray(&mut self, x: i32, y: i32, film: &mut Film) -> Ray {
         //Find point inside pixel coordinates
         let u: fp = (x as fp + 0.5) / film.width as fp;
         let v: fp = (y as fp + 0.5) / film.height as fp;

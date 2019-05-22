@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
 
     let integrator : TestIntegrator;
-    TestIntegrator::render(&mut scene_config, 20, 1);
+    TestIntegrator::render(&mut scene_config, 1, 1);
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);

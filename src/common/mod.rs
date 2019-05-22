@@ -1,6 +1,8 @@
 pub use cgmath::prelude::*;
 pub use f64 as fp;
 pub use log::{info, trace, warn};
+use cgmath::Vector3;
+
 pub type Spectrum = cgmath::Vector3<fp>;
 pub type Point3 = cgmath::Vector3<fp>;
 pub type Point2 = cgmath::Vector2<fp>;
@@ -29,10 +31,10 @@ pub const ZERO_MAT4: cgmath::Matrix4<fp> = cgmath::Matrix4 {
 
 #[derive(Debug)]
 pub struct Ray {
-    o: Point3,
-    d: Vec3,
-    t: fp,
-    tmax: fp,
+    pub o: Point3,
+    pub d: Vec3,
+    pub t: fp,
+    pub tmax: fp,
 }
 
 #[derive(Debug)]
