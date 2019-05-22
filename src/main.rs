@@ -1,12 +1,11 @@
 use flexi_logger::{with_thread, Logger};
 use log::warn;
+use sayo_pbr_rs::integrators::testintegrator::*;
+use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::SceneConfig;
 use std::error::Error;
 use std::process;
 use std::time::Instant;
-use sayo_pbr_rs::integrators::testintegrator::*;
-use sayo_pbr_rs::integrators::Integrator;
-use std::sync::Arc;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
@@ -28,12 +27,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     dbg!(&args);
 
     let start = Instant::now();
-    let mut scene_config = SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(|err| {
-        eprintln!("Problem parsing scene file: {}", err);
-        process::exit(1);
-    });
+    let mut scene_config =
+        SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(|err| {
+            eprintln!("Problem parsing scene file: {}", err);
+            process::exit(1);
+        });
 
-    let integrator : TestIntegrator;
     TestIntegrator::render(&mut scene_config, 1, 1);
 
     let duration = start.elapsed();

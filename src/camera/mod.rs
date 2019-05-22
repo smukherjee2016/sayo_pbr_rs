@@ -1,7 +1,6 @@
 pub mod pinholecamera;
 use crate::common::*;
 use crate::film::Film;
-use std::sync::Arc;
 
 pub trait Camera {
     fn new(origin_: Point3, look_at: Point3, up_: Vec3) -> Self

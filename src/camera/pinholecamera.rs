@@ -2,7 +2,6 @@ use crate::camera::Camera;
 use crate::common::*;
 use crate::film::Film;
 use std::f32::INFINITY;
-use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct PinholeCamera {
