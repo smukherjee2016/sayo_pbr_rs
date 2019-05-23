@@ -14,11 +14,7 @@ impl Integrator for TestIntegrator {
             let x = position_in_film % film.width;
             let y = position_in_film / film.width;
 
-            let mut pixel_value: Spectrum = Spectrum {
-                x: 0.0,
-                y: 0.0,
-                z: 0.0,
-            };
+            let mut pixel_value: Spectrum = ZERO_VEC3;
             for _j in 0..samples_count {
                 for _k in 0..bounces_count {
                     //Core Integrator code goes here
