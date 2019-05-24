@@ -20,29 +20,10 @@ impl Integrator for TestIntegrator {
                     //Core Integrator code goes here
                     let ray = camera.generate_camera_ray(x, y, &mut film);
                     //info!("Ray info: {:?}", &ray);
-                    let x;
-                    let y;
-                    let z;
-                    if ray.d.x > 0.0 {
-                        x = ray.d.x;
-                    } else {
-                        x = -ray.d.x;
-                    }
-                    if ray.d.y > 0.0 {
-                        y = ray.d.y;
-                    } else {
-                        y = -ray.d.y;
-                    }
-                    if ray.d.z > 0.0 {
-                        z = ray.d.z;
-                    } else {
-                        z = -ray.d.z;
-                    }
-
                     let intersection = scene.check_intersection_return_closest_hit(ray.clone());
                     match intersection {
                         Some(intersection_info) => {
-                            pixel_value = intersection_info.normal;
+                            pixel_value += intersection_info.normal;
                             //info!("{:?}", pixel_value);
                         }
                         None => {
@@ -52,6 +33,7 @@ impl Integrator for TestIntegrator {
 
                 }
             }
+            pixel_value /= (samples_count as fp);
             if !pixel_value.x.is_finite() || !pixel_value.y.is_finite() || !pixel_value.z.is_finite() {
                 warn!("Value is infinite or NaN!! {} {} {} at pixel {} {}", pixel_value.x, pixel_value.y, pixel_value.z, x, y);
             }
