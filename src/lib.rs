@@ -15,11 +15,12 @@ use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use toml::Value;
+use std::cell::RefCell;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
-    pub film: Film,
+    pub film: RefCell<Film>,
     pub camera: Box<Camera>,
     pub geometries: Vec<Box<Hitable>>,
 }
@@ -162,18 +163,35 @@ impl SceneConfig {
         Ok(SceneConfig {
             scene_file_name: scene_filename,
             out_file: out_file,
-            film: film,
+            film: RefCell::new(film),
             camera: camera,
             geometries: geometries,
         })
     }
 
+    pub fn check_intersection_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
+        for geometry in &self.geometries {
+            match geometry.check_intersection_and_return_closest_hit(ray.clone()) {
+                Some(intersection_info) => {
+                    return Some(intersection_info);
+                }
+                None => {}
+            }
+        }
+        None
+    }
+
     pub fn write_output(&self) -> Result<(), Box<dyn Error>> {
+        let borrowed_film = self.film.borrow();
+        let image = borrowed_film.image.clone();
+        let width = borrowed_film.width;
+        let height = borrowed_film.height;
+
         utilities::imageutils::write_pfm(
             self.out_file.clone(),
-            self.film.image.clone(),
-            self.film.width,
-            self.film.height,
+            image,
+            width,
+            height
         )
     }
 }

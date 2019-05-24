@@ -28,7 +28,7 @@ pub const ZERO_MAT4: cgmath::Matrix4<fp> = cgmath::Matrix4 {
     w: ZERO_VEC4,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Ray {
     pub o: Point3,
     pub d: Vec3,
