@@ -1,5 +1,7 @@
-pub use log::{info, trace, warn};
 pub use crate::utilities::mathutils::*;
+pub use log::{info, trace, warn};
+
+pub const EPSILON: fp = 1e-5;
 
 #[derive(Debug, Clone)]
 pub struct Ray {
@@ -9,7 +11,7 @@ pub struct Ray {
     pub tmax: fp,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct IntersectionInfo {
     pub t_intersection: fp,
     pub point_of_intersection: Point3,

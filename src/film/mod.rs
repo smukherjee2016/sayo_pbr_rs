@@ -1,5 +1,4 @@
 use crate::common::*;
-use cgmath::Vector3;
 
 #[derive(Debug, Default, Clone)]
 pub struct Film {
@@ -20,6 +19,6 @@ impl Film {
         self.width = width;
         self.height = height;
         self.image
-            .resize((width * height) as usize, Vector3::from((0.0, 0.3, 0.7)));
+            .resize((width * height) as usize, Vector3::new(0.0, 0.3, 0.7));
     }
 }

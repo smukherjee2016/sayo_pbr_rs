@@ -76,8 +76,8 @@ impl Hitable for Triangle {
     fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
         let intersection_info = IntersectionInfo {
             t_intersection: 0.0,
-            point_of_intersection: ZERO_VEC3,
-            normal: ZERO_VEC3,
+            point_of_intersection: Default::default(),
+            normal: Vector3::new(0.1, 0.4, 0.9),
         };
 
         Some(intersection_info)

@@ -3,7 +3,7 @@ use crate::common::*;
 use crate::film::Film;
 use std::f32::INFINITY;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct PinholeCamera {
     origin: Point3,
     look_at: Point3, //look_at is a point, not direction
@@ -15,32 +15,18 @@ pub struct PinholeCamera {
     c_z: Vec3,
 }
 
-impl Default for PinholeCamera {
-    fn default() -> Self {
-        PinholeCamera {
-            origin: ZERO_VEC3,
-            look_at: ZERO_VEC3,
-            up: ZERO_VEC3,
-            direction_to_look_at: ZERO_VEC3,
-            c_x: ZERO_VEC3,
-            c_y: ZERO_VEC3,
-            c_z: ZERO_VEC3,
-        }
-    }
-}
-
 fn make_basis_vectors(pinhole_camera: &mut PinholeCamera) {
     pinhole_camera.direction_to_look_at =
-        cgmath::InnerSpace::normalize(pinhole_camera.look_at - pinhole_camera.origin);
+        (pinhole_camera.look_at.clone() - pinhole_camera.origin.clone()).normalize();
 
     //Basis vectors at camera origin
     pinhole_camera.c_x = pinhole_camera
         .direction_to_look_at
-        .cross(pinhole_camera.up)
+        .cross(pinhole_camera.up.clone())
         .normalize();
     pinhole_camera.c_y = pinhole_camera
         .c_x
-        .cross(pinhole_camera.direction_to_look_at)
+        .cross(pinhole_camera.direction_to_look_at.clone())
         .normalize();
     pinhole_camera.c_z = pinhole_camera.direction_to_look_at.normalize();
 }
@@ -73,16 +59,16 @@ impl Camera for PinholeCamera {
         let y_image_plane = (v - 0.5) * height_image_plane;
 
         //Project to world space
-        let position_pixel_in_image_space: Point3 = self.origin
-            + film.distance_to_film * self.direction_to_look_at
-            + x_image_plane * self.c_x
-            + y_image_plane * self.c_y;
+        let position_pixel_in_image_space: Point3 = self.origin.clone()
+            + Vector3::from(film.distance_to_film) * self.direction_to_look_at.clone()
+            + Vector3::from(x_image_plane) * self.c_x.clone()
+            + Vector3::from(y_image_plane) * self.c_y.clone();
 
         let direction_in_image_space: Vec3 =
-            (position_pixel_in_image_space - self.origin).normalize();
+            (position_pixel_in_image_space.clone() - self.origin.clone()).normalize();
 
         Ray::new(
-            self.origin,
+            self.origin.clone(),
             direction_in_image_space,
             EPSILON,
             INFINITY.into(),

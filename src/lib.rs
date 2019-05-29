@@ -14,8 +14,8 @@ use crate::common::*;
 use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
-use toml::Value;
 use std::cell::RefCell;
+use toml::Value;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
@@ -187,11 +187,6 @@ impl SceneConfig {
         let width = borrowed_film.width;
         let height = borrowed_film.height;
 
-        utilities::imageutils::write_pfm(
-            self.out_file.clone(),
-            image,
-            width,
-            height
-        )
+        utilities::imageutils::write_pfm(self.out_file.clone(), image, width, height)
     }
 }

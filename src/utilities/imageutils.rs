@@ -45,7 +45,7 @@ pub fn write_pfm(
 
     for i in 0..(height) {
         for j in 0..(width) {
-            let pixelvalue: Spectrum = pixels[(i * width + j) as usize];
+            let pixelvalue: &Spectrum = &pixels[(i * width + j) as usize];
             let r = pixelvalue.x as f32;
             let g = pixelvalue.y as f32;
             let b = pixelvalue.z as f32;

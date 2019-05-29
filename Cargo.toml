@@ -7,7 +7,6 @@ license = "MIT OR Apache-2.0"
 
 [dependencies]
 toml = "*"
-cgmath = "*"
 byteorder = "1" #for writing pfm file
 tobj = "*"
 log = "0.4"
