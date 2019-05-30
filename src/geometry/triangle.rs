@@ -44,30 +44,77 @@ impl TriangleMesh {
     pub fn get_triangles_from_mesh(&self) -> Vec<Triangle> {
         let mut triangles: Vec<Triangle> = vec![];
 
+        //*self.positions.get(index[0] as usize).unwrap() as fp
         //Convert the indices to groups of 3
-        let triangle_indices: Vec<Vec<u32>> = self.indices.chunks(3).map(|x| x.to_vec()).collect();
-        for index in &triangle_indices {
+        for v in 0..self.indices.len() / 3 {
+            let index_0_of_triangle = self.indices[3 * v] as usize;
+            let index_1_of_triangle = self.indices[3 * v + 1] as usize;
+            let index_2_of_triangle = self.indices[3 * v + 2] as usize;
+
             let triangle = Triangle {
-                positions: vec![Point3::new(
-                    *self.positions.get(index[0] as usize).unwrap() as fp,
-                    *self.positions.get(index[1] as usize).unwrap() as fp,
-                    *self.positions.get(index[2] as usize).unwrap() as fp,
-                )],
-                normals: vec![Point3::new(
-                    *self.normals.get(index[0] as usize).unwrap() as fp,
-                    *self.normals.get(index[1] as usize).unwrap() as fp,
-                    *self.normals.get(index[2] as usize).unwrap() as fp,
-                )],
-                texcoords: vec![Point2::new(
-                    *self.texcoords.get(index[0] as usize).unwrap() as fp,
-                    *self.texcoords.get(index[1] as usize).unwrap() as fp,
-                )],
+                positions: vec![
+                    Point3::new(
+                        self.positions[3 * index_0_of_triangle] as fp,
+                        self.positions[3 * index_0_of_triangle + 1] as fp,
+                        self.positions[3 * index_0_of_triangle + 2] as fp,
+                    ),
+                    Point3::new(
+                        self.positions[3 * index_1_of_triangle] as fp,
+                        self.positions[3 * index_1_of_triangle + 1] as fp,
+                        self.positions[3 * index_1_of_triangle + 2] as fp,
+                    ),
+                    Point3::new(
+                        self.positions[3 * index_2_of_triangle] as fp,
+                        self.positions[3 * index_2_of_triangle + 1] as fp,
+                        self.positions[3 * index_2_of_triangle + 2] as fp,
+                    ),
+                ],
+                normals: vec![
+                    Vector3::new(
+                        self.normals[3 * index_0_of_triangle] as fp,
+                        self.normals[3 * index_0_of_triangle + 1] as fp,
+                        self.normals[3 * index_0_of_triangle + 2] as fp,
+                    ),
+                    Vector3::new(
+                        self.normals[3 * index_1_of_triangle] as fp,
+                        self.normals[3 * index_1_of_triangle + 1] as fp,
+                        self.normals[3 * index_1_of_triangle + 2] as fp,
+                    ),
+                    Vector3::new(
+                        self.normals[3 * index_2_of_triangle] as fp,
+                        self.normals[3 * index_2_of_triangle + 1] as fp,
+                        self.normals[3 * index_2_of_triangle + 2] as fp,
+                    ),
+                ],
+                texcoords: vec![
+                    Point2::new(
+                        self.texcoords[2 * index_0_of_triangle] as fp,
+                        self.texcoords[2 * index_0_of_triangle + 1] as fp,
+                    ),
+                    Point2::new(
+                        self.texcoords[2 * index_1_of_triangle] as fp,
+                        self.texcoords[2 * index_1_of_triangle + 1] as fp,
+                    ),
+                    Point2::new(
+                        self.texcoords[2 * index_2_of_triangle] as fp,
+                        self.texcoords[2 * index_2_of_triangle + 1] as fp,
+                    ),
+                ],
             };
+            /*
+            warn!(" Positions of triangle {} : {} {} {}", v, index_0_of_triangle,
+                  index_1_of_triangle, index_2_of_triangle);
+            warn!("    v[{}] = ({}, {}, {})", v,  self.positions[3*index_0_of_triangle],
+                  self.positions[3*index_0_of_triangle + 1], self.positions[3*index_0_of_triangle + 2]);
+            warn!("    v[{}] = ({}, {}, {})", v,  self.positions[3*index_1_of_triangle],
+                  self.positions[3*index_1_of_triangle + 1], self.positions[3*index_1_of_triangle + 2]);
+            warn!("    v[{}] = ({}, {}, {})", v,  self.positions[3*index_2_of_triangle],
+                  self.positions[3*index_2_of_triangle + 1], self.positions[3*index_2_of_triangle + 2]);
+            */
             triangles.push(triangle);
         }
 
-        //info!("Triangle 0: Positions: {:?}", triangles.get(0).unwrap().texcoords);
-
+        //info!("Size of triangles: {}", triangles.len());
         triangles
     }
 }
