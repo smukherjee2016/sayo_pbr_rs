@@ -7,14 +7,14 @@ pub type Point3 = Vector3;
 pub type Point2 = Vector2;
 pub type Vec3 = Vector3;
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Vector3 {
     pub x: fp,
     pub y: fp,
     pub z: fp,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Vector2 {
     pub x: fp,
     pub y: fp,

@@ -17,16 +17,16 @@ pub struct PinholeCamera {
 
 fn make_basis_vectors(pinhole_camera: &mut PinholeCamera) {
     pinhole_camera.direction_to_look_at =
-        (pinhole_camera.look_at.clone() - pinhole_camera.origin.clone()).normalize();
+        (pinhole_camera.look_at - pinhole_camera.origin).normalize();
 
     //Basis vectors at camera origin
     pinhole_camera.c_x = pinhole_camera
         .direction_to_look_at
-        .cross(pinhole_camera.up.clone())
+        .cross(pinhole_camera.up)
         .normalize();
     pinhole_camera.c_y = pinhole_camera
         .c_x
-        .cross(pinhole_camera.direction_to_look_at.clone())
+        .cross(pinhole_camera.direction_to_look_at)
         .normalize();
     pinhole_camera.c_z = pinhole_camera.direction_to_look_at.normalize();
 }
@@ -59,16 +59,16 @@ impl Camera for PinholeCamera {
         let y_image_plane = (v - 0.5) * height_image_plane;
 
         //Project to world space
-        let position_pixel_in_image_space: Point3 = self.origin.clone()
-            + Vector3::from(film.distance_to_film) * self.direction_to_look_at.clone()
-            + Vector3::from(x_image_plane) * self.c_x.clone()
-            + Vector3::from(y_image_plane) * self.c_y.clone();
+        let position_pixel_in_image_space: Point3 = self.origin
+            + Vector3::from(film.distance_to_film) * self.direction_to_look_at
+            + Vector3::from(x_image_plane) * self.c_x
+            + Vector3::from(y_image_plane) * self.c_y;
 
         let direction_in_image_space: Vec3 =
-            (position_pixel_in_image_space.clone() - self.origin.clone()).normalize();
+            (position_pixel_in_image_space - self.origin).normalize();
 
         Ray::new(
-            self.origin.clone(),
+            self.origin,
             direction_in_image_space,
             EPSILON,
             INFINITY.into(),
