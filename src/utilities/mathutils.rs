@@ -165,6 +165,16 @@ impl Vector3 {
             z: *original_vector_elements.get(z as usize).unwrap(),
         }
     }
+
+    pub fn dot(&self, b: Vector3) -> fp {
+        self.x * b.x + self.y * b.y + self.z * b.z
+    }
+
+    pub fn face_outward_normal(&mut self, v: Vector3) {
+        if self.dot(v) < (0.0 as fp) {
+            *self *= -1.0 as fp;
+        }
+    }
 }
 
 impl Vector2 {
