@@ -121,6 +121,19 @@ impl TriangleMesh {
 
 impl Hitable for Triangle {
     fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
+        //Follow pbrt's watertight ray-triangle intersection
+        /*
+        3-step transformation to transform the triangle and the ray to ray-triangle intersection coordinate system s.t. ray's origin is at (0,0,0):
+        A
+        */
+        //1. Translate triangle to
+        let p0t: Point3 = self.positions[0] - ray.o;
+        let p1t: Point3 = self.positions[1] - ray.o;
+        let p2t: Point3 = self.positions[2] - ray.o;
+
+        //2. Permute the vertices
+
+
         let intersection_info = IntersectionInfo {
             t_intersection: 0.0,
             point_of_intersection: Default::default(),
