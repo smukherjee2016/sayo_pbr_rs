@@ -175,6 +175,14 @@ impl Vector3 {
             *self *= -1.0 as fp;
         }
     }
+
+    pub fn abs(&self) -> Vector3 {
+        Vector3{
+            x: fp::abs(self.x),
+            y: fp::abs(self.y),
+            z: fp::abs(self.z),
+        }
+    }
 }
 
 impl Vector2 {

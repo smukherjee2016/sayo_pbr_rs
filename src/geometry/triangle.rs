@@ -74,17 +74,17 @@ impl TriangleMesh {
                         self.normals[3 * index_0_of_triangle] as fp,
                         self.normals[3 * index_0_of_triangle + 1] as fp,
                         self.normals[3 * index_0_of_triangle + 2] as fp,
-                    ),
+                    ).normalize(),
                     Vector3::new(
                         self.normals[3 * index_1_of_triangle] as fp,
                         self.normals[3 * index_1_of_triangle + 1] as fp,
                         self.normals[3 * index_1_of_triangle + 2] as fp,
-                    ),
+                    ).normalize(),
                     Vector3::new(
                         self.normals[3 * index_2_of_triangle] as fp,
                         self.normals[3 * index_2_of_triangle + 1] as fp,
                         self.normals[3 * index_2_of_triangle + 2] as fp,
-                    ),
+                    ).normalize(),
                 ],
                 texcoords: vec![
                     Point2::new(
@@ -124,14 +124,38 @@ impl Hitable for Triangle {
         //Follow pbrt's watertight ray-triangle intersection
         /*
         3-step transformation to transform the triangle and the ray to ray-triangle intersection coordinate system s.t. ray's origin is at (0,0,0):
-        A
+        a translation, a permutation and a shear.
         */
-        //1. Translate triangle to
-        let p0t: Point3 = self.positions[0] - ray.o;
-        let p1t: Point3 = self.positions[1] - ray.o;
-        let p2t: Point3 = self.positions[2] - ray.o;
+        //1. Translate triangle
+        let mut p0t: Point3 = self.positions[0] - ray.o;
+        let mut p1t: Point3 = self.positions[1] - ray.o;
+        let mut p2t: Point3 = self.positions[2] - ray.o;
 
         //2. Permute the vertices
+        //Find max dimension to permute to
+        let kz: i32 = ray.d.abs().max_dimension();
+        let mut kx: i32 = kz + 1;
+        if kx == 3 { kx = 0; }
+        let mut ky: i32 = kz + 1;
+        if ky == 3 { ky = 0; }
+        //Permute the vertices
+        p0t = p0t.permute(kx, ky, kz);
+        p1t = p1t.permute(kx, ky, kz);
+        p2t = p2t.permute(kx, ky, kz);
+
+        //3. Shear
+        //Only shear x and y dimensions
+        let sx: fp = -ray.d.x / ray.d.z;
+        let sy: fp = -ray.d.y / ray.d.z;
+        let sz: fp = 1.0 / ray.d.z;
+        p0t.x += sx * p0t.z;
+        p0t.y += sy * p0t.z;
+        p1t.x += sx * p1t.z;
+        p1t.y += sy * p1t.z;
+        p2t.x += sx * p2t.z;
+        p2t.y += sy * p2t.z;
+
+
 
 
         let intersection_info = IntersectionInfo {
