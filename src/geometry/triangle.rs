@@ -74,17 +74,20 @@ impl TriangleMesh {
                         self.normals[3 * index_0_of_triangle] as fp,
                         self.normals[3 * index_0_of_triangle + 1] as fp,
                         self.normals[3 * index_0_of_triangle + 2] as fp,
-                    ).normalize(),
+                    )
+                    .normalize(),
                     Vector3::new(
                         self.normals[3 * index_1_of_triangle] as fp,
                         self.normals[3 * index_1_of_triangle + 1] as fp,
                         self.normals[3 * index_1_of_triangle + 2] as fp,
-                    ).normalize(),
+                    )
+                    .normalize(),
                     Vector3::new(
                         self.normals[3 * index_2_of_triangle] as fp,
                         self.normals[3 * index_2_of_triangle + 1] as fp,
                         self.normals[3 * index_2_of_triangle + 2] as fp,
-                    ).normalize(),
+                    )
+                    .normalize(),
                 ],
                 texcoords: vec![
                     Point2::new(
@@ -135,9 +138,13 @@ impl Hitable for Triangle {
         //Find max dimension to permute to
         let kz: i32 = ray.d.abs().max_dimension();
         let mut kx: i32 = kz + 1;
-        if kx == 3 { kx = 0; }
+        if kx == 3 {
+            kx = 0;
+        }
         let mut ky: i32 = kz + 1;
-        if ky == 3 { ky = 0; }
+        if ky == 3 {
+            ky = 0;
+        }
         //Permute the vertices
         p0t = p0t.permute(kx, ky, kz);
         p1t = p1t.permute(kx, ky, kz);
@@ -155,11 +162,43 @@ impl Hitable for Triangle {
         p2t.x += sx * p2t.z;
         p2t.y += sy * p2t.z;
 
+        //4. Now compute if ray from (0,0) along +z axis intersects this transformed triangle.
+        //Due to transformation, equivalent to determining if (0,0) is inside the xy-projection
+        let e0: fp = p1t.x * p2t.y - p1t.y * p2t.x;
+        let e1: fp = p2t.x * p0t.y - p2t.y * p0t.x;
+        let e2: fp = p0t.x * p1t.y - p0t.y * p1t.x;
 
+        if (e0 < 0 || e1 < 0 || e2 < 0) && (e0 > 0 || e1 > 0 || e2 > 0) {
+            None
+        }
+        let det: fp = e0 + e1 + e2;
+        if det == 0 {
+            None
+        }
 
+        //5. Check if t value is valid
+        //Compute t by interpolating z_i with e_i, and checking if sign of d=e0+e1+e2 and this
+        //interpolated t are different. If yes, the final t will be negative and not valid intersection
+        p0t.z *= sz;
+        p1t.z *= sz;
+        p2t.z *= sz;
+
+        let t_scaled: fp = e0 * p0t.z + e1 * p1t.z + e2 * p2t.z;
+        if det < 0 && (t_scaled >= 0 || t_scaled < ray.tmax * det) {
+            None
+        } else if det > 0 && (t_scaled <= 0 || t_scaled > ray.tmax * det) {
+            None
+        }
+
+        //6. Get t value and barycentric coordinates now that we are sure we have a valid intersection
+        let inv_det: fp = 1.0 / det;
+        let b0: fp = e0 * inv_det;
+        let b1: fp = e1 * inv_det;
+        let b2: fp = e2 * inv_det;
+        let t: fp = t_scaled * inv_det;
 
         let intersection_info = IntersectionInfo {
-            t_intersection: 0.0,
+            t_intersection: t,
             point_of_intersection: Default::default(),
             normal: Vector3::new(0.1, 0.4, 0.9),
         };
