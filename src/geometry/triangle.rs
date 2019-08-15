@@ -168,12 +168,12 @@ impl Hitable for Triangle {
         let e1: fp = p2t.x * p0t.y - p2t.y * p0t.x;
         let e2: fp = p0t.x * p1t.y - p0t.y * p1t.x;
 
-        if (e0 < 0 || e1 < 0 || e2 < 0) && (e0 > 0 || e1 > 0 || e2 > 0) {
-            None
+        if (e0 < 0.0 || e1 < 0.0 || e2 < 0.0) && (e0 > 0.0 || e1 > 0.0 || e2 > 0.0) {
+            return None;
         }
         let det: fp = e0 + e1 + e2;
-        if det == 0 {
-            None
+        if det == 0.0 {
+            return None;
         }
 
         //5. Check if t value is valid
@@ -184,10 +184,10 @@ impl Hitable for Triangle {
         p2t.z *= sz;
 
         let t_scaled: fp = e0 * p0t.z + e1 * p1t.z + e2 * p2t.z;
-        if det < 0 && (t_scaled >= 0 || t_scaled < ray.tmax * det) {
-            None
-        } else if det > 0 && (t_scaled <= 0 || t_scaled > ray.tmax * det) {
-            None
+        if det < 0.0 && (t_scaled >= 0.0 || t_scaled < ray.tmax * det) {
+            return None;
+        } else if det > 0.0 && (t_scaled <= 0.0 || t_scaled > ray.tmax * det) {
+            return None;
         }
 
         //6. Get t value and barycentric coordinates now that we are sure we have a valid intersection
@@ -197,10 +197,50 @@ impl Hitable for Triangle {
         let b2: fp = e2 * inv_det;
         let t: fp = t_scaled * inv_det;
 
+        let intersection_info2 = IntersectionInfo {
+            t_intersection: 0.0,
+            point_of_intersection: Default::default(),
+            normal: Vector3::from(t).normalize(),
+        };
+        return Some(intersection_info2);
+
+        //7. Compute triangle partial derivatives for uv and hit point calculation
+        //dpdu: Shading tangent
+
+        let mut dpdu: Vector3 = Default::default();
+        let mut dpdv: Vector3 = Default::default();
+        let duv02: Vector2 = self.texcoords[0] - self.texcoords[2];
+        let duv12: Vector2 = self.texcoords[1] - self.texcoords[2];
+        let dp02: Vector3 = self.positions[0] - self.positions[2];
+        let dp12: Vector3 = self.positions[1] - self.positions[2];
+
+        let determinant: fp = duv02.x * duv12.y - duv02.y * duv12.x;
+        if determinant == 0.0 {
+            coordinate_system(
+                (self.positions[2] - self.positions[0])
+                    .cross(self.positions[1] - self.positions[0])
+                    .normalize(),
+                &mut dpdu,
+                &mut dpdv,
+            );
+        } else {
+            let inv_det_uv: fp = 1.0 / determinant;
+            dpdu = (dp02 * duv12.y - dp12 * duv02.x) * inv_det_uv;
+            dpdv = (dp02 * -duv12.y + dp12 * duv02.x) * inv_det_uv;
+        }
+
+        //8. Find point of intersection and texture coordinates at given point
+        let p_hit: Point3 =
+            self.positions[0] * b0 + self.positions[1] * b1 + self.positions[2] * b2;
+        let uv_hit: Point2 =
+            self.texcoords[0] * b0 + self.texcoords[1] * b1 + self.texcoords[2] * b2;
+        let mut geometric_normal: Vector3 = dp02.cross(dp12).normalize();
+        geometric_normal.face_outward_normal(self.normals[0]);
+
         let intersection_info = IntersectionInfo {
             t_intersection: t,
-            point_of_intersection: Default::default(),
-            normal: Vector3::new(0.1, 0.4, 0.9),
+            point_of_intersection: p_hit,
+            normal: geometric_normal,
         };
 
         Some(intersection_info)
