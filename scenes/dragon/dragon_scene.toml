@@ -5,8 +5,8 @@ media = []
 [camera]
 tonemap = "filmic"
 resolution = [
-  1280.0,
-  720.0
+  1.0,
+  1.0
 ]
 reconstruction_filter = "tent"
 type = "pinhole"
@@ -31,7 +31,7 @@ fov = 35.0
 
 [integrator]
 min_bounces = 0.0
-max_bounces = 16.0
+max_bounces = 1.0
 enable_consistency_checks = false
 enable_two_sided_shading = true
 type = "path_tracer"
@@ -44,7 +44,7 @@ adaptive_sampling = true
 enable_resume_render = false
 stratified_sampler = true
 scene_bvh = true
-spp = 64.0
+spp = 1.0
 spp_step = 16.0
 checkpoint_interval = "0"
 timeout = "0"

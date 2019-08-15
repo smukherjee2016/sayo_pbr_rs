@@ -212,11 +212,16 @@ pub fn coordinate_system(in_vec: Vector3, v2: &mut Vector3, v3: &mut Vector3) {
     let in_vec_normalized: Vector3 = in_vec.normalize();
     if fp::abs(in_vec_normalized.x) > fp::abs(in_vec_normalized.y) {
         *v2 = Vector3::new(-in_vec_normalized.z, 0.0, in_vec_normalized.x)
-            / (fp::sqrt(in_vec_normalized.x * in_vec_normalized.x + in_vec_normalized.z * in_vec_normalized.z));
-    }
-    else {
+            / (fp::sqrt(
+                in_vec_normalized.x * in_vec_normalized.x
+                    + in_vec_normalized.z * in_vec_normalized.z,
+            ));
+    } else {
         *v2 = Vector3::new(0.0, in_vec_normalized.z, -in_vec_normalized.y)
-            / (fp::sqrt(in_vec_normalized.y * in_vec_normalized.y + in_vec_normalized.z * in_vec_normalized.z));
+            / (fp::sqrt(
+                in_vec_normalized.y * in_vec_normalized.y
+                    + in_vec_normalized.z * in_vec_normalized.z,
+            ));
     }
     *v3 = in_vec_normalized.cross(v2.clone()).clone();
 }
@@ -263,7 +268,6 @@ impl ops::Mul<fp> for Vector2 {
         }
     }
 }
-
 
 impl ops::Div for Vector2 {
     type Output = Self;
@@ -350,7 +354,7 @@ impl Vector2 {
         }
     }
 
-   pub fn abs(&self) -> Vector2 {
+    pub fn abs(&self) -> Vector2 {
         Vector2 {
             x: fp::abs(self.x),
             y: fp::abs(self.y),

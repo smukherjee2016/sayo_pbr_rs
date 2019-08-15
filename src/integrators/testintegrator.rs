@@ -8,6 +8,10 @@ impl Integrator for TestIntegrator {
     fn render(scene: &mut SceneConfig, samples_count: u32, bounces_count: u32) {
         let camera = &scene.camera;
         let mut film = &mut scene.film.borrow_mut();
+        info!(
+            "Beginning rendering with {} spp and {} bounces",
+            samples_count, bounces_count
+        );
 
         for i in 0..(film.height * film.width) {
             let position_in_film = i;
@@ -26,7 +30,9 @@ impl Integrator for TestIntegrator {
                             pixel_value += intersection_info.normal;
                             //info!("{:?}", pixel_value);
                         }
-                        None => {}
+                        None => {
+                            pixel_value += Vector3::new(1.0, 0.0, 0.0);
+                        }
                     }
                 }
             }
