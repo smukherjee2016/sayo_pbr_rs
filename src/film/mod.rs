@@ -14,7 +14,7 @@ impl Film {
     pub fn new(&mut self, width: i32, height: i32, fovdegrees: fp) {
         self.distance_to_film = 1.0;
         self.aspect_ratio = width as fp / height as fp;
-        self.fov = fovdegrees * std::f64::consts::PI / 360.0;
+        self.fov = fovdegrees * std::f64::consts::PI / 180.0;
 
         self.width = width;
         self.height = height;
