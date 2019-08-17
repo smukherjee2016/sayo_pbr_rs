@@ -28,7 +28,7 @@ fn make_basis_vectors(pinhole_camera: &mut PinholeCamera) {
         .c_x
         .cross(pinhole_camera.direction_to_look_at)
         .normalize();
-    pinhole_camera.c_z = pinhole_camera.direction_to_look_at.normalize();
+    pinhole_camera.c_z = (pinhole_camera.direction_to_look_at * -1.0).normalize();
 }
 
 impl Camera for PinholeCamera {
