@@ -197,13 +197,6 @@ impl Hitable for Triangle {
         let b2: fp = e2 * inv_det;
         let t: fp = t_scaled * inv_det;
 
-        let intersection_info2 = IntersectionInfo {
-            t_intersection: 0.0,
-            point_of_intersection: Default::default(),
-            normal: Vector3::from(t).normalize(),
-        };
-        return Some(intersection_info2);
-
         //7. Compute triangle partial derivatives for uv and hit point calculation
         //dpdu: Shading tangent
 
