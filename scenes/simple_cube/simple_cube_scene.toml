@@ -1,0 +1,62 @@
+#Simple cube
+media = []
+
+[camera]
+tonemap = "filmic"
+resolution = [
+  640.0,
+  360.0
+]
+reconstruction_filter = "tent"
+type = "pinhole"
+fov = 26.991466
+
+  [camera.transform]
+  position = [
+    7.358891,
+	4.958310,
+	6.925791
+  ]
+  look_at = [
+    6.707333,
+    4.513038,
+    6.311620
+  ]
+  up = [
+    0.0,
+    1.0,
+    0.0
+  ]
+
+[integrator]
+min_bounces = 0.0
+max_bounces = 1.0
+enable_two_sided_shading = true
+type = "path_tracer"
+enable_light_sampling = true
+enable_volume_light_sampling = true
+
+[renderer]
+output_file = "cube.png"
+overwrite_output_files = true
+spp = 1.0
+hdr_output_file = "cube.pfm"
+
+[[bsdfs]]
+name = "Material"
+albedo = 0.9
+type = "lambert"
+ior = 1.5
+thickness = 1.0
+sigma_a = 0.0
+
+
+[[primitives]]
+type = "mesh"
+file = "models/cube.obj"
+smooth = true
+backface_culling = false
+recompute_normals = false
+bsdf = "Material"
+
+  [primitives.transform]

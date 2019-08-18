@@ -28,7 +28,7 @@ impl Integrator for TestIntegrator {
                     match intersection {
                         Some(intersection_info) => {
                             pixel_value += intersection_info.normal;
-                            //info!("{:?}", pixel_value);
+                            info!("{:?}", pixel_value);
                         }
                         None => {
                             pixel_value += Vector3::new(1.0, 0.0, 0.0);
