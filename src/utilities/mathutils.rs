@@ -192,8 +192,8 @@ impl Vector3 {
     }
 
     pub fn face_outward_normal(&mut self, v: Vector3) {
-        if self.dot(v) < (0.0 as fp) {
-            *self *= -1.0 as fp;
+        if self.dot(v) < 0.0 {
+            *self *= -1.0;
         }
     }
 
