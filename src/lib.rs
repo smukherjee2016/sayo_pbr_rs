@@ -21,8 +21,8 @@ pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
     pub film: RefCell<Film>,
-    pub camera: Box<Camera>,
-    pub geometries: Vec<Box<Hitable>>,
+    pub camera: Box<dyn Camera>,
+    pub geometries: Vec<Box<dyn Hitable>>,
 }
 
 impl SceneConfig {
@@ -97,7 +97,7 @@ impl SceneConfig {
         };
 
         let type_of_camera = &parsed_scene_toml["camera"]["type"].as_str().unwrap();
-        let mut camera: Box<Camera>;
+        let camera: Box<dyn Camera>;
         match *type_of_camera {
             "pinhole" => {
                 camera = Box::new(PinholeCamera::new(
@@ -117,7 +117,7 @@ impl SceneConfig {
         }
 
         //Geometry
-        let mut geometries: Vec<Box<Hitable>> = vec![];
+        let mut geometries: Vec<Box<dyn Hitable>> = vec![];
 
         for i in &parsed_scene_toml["primitives"].as_array() {
             for j in *i {

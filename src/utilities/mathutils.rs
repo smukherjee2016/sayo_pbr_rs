@@ -323,41 +323,10 @@ impl ops::DivAssign<fp> for Vector2 {
 }
 
 impl Vector2 {
-    pub fn normalize(&self) -> Vector2 {
-        let normalization_factor = (self.x * self.x + self.y * self.y).sqrt();
-        Vector2 {
-            x: self.x / normalization_factor,
-            y: self.y / normalization_factor,
-        }
-    }
-
-    pub fn from(scalar: fp) -> Vector2 {
-        Vector2 {
-            x: scalar,
-            y: scalar,
-        }
-    }
-
     pub fn new(scalar_x: fp, scalar_y: fp) -> Vector2 {
         Vector2 {
             x: scalar_x,
             y: scalar_y,
-        }
-    }
-
-    pub fn permute(&self, x: i32, y: i32) -> Vector2 {
-        let original_vector_elements: Vec<fp> = vec![self.x, self.y];
-
-        Vector2 {
-            x: *original_vector_elements.get(x as usize).unwrap(),
-            y: *original_vector_elements.get(y as usize).unwrap(),
-        }
-    }
-
-    pub fn abs(&self) -> Vector2 {
-        Vector2 {
-            x: fp::abs(self.x),
-            y: fp::abs(self.y),
         }
     }
 }

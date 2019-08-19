@@ -31,15 +31,15 @@ fn make_basis_vectors(pinhole_camera: &mut PinholeCamera) {
     //Right-handed coordinate system
     pinhole_camera.c_z = (pinhole_camera.direction_to_look_at * -1.0).normalize();
 
-//    info!("{:?}", pinhole_camera.c_x);
-//    info!("{:?}", pinhole_camera.c_y);
-//    info!("{:?}", pinhole_camera.c_z);
-//    info!(
-//        "{} {} {}",
-//        pinhole_camera.c_x.dot(pinhole_camera.origin),
-//        pinhole_camera.c_y.dot(pinhole_camera.origin),
-//        pinhole_camera.c_z.dot(pinhole_camera.origin)
-//    );
+    //    info!("{:?}", pinhole_camera.c_x);
+    //    info!("{:?}", pinhole_camera.c_y);
+    //    info!("{:?}", pinhole_camera.c_z);
+    //    info!(
+    //        "{} {} {}",
+    //        pinhole_camera.c_x.dot(pinhole_camera.origin),
+    //        pinhole_camera.c_y.dot(pinhole_camera.origin),
+    //        pinhole_camera.c_z.dot(pinhole_camera.origin)
+    //    );
 }
 
 impl Camera for PinholeCamera {
