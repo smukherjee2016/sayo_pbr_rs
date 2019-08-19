@@ -170,15 +170,26 @@ impl SceneConfig {
     }
 
     pub fn check_intersection_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
+        let mut closest_intersection_info: IntersectionInfo = Default::default();
+        let mut t_max = std::f64::INFINITY;
+        let mut hit_something: bool = false;
+
         for geometry in &self.geometries {
             match geometry.check_intersection_and_return_closest_hit(ray.clone()) {
                 Some(intersection_info) => {
-                    return Some(intersection_info);
+                    if intersection_info.t_intersection < t_max {
+                        hit_something = true;
+                        t_max = intersection_info.t_intersection;
+                        closest_intersection_info = intersection_info;
+                    }
                 }
                 None => {}
             }
         }
-        None
+        if hit_something == true {
+            Some(closest_intersection_info)
+        }
+        else { None }
     }
 
     pub fn write_output(&self) -> Result<(), Box<dyn Error>> {
