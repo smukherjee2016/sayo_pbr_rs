@@ -28,10 +28,10 @@ impl Integrator for TestIntegrator {
                     match intersection {
                         Some(intersection_info) => {
                             pixel_value += intersection_info.normal;
-                            info!("{:?}", pixel_value);
+                            //info!("{:?}", pixel_value);
                         }
                         None => {
-                            pixel_value += Vector3::new(1.0, 0.0, 0.0);
+                            pixel_value += Vector3::new(0.0, 0.0, 0.0);
                         }
                     }
                 }
@@ -48,7 +48,7 @@ impl Integrator for TestIntegrator {
             }
             film.image[position_in_film as usize] = pixel_value;
             //info!("{:?}",pixel_value);
-            if (position_in_film as f32 / (film.height * film.width) as f32) * 100.0 % 1.0 == 0.0 {
+            if (position_in_film as f32 / (film.height * film.width) as f32) * 100.0 % 10.0 == 0.0 {
                 info!(
                     "Finished {} percent.",
                     ((position_in_film as f32 / (film.height * film.width) as f32) * 100.0) as i32

@@ -124,6 +124,7 @@ impl TriangleMesh {
 
 impl Hitable for Triangle {
     fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
+
         //Follow pbrt's watertight ray-triangle intersection
         /*
         3-step transformation to transform the triangle and the ray to ray-triangle intersection coordinate system s.t. ray's origin is at (0,0,0):
@@ -141,26 +142,30 @@ impl Hitable for Triangle {
         if kx == 3 {
             kx = 0;
         }
-        let mut ky: i32 = kz + 1;
+        let mut ky: i32 = kx + 1;
         if ky == 3 {
             ky = 0;
         }
+        //info!("Ray dimensions: {} {} {}", kx, ky, kz);
         //Permute the vertices
+        let d: Vector3 = ray.d.permute(kx, ky, kz);
         p0t = p0t.permute(kx, ky, kz);
         p1t = p1t.permute(kx, ky, kz);
         p2t = p2t.permute(kx, ky, kz);
 
         //3. Shear
         //Only shear x and y dimensions
-        let sx: fp = -ray.d.x / ray.d.z;
-        let sy: fp = -ray.d.y / ray.d.z;
-        let sz: fp = 1.0 / ray.d.z;
+        let sx: fp = -d.x / d.z;
+        let sy: fp = -d.y / d.z;
+        let sz: fp = 1.0 / d.z;
         p0t.x += sx * p0t.z;
         p0t.y += sy * p0t.z;
         p1t.x += sx * p1t.z;
         p1t.y += sy * p1t.z;
         p2t.x += sx * p2t.z;
         p2t.y += sy * p2t.z;
+
+        //info!("Trying to intersect ray o:{:?}, d:{:?} with triangle with positions: {:?} before:{:?}", ray.o, ray.d, p0t, self.positions[0] - ray.o);
 
         //4. Now compute if ray from (0,0) along +z axis intersects this transformed triangle.
         //Due to transformation, equivalent to determining if (0,0) is inside the xy-projection
