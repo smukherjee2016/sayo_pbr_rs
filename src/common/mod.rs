@@ -1,6 +1,8 @@
 pub use crate::utilities::mathutils::*;
 pub use log::{info, trace, warn};
 
+pub mod mpscthreadpool;
+
 pub const EPSILON: fp = 1e-5;
 
 #[derive(Debug, Clone)]
