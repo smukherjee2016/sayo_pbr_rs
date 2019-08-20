@@ -188,8 +188,9 @@ impl SceneConfig {
         }
         if hit_something == true {
             Some(closest_intersection_info)
+        } else {
+            None
         }
-        else { None }
     }
 
     pub fn write_output(&self) -> Result<(), Box<dyn Error>> {

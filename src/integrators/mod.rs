@@ -1,6 +1,5 @@
 use crate::SceneConfig;
 
-
 pub mod baseintegrator;
 
 pub trait Integrator {

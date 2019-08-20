@@ -124,7 +124,6 @@ impl TriangleMesh {
 
 impl Hitable for Triangle {
     fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
-
         //Follow pbrt's watertight ray-triangle intersection
         /*
         3-step transformation to transform the triangle and the ray to ray-triangle intersection coordinate system s.t. ray's origin is at (0,0,0):

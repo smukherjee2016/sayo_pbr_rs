@@ -1,7 +1,7 @@
-use crossbeam::crossbeam_channel::unbounded;
-use crossbeam::channel::{Receiver, Sender};
-use scoped_threadpool::Pool;
 use crate::utilities::mathutils::Spectrum;
+use crossbeam::channel::{Receiver, Sender};
+use crossbeam::crossbeam_channel::unbounded;
+use scoped_threadpool::Pool;
 
 /*
     Initial draft idea v0 (20190820): each thread of the scoped threadpool will be a sender,
@@ -13,7 +13,7 @@ use crate::utilities::mathutils::Spectrum;
 struct TaskManager {
     pool: Pool,
     sources: Sender<Spectrum>,
-    sink: Receiver<Spectrum>
+    sink: Receiver<Spectrum>,
 }
 
 fn setup_threads_and_channel(num_threads: u32) -> TaskManager {
@@ -24,6 +24,4 @@ fn setup_threads_and_channel(num_threads: u32) -> TaskManager {
     t
 }
 
-impl TaskManager {
-
-}
+impl TaskManager {}

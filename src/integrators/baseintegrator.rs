@@ -6,7 +6,7 @@ pub struct BaseIntegrator;
 
 pub enum Integrators {
     PathTracerBSDF,
-    PathTracerNEE
+    PathTracerNEE,
 }
 
 impl Integrator for BaseIntegrator {
