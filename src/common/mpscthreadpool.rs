@@ -23,7 +23,6 @@ fn setup_threads_and_channel(num_threads: u32) -> TaskManager {
         sources: r,
         sink: s,
     };
-    t.pool = Pool::new(num_threads);
 
     t
 }
