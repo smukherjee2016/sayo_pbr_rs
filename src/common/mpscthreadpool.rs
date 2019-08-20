@@ -17,9 +17,13 @@ struct TaskManager {
 }
 
 fn setup_threads_and_channel(num_threads: u32) -> TaskManager {
-    let mut t: TaskManager = Default::default();
+    let (r, s) = unbounded::<Spectrum>();
+    let mut t: TaskManager = TaskManager {
+        pool: Pool::new(num_threads),
+        sources: r,
+        sink: s,
+    };
     t.pool = Pool::new(num_threads);
-    (&t.sources, &t.sink) = unbounded();
 
     t
 }
