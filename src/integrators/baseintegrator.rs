@@ -2,9 +2,14 @@ use crate::common::*;
 use crate::integrators::*;
 use crate::SceneConfig;
 
-pub struct TestIntegrator;
+pub struct BaseIntegrator;
 
-impl Integrator for TestIntegrator {
+pub enum Integrators {
+    PathTracerBSDF,
+    PathTracerNEE
+}
+
+impl Integrator for BaseIntegrator {
     fn render(scene: &mut SceneConfig, samples_count: u32, bounces_count: u32) {
         let camera = &scene.camera;
         let mut film = &mut scene.film.borrow_mut();

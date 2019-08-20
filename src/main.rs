@@ -1,6 +1,6 @@
 use flexi_logger::{with_thread, Logger};
 use log::warn;
-use sayo_pbr_rs::integrators::testintegrator::*;
+use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::SceneConfig;
 use std::error::Error;
@@ -21,7 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //current_dir() is the root directory of the project, setting relative paths
     //If no arguments specified, try to use a default scene
     if args.len() == 1 {
-        let scene_file_path = "scenes/simple_cube/simple_cube_scene.toml".to_string();
+        let scene_file_path = "scenes/teapot/teapot_test_scene.toml".to_string();
         args.push(scene_file_path);
     }
     dbg!(&args);
@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             process::exit(1);
         });
 
-    TestIntegrator::render(&mut scene_config, 1, 1);
+    BaseIntegrator::render(&mut scene_config, 1, 1);
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
