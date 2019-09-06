@@ -14,6 +14,7 @@ use crate::common::*;
 use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
+use crate::integrators::baseintegrator::Integrators;
 use std::cell::RefCell;
 use toml::Value;
 
@@ -23,6 +24,7 @@ pub struct SceneConfig {
     pub film: RefCell<Film>,
     pub camera: Box<dyn Camera>,
     pub geometries: Vec<Box<dyn Hitable>>,
+    pub integrator: Integrators,
 }
 
 impl SceneConfig {
@@ -151,6 +153,35 @@ impl SceneConfig {
 
         //Material
 
+        //Integrator
+        let mut type_of_integrator: Integrators;
+        let integrator_string = &parsed_scene_toml["integrator"]["type"]
+            .as_str()
+            .unwrap()
+            .to_ascii_lowercase()
+            .to_string();
+        match integrator_string.as_ref() {
+            "direct_lighting" => {
+                type_of_integrator = Integrators::DirectLighting;
+            }
+
+            "path_tracer_bsdf" => {
+                type_of_integrator = Integrators::PathTracerBSDF;
+            }
+
+            "path_tracer_nee" => {
+                type_of_integrator = Integrators::PathTracerNEE;
+            }
+
+            _ => {
+                warn!(
+                    "Warning: Found unsupported integrator {}, falling back to PathTracerNEE...",
+                    integrator_string
+                );
+                type_of_integrator = Integrators::PathTracerNEE;
+            }
+        }
+
         //Output pfm
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"]
             .as_str()
@@ -166,6 +197,7 @@ impl SceneConfig {
             film: RefCell::new(film),
             camera: camera,
             geometries: geometries,
+            integrator: type_of_integrator,
         })
     }
 

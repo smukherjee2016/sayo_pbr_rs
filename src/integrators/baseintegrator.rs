@@ -5,6 +5,7 @@ use crate::SceneConfig;
 pub struct BaseIntegrator;
 
 pub enum Integrators {
+    DirectLighting,
     PathTracerBSDF,
     PathTracerNEE,
 }
