@@ -175,10 +175,10 @@ impl SceneConfig {
 
             _ => {
                 warn!(
-                    "Warning: Found unsupported integrator {}, falling back to PathTracerNEE...",
+                    "Warning: Found unsupported integrator {}, falling back to DirectLighting...",
                     integrator_string
                 );
-                type_of_integrator = Integrators::PathTracerNEE;
+                type_of_integrator = Integrators::DirectLighting;
             }
         }
 
