@@ -51,51 +51,51 @@ impl SceneConfig {
         //dbg!(&parsed_scene_toml);
 
         //Film
-        let width = *(&parsed_scene_toml["camera"]["resolution"][0]
+        let width = parsed_scene_toml["camera"]["resolution"][0]
             .as_float()
-            .unwrap()) as i32;
-        let height = *(&parsed_scene_toml["camera"]["resolution"][1]
+            .unwrap() as i32;
+        let height = parsed_scene_toml["camera"]["resolution"][1]
             .as_float()
-            .unwrap()) as i32;
-        let fov_degrees = *(&parsed_scene_toml["camera"]["fov"].as_float().unwrap()) as fp;
+            .unwrap() as i32;
+        let fov_degrees = parsed_scene_toml["camera"]["fov"].as_float().unwrap() as fp;
         let mut film = Film::default();
-        film.new(width, height, fov_degrees);
+        film.new_film(width, height, fov_degrees);
 
         //Camera
         let camera_position: Point3 = Point3 {
-            x: *(&parsed_scene_toml["camera"]["transform"]["position"][0]
+            x: parsed_scene_toml["camera"]["transform"]["position"][0]
                 .as_float()
-                .unwrap()) as fp,
-            y: *(&parsed_scene_toml["camera"]["transform"]["position"][1]
+                .unwrap() as fp,
+            y: parsed_scene_toml["camera"]["transform"]["position"][1]
                 .as_float()
-                .unwrap()) as fp,
-            z: *(&parsed_scene_toml["camera"]["transform"]["position"][2]
+                .unwrap() as fp,
+            z: parsed_scene_toml["camera"]["transform"]["position"][2]
                 .as_float()
-                .unwrap()) as fp,
+                .unwrap() as fp,
         };
 
         let camera_look_at: Point3 = Point3 {
-            x: *(&parsed_scene_toml["camera"]["transform"]["look_at"][0]
+            x: parsed_scene_toml["camera"]["transform"]["look_at"][0]
                 .as_float()
-                .unwrap()) as fp,
-            y: *(&parsed_scene_toml["camera"]["transform"]["look_at"][1]
+                .unwrap() as fp,
+            y: parsed_scene_toml["camera"]["transform"]["look_at"][1]
                 .as_float()
-                .unwrap()) as fp,
-            z: *(&parsed_scene_toml["camera"]["transform"]["look_at"][2]
+                .unwrap() as fp,
+            z: parsed_scene_toml["camera"]["transform"]["look_at"][2]
                 .as_float()
-                .unwrap()) as fp,
+                .unwrap() as fp,
         };
 
         let camera_up: Point3 = Point3 {
-            x: *(&parsed_scene_toml["camera"]["transform"]["up"][0]
+            x: parsed_scene_toml["camera"]["transform"]["up"][0]
                 .as_float()
-                .unwrap()) as fp,
-            y: *(&parsed_scene_toml["camera"]["transform"]["up"][1]
+                .unwrap() as fp,
+            y: parsed_scene_toml["camera"]["transform"]["up"][1]
                 .as_float()
-                .unwrap()) as fp,
-            z: *(&parsed_scene_toml["camera"]["transform"]["up"][2]
+                .unwrap() as fp,
+            z: parsed_scene_toml["camera"]["transform"]["up"][2]
                 .as_float()
-                .unwrap()) as fp,
+                .unwrap() as fp,
         };
 
         let type_of_camera = &parsed_scene_toml["camera"]["type"].as_str().unwrap();
@@ -193,10 +193,10 @@ impl SceneConfig {
 
         Ok(SceneConfig {
             scene_file_name: scene_filename,
-            out_file: out_file,
+            out_file,
             film: RefCell::new(film),
-            camera: camera,
-            geometries: geometries,
+            camera,
+            geometries,
             integrator: type_of_integrator,
         })
     }
@@ -207,18 +207,17 @@ impl SceneConfig {
         let mut hit_something: bool = false;
 
         for geometry in &self.geometries {
-            match geometry.check_intersection_and_return_closest_hit(ray.clone()) {
-                Some(intersection_info) => {
-                    if intersection_info.t_intersection < t_max {
-                        hit_something = true;
-                        t_max = intersection_info.t_intersection;
-                        closest_intersection_info = intersection_info;
-                    }
+            if let Some(intersection_info) =
+                geometry.check_intersection_and_return_closest_hit(ray.clone())
+            {
+                if intersection_info.t_intersection < t_max {
+                    hit_something = true;
+                    t_max = intersection_info.t_intersection;
+                    closest_intersection_info = intersection_info;
                 }
-                None => {}
             }
         }
-        if hit_something == true {
+        if hit_something {
             Some(closest_intersection_info)
         } else {
             None

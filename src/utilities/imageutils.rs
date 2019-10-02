@@ -54,11 +54,11 @@ pub fn write_pfm(
             //x86_64 is LittleEndian
             let mut buf = [0; 4];
             LittleEndian::write_f32(&mut buf, r);
-            buffer.write(&buf)?;
+            buffer.write_all(&buf)?;
             LittleEndian::write_f32(&mut buf, g);
-            buffer.write(&buf)?;
+            buffer.write_all(&buf)?;
             LittleEndian::write_f32(&mut buf, b);
-            buffer.write(&buf)?;
+            buffer.write_all(&buf)?;
         }
     }
 

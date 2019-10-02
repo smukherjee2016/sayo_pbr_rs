@@ -32,7 +32,7 @@ impl DirectLightingIntegrator {
                 }
             }
         }
-        pixel_value /= samples_count as fp;
+        pixel_value /= fp::from(samples_count);
         if !pixel_value.x.is_finite() || !pixel_value.y.is_finite() || !pixel_value.z.is_finite() {
             warn!(
                 "Value is infinite or NaN!! {} {} {} at pixel {} {}",

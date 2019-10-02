@@ -3,7 +3,6 @@ pub use crate::integrators::directlighting;
 use crate::integrators::directlighting::DirectLightingIntegrator;
 use crate::integrators::Integrator;
 use crate::SceneConfig;
-use std::borrow::Borrow;
 
 pub struct BaseIntegrator;
 

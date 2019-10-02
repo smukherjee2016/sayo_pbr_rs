@@ -54,53 +54,53 @@ impl TriangleMesh {
             let triangle = Triangle {
                 positions: vec![
                     Point3::new(
-                        self.positions[3 * index_0_of_triangle] as fp,
-                        self.positions[3 * index_0_of_triangle + 1] as fp,
-                        self.positions[3 * index_0_of_triangle + 2] as fp,
+                        fp::from(self.positions[3 * index_0_of_triangle]),
+                        fp::from(self.positions[3 * index_0_of_triangle + 1]),
+                        fp::from(self.positions[3 * index_0_of_triangle + 2]),
                     ),
                     Point3::new(
-                        self.positions[3 * index_1_of_triangle] as fp,
-                        self.positions[3 * index_1_of_triangle + 1] as fp,
-                        self.positions[3 * index_1_of_triangle + 2] as fp,
+                        fp::from(self.positions[3 * index_1_of_triangle]),
+                        fp::from(self.positions[3 * index_1_of_triangle + 1]),
+                        fp::from(self.positions[3 * index_1_of_triangle + 2]),
                     ),
                     Point3::new(
-                        self.positions[3 * index_2_of_triangle] as fp,
-                        self.positions[3 * index_2_of_triangle + 1] as fp,
-                        self.positions[3 * index_2_of_triangle + 2] as fp,
+                        fp::from(self.positions[3 * index_2_of_triangle]),
+                        fp::from(self.positions[3 * index_2_of_triangle + 1]),
+                        fp::from(self.positions[3 * index_2_of_triangle + 2]),
                     ),
                 ],
                 normals: vec![
                     Vector3::new(
-                        self.normals[3 * index_0_of_triangle] as fp,
-                        self.normals[3 * index_0_of_triangle + 1] as fp,
-                        self.normals[3 * index_0_of_triangle + 2] as fp,
+                        fp::from(self.normals[3 * index_0_of_triangle]),
+                        fp::from(self.normals[3 * index_0_of_triangle + 1]),
+                        fp::from(self.normals[3 * index_0_of_triangle + 2]),
                     )
                     .normalize(),
                     Vector3::new(
-                        self.normals[3 * index_1_of_triangle] as fp,
-                        self.normals[3 * index_1_of_triangle + 1] as fp,
-                        self.normals[3 * index_1_of_triangle + 2] as fp,
+                        fp::from(self.normals[3 * index_1_of_triangle]),
+                        fp::from(self.normals[3 * index_1_of_triangle + 1]),
+                        fp::from(self.normals[3 * index_1_of_triangle + 2]),
                     )
                     .normalize(),
                     Vector3::new(
-                        self.normals[3 * index_2_of_triangle] as fp,
-                        self.normals[3 * index_2_of_triangle + 1] as fp,
-                        self.normals[3 * index_2_of_triangle + 2] as fp,
+                        fp::from(self.normals[3 * index_2_of_triangle]),
+                        fp::from(self.normals[3 * index_2_of_triangle + 1]),
+                        fp::from(self.normals[3 * index_2_of_triangle + 2]),
                     )
                     .normalize(),
                 ],
                 texcoords: vec![
                     Point2::new(
-                        self.texcoords[2 * index_0_of_triangle] as fp,
-                        self.texcoords[2 * index_0_of_triangle + 1] as fp,
+                        fp::from(self.texcoords[2 * index_0_of_triangle]),
+                        fp::from(self.texcoords[2 * index_0_of_triangle + 1]),
                     ),
                     Point2::new(
-                        self.texcoords[2 * index_1_of_triangle] as fp,
-                        self.texcoords[2 * index_1_of_triangle + 1] as fp,
+                        fp::from(self.texcoords[2 * index_1_of_triangle]),
+                        fp::from(self.texcoords[2 * index_1_of_triangle + 1]),
                     ),
                     Point2::new(
-                        self.texcoords[2 * index_2_of_triangle] as fp,
-                        self.texcoords[2 * index_2_of_triangle + 1] as fp,
+                        fp::from(self.texcoords[2 * index_2_of_triangle]),
+                        fp::from(self.texcoords[2 * index_2_of_triangle + 1]),
                     ),
                 ],
             };
@@ -190,7 +190,8 @@ impl Hitable for Triangle {
         let t_scaled: fp = e0 * p0t.z + e1 * p1t.z + e2 * p2t.z;
         if det < 0.0 && (t_scaled >= 0.0 || t_scaled < ray.tmax * det) {
             return None;
-        } else if det > 0.0 && (t_scaled <= 0.0 || t_scaled > ray.tmax * det) {
+        }
+        if det > 0.0 && (t_scaled <= 0.0 || t_scaled > ray.tmax * det) {
             return None;
         }
 

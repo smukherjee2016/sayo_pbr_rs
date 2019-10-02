@@ -57,8 +57,8 @@ impl Camera for PinholeCamera {
 
     fn generate_camera_ray(&self, x: i32, y: i32, film: &Film) -> Ray {
         //Find point inside pixel coordinates
-        let u: fp = (x as fp + 0.5) / film.width as fp;
-        let v: fp = (y as fp + 0.5) / film.height as fp;
+        let u: fp = (fp::from(x) + 0.5) / fp::from(film.width);
+        let v: fp = (fp::from(y) + 0.5) / fp::from(film.height);
 
         //Find height and width of the image plane based on FOV, distance and aspect ratio
         //Use Y-FOV
