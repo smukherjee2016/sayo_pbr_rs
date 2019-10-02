@@ -1,7 +1,8 @@
-use crate::utilities::mathutils::Spectrum;
 use crossbeam::channel::{Receiver, Sender};
 use crossbeam::crossbeam_channel::unbounded;
 use scoped_threadpool::Pool;
+use crate::film::Film;
+use crate::utilities::mathutils::Spectrum;
 
 /*
     Initial draft idea v0 (20190820): each thread of the scoped threadpool will be a sender,
@@ -10,14 +11,23 @@ use scoped_threadpool::Pool;
     the image array and make the threads work on it till all the blocks are exhausted.
 */
 
+struct Job {
+    start_index: usize,
+    num_pixels: usize,
+    film: Film,
+    samples_count: u32,
+    bounces_count: u32,
+    out_array: Vec<Spectrum>,
+}
+
 struct TaskManager {
     pool: Pool,
-    sources: Sender<Spectrum>,
-    sink: Receiver<Spectrum>,
+    sources: Sender<Job>,
+    sink: Receiver<Job>,
 }
 
 fn setup_threads_and_channel(num_threads: u32) -> TaskManager {
-    let (r, s) = unbounded::<Spectrum>();
+    let (r, s) = unbounded::<Job>();
     let mut t: TaskManager = TaskManager {
         pool: Pool::new(num_threads),
         sources: r,
