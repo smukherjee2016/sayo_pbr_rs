@@ -1,8 +1,8 @@
+use crate::film::Film;
+use crate::utilities::mathutils::Spectrum;
 use crossbeam::channel::{Receiver, Sender};
 use crossbeam::crossbeam_channel::unbounded;
 use scoped_threadpool::Pool;
-use crate::film::Film;
-use crate::utilities::mathutils::Spectrum;
 
 /*
     Initial draft idea v0 (20190820): each thread of the scoped threadpool will be a sender,
@@ -28,7 +28,7 @@ struct TaskManager {
 
 fn setup_threads_and_channel(num_threads: u32) -> TaskManager {
     let (r, s) = unbounded::<Job>();
-    let mut t: TaskManager = TaskManager {
+    let t: TaskManager = TaskManager {
         pool: Pool::new(num_threads),
         sources: r,
         sink: s,

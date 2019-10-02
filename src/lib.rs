@@ -154,7 +154,7 @@ impl SceneConfig {
         //Material
 
         //Integrator
-        let mut type_of_integrator: Integrators;
+        let type_of_integrator: Integrators;
         let integrator_string = &parsed_scene_toml["integrator"]["type"]
             .as_str()
             .unwrap()
