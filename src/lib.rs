@@ -22,9 +22,16 @@ pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
     pub film: Film,
-    pub camera: Box<dyn Camera>,
-    pub geometries: Vec<Box<dyn Hitable>>,
+    pub camera: Box<dyn Camera + Send + Sync>,
+    pub geometries: Vec<Box<dyn Hitable + Send + Sync>>,
     pub integrator: Integrators,
+}
+
+#[derive(Default)]
+pub struct Tile {
+    pub start_index: i32,
+    pub num_pixels: usize,
+    pub pixels: Vec<Spectrum>,
 }
 
 impl SceneConfig {
@@ -99,7 +106,7 @@ impl SceneConfig {
         };
 
         let type_of_camera = &parsed_scene_toml["camera"]["type"].as_str().unwrap();
-        let camera: Box<dyn Camera>;
+        let camera: Box<dyn Camera + Send + Sync>;
         match *type_of_camera {
             "pinhole" => {
                 camera = Box::new(PinholeCamera::new(
@@ -119,7 +126,7 @@ impl SceneConfig {
         }
 
         //Geometry
-        let mut geometries: Vec<Box<dyn Hitable>> = vec![];
+        let mut geometries: Vec<Box<dyn Hitable + Sync + Send>> = vec![];
 
         for i in &parsed_scene_toml["primitives"].as_array() {
             for j in *i {

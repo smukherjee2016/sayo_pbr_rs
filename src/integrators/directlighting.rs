@@ -1,6 +1,5 @@
 use crate::common::*;
-use crate::integrators::baseintegrator::Tile;
-use crate::SceneConfig;
+use crate::{SceneConfig, Tile};
 use std::borrow::Borrow;
 
 pub struct DirectLightingIntegrator;

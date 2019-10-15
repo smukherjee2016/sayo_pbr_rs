@@ -1,5 +1,5 @@
 use crate::common::*;
-use crate::integrators::baseintegrator::Tile;
+use crate::Tile;
 
 #[derive(Debug, Default, Clone)]
 pub struct Film {

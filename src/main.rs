@@ -3,6 +3,7 @@ use log::warn;
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::SceneConfig;
+use std::borrow::BorrowMut;
 use std::error::Error;
 use std::process;
 use std::time::Instant;
@@ -27,13 +28,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     dbg!(&args);
 
     let start = Instant::now();
-    let mut scene_config =
+    let mut scene_config: SceneConfig =
         SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(|err| {
             eprintln!("Problem parsing scene file: {}", err);
             process::exit(1);
         });
 
-    BaseIntegrator::render(&mut scene_config, 1, 1);
+    let tiles = BaseIntegrator::render(&scene_config, 1, 1);
+
+    let film_mut = scene_config.film.borrow_mut();
+    for tile in tiles {
+        //warn!("{}", tile.start_index);
+        film_mut.write_tile(tile);
+    }
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
