@@ -48,11 +48,11 @@ impl Integrator for BaseIntegrator {
                     Integrators::PathTracerNEE => {}
                 }
                 );
-
-                tiles.push(r.recv().unwrap());
                 //warn!("{:?}", tile.pixels);
             }
         });
+        drop(s); //To avoid waiting for the initial s which does not do anything
+        tiles.extend(r);
         info!("Finished running render()");
         tiles
     }
