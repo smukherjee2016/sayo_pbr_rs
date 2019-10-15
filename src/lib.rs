@@ -15,13 +15,13 @@ use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use crate::integrators::baseintegrator::Integrators;
-use std::cell::RefCell;
+use std::borrow::Borrow;
 use toml::Value;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
-    pub film: RefCell<Film>,
+    pub film: Film,
     pub camera: Box<dyn Camera>,
     pub geometries: Vec<Box<dyn Hitable>>,
     pub integrator: Integrators,
@@ -194,7 +194,7 @@ impl SceneConfig {
         Ok(SceneConfig {
             scene_file_name: scene_filename,
             out_file,
-            film: RefCell::new(film),
+            film,
             camera,
             geometries,
             integrator: type_of_integrator,

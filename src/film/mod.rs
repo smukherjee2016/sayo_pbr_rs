@@ -1,4 +1,5 @@
 use crate::common::*;
+use crate::integrators::baseintegrator::Tile;
 
 #[derive(Debug, Default, Clone)]
 pub struct Film {
@@ -20,5 +21,12 @@ impl Film {
         self.height = height;
         self.image
             .resize((width * height) as usize, Vector3::new(0.0, 0.3, 0.7));
+    }
+
+    pub fn write_tile(&mut self, tile: Tile) {
+        let starting_index = tile.start_index as usize;
+        let num_pixels_to_write = tile.num_pixels;
+        self.image[starting_index..(starting_index + num_pixels_to_write)]
+            .clone_from_slice(&tile.pixels[0..num_pixels_to_write]);
     }
 }

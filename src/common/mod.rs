@@ -4,6 +4,7 @@ pub use log::{info, trace, warn};
 pub mod mpscthreadpool;
 
 pub const EPSILON: fp = 1e-5;
+pub const TILE_SIZE: usize = 256;
 
 #[derive(Debug, Clone)]
 pub struct Ray {
