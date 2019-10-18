@@ -16,4 +16,4 @@ scoped-pool = "1.0.0"
 num_cpus = "*"
 
 [profile.release]
-debug = true
+#debug = true
