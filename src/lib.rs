@@ -7,6 +7,7 @@ mod film;
 mod geometry;
 pub mod integrators;
 mod utilities;
+mod accel;
 
 use crate::camera::pinholecamera::PinholeCamera;
 use crate::camera::Camera;
