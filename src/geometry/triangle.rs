@@ -239,6 +239,7 @@ impl Hitable for Triangle {
             t_intersection: t,
             point_of_intersection: p_hit,
             normal: geometric_normal,
+            is_aabb: false,
         };
 
         Some(intersection_info)
