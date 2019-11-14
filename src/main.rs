@@ -28,8 +28,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     dbg!(&args);
 
     let start = Instant::now();
-    let mut scene_config: SceneConfig =
-        SceneConfig::parse_args_and_construct_scene(&args).unwrap_or_else(|err| {
+    let mut scene_config: SceneConfig = SceneConfig::parse_args_and_construct_scene(&args)
+        .unwrap_or_else(|err| {
             eprintln!("Problem parsing scene file: {}", err);
             process::exit(1);
         });

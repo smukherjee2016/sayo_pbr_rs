@@ -4,8 +4,8 @@ use crate::integrators::directlighting::DirectLightingIntegrator;
 use crate::integrators::Integrator;
 use crate::{SceneConfig, Tile};
 use crossbeam::crossbeam_channel::unbounded;
-use std::borrow::Borrow;
 use scoped_pool::Pool;
+use std::borrow::Borrow;
 
 pub struct BaseIntegrator;
 
@@ -33,8 +33,7 @@ impl Integrator for BaseIntegrator {
         pool.scoped(|scope| {
             for i in pixel_numbers.step_by(TILE_SIZE) {
                 let sender = s.clone();
-                scope.execute(move ||
-                 match scene.integrator {
+                scope.execute(move || match scene.integrator {
                     Integrators::DirectLighting => {
                         let tile: Tile = DirectLightingIntegrator::integrate(
                             scene,
@@ -46,8 +45,7 @@ impl Integrator for BaseIntegrator {
                     }
                     Integrators::PathTracerBSDF => {}
                     Integrators::PathTracerNEE => {}
-                }
-                );
+                });
                 //warn!("{:?}", tile.pixels);
             }
         });
