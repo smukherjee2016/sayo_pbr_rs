@@ -1,12 +1,14 @@
+use crate::accel::aabb::{AxisAlignedBoundingBox, Boundable};
 use crate::common::*;
 use crate::geometry::Hitable;
+use std::cmp::min;
 use std::path::PathBuf;
 
 pub struct TriangleMesh {
     //Same as tobj::Mesh
     pub positions: Vec<f32>,
     pub normals: Vec<f32>,
-    pub texcoords: Vec<f32>,
+    pub texture_coordinates: Vec<f32>,
     pub indices: Vec<u32>,
     pub material_id: Option<usize>,
 }
@@ -17,7 +19,7 @@ pub struct Triangle {
     //mesh: Arc<TriangleMesh>,
     pub positions: Vec<Point3>,
     pub normals: Vec<Vec3>,
-    pub texcoords: Vec<Point2>,
+    pub texture_coordinates: Vec<Point2>,
 }
 
 impl TriangleMesh {
@@ -31,7 +33,7 @@ impl TriangleMesh {
             let mesh = TriangleMesh {
                 positions: model.mesh.positions,
                 normals: model.mesh.normals,
-                texcoords: model.mesh.texcoords,
+                texture_coordinates: model.mesh.texcoords,
                 indices: model.mesh.indices,
                 material_id: model.mesh.material_id,
             };
@@ -89,18 +91,18 @@ impl TriangleMesh {
                     )
                     .normalize(),
                 ],
-                texcoords: vec![
+                texture_coordinates: vec![
                     Point2::new(
-                        fp::from(self.texcoords[2 * index_0_of_triangle]),
-                        fp::from(self.texcoords[2 * index_0_of_triangle + 1]),
+                        fp::from(self.texture_coordinates[2 * index_0_of_triangle]),
+                        fp::from(self.texture_coordinates[2 * index_0_of_triangle + 1]),
                     ),
                     Point2::new(
-                        fp::from(self.texcoords[2 * index_1_of_triangle]),
-                        fp::from(self.texcoords[2 * index_1_of_triangle + 1]),
+                        fp::from(self.texture_coordinates[2 * index_1_of_triangle]),
+                        fp::from(self.texture_coordinates[2 * index_1_of_triangle + 1]),
                     ),
                     Point2::new(
-                        fp::from(self.texcoords[2 * index_2_of_triangle]),
-                        fp::from(self.texcoords[2 * index_2_of_triangle + 1]),
+                        fp::from(self.texture_coordinates[2 * index_2_of_triangle]),
+                        fp::from(self.texture_coordinates[2 * index_2_of_triangle + 1]),
                     ),
                 ],
             };
@@ -207,8 +209,8 @@ impl Hitable for Triangle {
 
         let mut dpdu: Vector3 = Default::default();
         let mut dpdv: Vector3 = Default::default();
-        let duv02: Vector2 = self.texcoords[0] - self.texcoords[2];
-        let duv12: Vector2 = self.texcoords[1] - self.texcoords[2];
+        let duv02: Vector2 = self.texture_coordinates[0] - self.texture_coordinates[2];
+        let duv12: Vector2 = self.texture_coordinates[1] - self.texture_coordinates[2];
         let dp02: Vector3 = self.positions[0] - self.positions[2];
         let dp12: Vector3 = self.positions[1] - self.positions[2];
 
@@ -230,8 +232,9 @@ impl Hitable for Triangle {
         //8. Find point of intersection and texture coordinates at given point
         let p_hit: Point3 =
             self.positions[0] * b0 + self.positions[1] * b1 + self.positions[2] * b2;
-        let uv_hit: Point2 =
-            self.texcoords[0] * b0 + self.texcoords[1] * b1 + self.texcoords[2] * b2;
+        let uv_hit: Point2 = self.texture_coordinates[0] * b0
+            + self.texture_coordinates[1] * b1
+            + self.texture_coordinates[2] * b2;
         let mut geometric_normal: Vector3 = dp02.cross(dp12).normalize();
         geometric_normal.face_outward_normal(self.normals[0]);
 
@@ -243,5 +246,39 @@ impl Hitable for Triangle {
         };
 
         Some(intersection_info)
+    }
+}
+
+impl Boundable for Triangle {
+    fn get_bounding_box(&self, t0: fp, t1: fp) -> AxisAlignedBoundingBox {
+        let x_min: fp = fp::min(
+            fp::min(self.positions[0].x, self.positions[1].x),
+            self.positions[2].x,
+        );
+        let y_min: fp = fp::min(
+            fp::min(self.positions[0].y, self.positions[1].y),
+            self.positions[2].y,
+        );
+        let z_min: fp = fp::min(
+            fp::min(self.positions[0].z, self.positions[1].z),
+            self.positions[2].z,
+        );
+        let min_point: Point3 = Point3::new(x_min, y_min, z_min);
+
+        let x_max: fp = fp::max(
+            fp::max(self.positions[0].x, self.positions[1].x),
+            self.positions[2].x,
+        );
+        let y_max: fp = fp::max(
+            fp::max(self.positions[0].y, self.positions[1].y),
+            self.positions[2].y,
+        );
+        let z_max: fp = fp::max(
+            fp::max(self.positions[0].z, self.positions[1].z),
+            self.positions[2].z,
+        );
+        let max_point: Point3 = Point3::new(x_max, y_max, z_max);
+
+        AxisAlignedBoundingBox::new_aabb(min_point, max_point)
     }
 }

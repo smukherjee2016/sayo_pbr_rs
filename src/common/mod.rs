@@ -23,7 +23,7 @@ pub struct IntersectionInfo {
 
 impl Ray {
     pub fn new(origin_: Point3, direction: Vec3, t_: fp, tmax_: fp) -> Ray {
-        let inv_dir: Vec3 = Vec3{
+        let inv_dir: Vec3 = Vec3 {
             x: 1.0 / direction.x,
             y: 1.0 / direction.y,
             z: 1.0 / direction.z,
@@ -33,7 +33,7 @@ impl Ray {
             d: direction,
             t: t_,
             tmax: tmax_,
-            inv_dir
+            inv_dir,
         }
     }
 }

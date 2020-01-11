@@ -1,6 +1,5 @@
 use crate::common::*;
 
-pub mod aabb;
 pub mod triangle;
 
 pub trait Hitable {
