@@ -251,6 +251,8 @@ impl Hitable for Triangle {
 
 impl Boundable for Triangle {
     fn get_bounding_box(&self, t0: fp, t1: fp) -> AxisAlignedBoundingBox {
+        // Bounding box for triangle = a box with minimum of all coordinates as one corner
+        /// and maximum of all coordinates as another corner
         let x_min: fp = fp::min(
             fp::min(self.positions[0].x, self.positions[1].x),
             self.positions[2].x,
