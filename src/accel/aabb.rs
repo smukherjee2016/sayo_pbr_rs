@@ -57,3 +57,23 @@ impl Hitable for AxisAlignedBoundingBox {
 pub trait Boundable: Hitable {
     fn get_bounding_box(&self, t0: fp, t1: fp) -> AxisAlignedBoundingBox;
 }
+
+// Return surrounding box of two AABB's
+pub fn surrounding_box( a: &AxisAlignedBoundingBox, b: &AxisAlignedBoundingBox) -> AxisAlignedBoundingBox {
+    let small : Vector3 = Vector3::new(
+      fp::min(a.min.x, b.min.x),
+        fp::min(a.min.y, b.min.y),
+        fp::min(a.min.z, b.min.z),
+    );
+
+    let big: Vector3 = Vector3::new(
+        fp::max(a.max.x, b.max.x),
+        fp::max(a.max.y, b.max.y),
+        fp::max(a.max.z, b.max.z),
+    );
+
+    AxisAlignedBoundingBox {
+        min: small,
+        max: big,
+    }
+}
