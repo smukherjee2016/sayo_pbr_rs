@@ -59,9 +59,12 @@ pub trait Boundable: Hitable {
 }
 
 // Return surrounding box of two AABB's
-pub fn surrounding_box( a: &AxisAlignedBoundingBox, b: &AxisAlignedBoundingBox) -> AxisAlignedBoundingBox {
-    let small : Vector3 = Vector3::new(
-      fp::min(a.min.x, b.min.x),
+pub fn surrounding_box(
+    a: &AxisAlignedBoundingBox,
+    b: &AxisAlignedBoundingBox,
+) -> AxisAlignedBoundingBox {
+    let small: Vector3 = Vector3::new(
+        fp::min(a.min.x, b.min.x),
         fp::min(a.min.y, b.min.y),
         fp::min(a.min.z, b.min.z),
     );
