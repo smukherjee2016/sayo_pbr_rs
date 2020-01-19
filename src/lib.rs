@@ -28,7 +28,7 @@ pub struct SceneConfig {
     pub integrator: Integrators,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Tile {
     pub start_index: i32,
     pub num_pixels: usize,
