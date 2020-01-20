@@ -16,10 +16,21 @@ pub enum Integrators {
     PathTracerNEE,
 }
 
+//TODO: Move Window class and this method to its separate file
+fn from_u8_rgb(r: u8, g: u8, b: u8) -> u32 {
+    let (r, g, b) = (r as u32, g as u32, b as u32);
+    (r << 16) | (g << 8) | b
+}
+
+fn do_tonemapping(input: Vec<Spectrum>) -> Vec<u32> {
+    let ret : Vec<u32> = vec![from_u8_rgb(0, 127, 255); input.len()];
+    ret
+}
+
 impl Integrator for BaseIntegrator {
     fn render(scene: &SceneConfig, samples_count: u32, bounces_count: u32) -> Vec<Tile> {
         let mut tiles: Vec<Tile> = vec![];
-        let cpus = num_cpus::get();
+        let cpus = num_cpus::get() - 1;
         info!("Trying with {} cpus", cpus);
         let pool = Pool::new(cpus);
 
@@ -30,9 +41,11 @@ impl Integrator for BaseIntegrator {
             samples_count, bounces_count
         );
         let (s, r) = unbounded();
+        let r2 = r.clone();
 
         //Set up temp buffer and window
         let mut frame_buffer: Vec<u32> = vec![0; (film.height * film.width) as usize];
+        dbg!(frame_buffer.len());
         let mut window = Window::new(
             "Renderer?",
             film.width as usize,
@@ -65,22 +78,30 @@ impl Integrator for BaseIntegrator {
         });
         drop(s); //To avoid waiting for the initial s which does not do anything
 
-        while window.is_open() && !window.is_key_down(Key::Escape) {
+        while window.is_open() && !window.is_key_down(Key::Escape) && !r.is_empty() {
+            tiles.extend(r2.clone());
             // Receive tile from renderer without blocking, should allow other keystrokes to be recognized
-            let finished_tile_result = r.clone().try_recv();
+            let finished_tile_result = r.try_recv();
             match finished_tile_result {
                 Ok(finished_tile) => {
                     // Now that we have the tile from the renderer, push it into tiles for image
                     // and push it to display buffer, tone mapping and showing to the screen
-                    tiles.push(finished_tile.clone());
+                    //tiles.push(finished_tile.clone());
+                    frame_buffer.splice(
+                        finished_tile.start_index as usize
+                            ..(finished_tile.start_index as usize + finished_tile.num_pixels),
+                        do_tonemapping(finished_tile.pixels),
+                    );
+
                     //dbg!(finished_tile.num_pixels);
+                    // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
+                    window
+                        .update_with_buffer(&frame_buffer, film.width as usize, film.height as usize)
+                        .unwrap();
                 }
-                Err(e) => {}
+                Err(_) => {}
             }
-            // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
-            window
-                .update_with_buffer(&frame_buffer, film.width as usize, film.height as usize)
-                .unwrap();
+
         }
         info!("Finished running render()");
         tiles
