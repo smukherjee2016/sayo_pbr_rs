@@ -1,12 +1,13 @@
 use crate::common::*;
 use crate::{SceneConfig, Tile};
 use std::borrow::Borrow;
+use std::sync::Arc;
 
 pub struct DirectLightingIntegrator;
 
 impl DirectLightingIntegrator {
     pub fn integrate(
-        scene: &SceneConfig,
+        scene: Arc<SceneConfig>,
         start_position_in_film: i32,
         samples_count: u32,
         bounces_count: u32,
@@ -19,7 +20,7 @@ impl DirectLightingIntegrator {
         tile.pixels.resize(TILE_SIZE, Spectrum::from(0.0));
 
         for i in 0..tile.num_pixels {
-            let film = scene.film.borrow();
+            let film = scene.film.clone();
             let x = (start_position_in_film + i as i32) % film.width;
             let y = (start_position_in_film + i as i32) / film.width;
 

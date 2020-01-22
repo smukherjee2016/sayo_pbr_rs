@@ -6,7 +6,9 @@ use crate::{SceneConfig, Tile};
 use crossbeam::crossbeam_channel::unbounded;
 use minifb::{Key, Window, WindowOptions};
 use scoped_pool::Pool;
-use std::borrow::Borrow;
+use std::borrow::{Borrow, BorrowMut};
+use threadpool::ThreadPool;
+use std::sync::Arc;
 
 pub struct BaseIntegrator;
 
@@ -28,13 +30,12 @@ fn do_tonemapping(input: Vec<Spectrum>) -> Vec<u32> {
 }
 
 impl Integrator for BaseIntegrator {
-    fn render(scene: &SceneConfig, samples_count: u32, bounces_count: u32) -> Vec<Tile> {
+    fn render(scene: Arc<SceneConfig>, samples_count: u32, bounces_count: u32) {
         let mut tiles: Vec<Tile> = vec![];
         let cpus = num_cpus::get() - 1;
         info!("Trying with {} cpus", cpus);
-        let pool = Pool::new(cpus);
-
-        let film = scene.film.borrow();
+        let pool = ThreadPool::new(cpus);
+        let mut film = scene.film.clone();
 
         info!(
             "Beginning rendering with {} spp and {} bounces",
@@ -46,28 +47,30 @@ impl Integrator for BaseIntegrator {
         //Set up temp buffer and window
         let mut frame_buffer: Vec<u32> = vec![0; (film.height * film.width) as usize];
         dbg!(frame_buffer.len());
-        let mut window = Window::new(
-            "Renderer?",
-            film.width as usize,
-            film.height as usize,
-            WindowOptions::default(),
-        )
-        .unwrap_or_else(|e| {
-            panic!("{}", e);
-        });
+//        let mut window = Window::new(
+//            "Renderer?",
+//            film.width as usize,
+//            film.height as usize,
+//            WindowOptions::default(),
+//        )
+//        .unwrap_or_else(|e| {
+//            panic!("{}", e);
+//        });
 
         let pixel_numbers = 0..(film.height * film.width);
-        pool.scoped(|scope| {
+        //pool.scoped(|scope| {
             for i in pixel_numbers.step_by(TILE_SIZE) {
                 let sender = s.clone();
-                scope.execute(move || match scene.integrator {
+                let cloned_scene = Arc::clone(&scene);
+                pool.execute(move || match cloned_scene.integrator {
                     Integrators::DirectLighting => {
                         let tile: Tile = DirectLightingIntegrator::integrate(
-                            scene,
+                            cloned_scene,
                             i,
                             samples_count,
                             bounces_count,
                         );
+                        dbg!("Did some tile work: {}", tile.start_index);
                         sender.send(tile).unwrap();
                     }
                     Integrators::PathTracerBSDF => {}
@@ -75,35 +78,41 @@ impl Integrator for BaseIntegrator {
                 });
                 //warn!("{:?}", tile.pixels);
             }
-        });
+       // });
         drop(s); //To avoid waiting for the initial s which does not do anything
 
-        while window.is_open() && !window.is_key_down(Key::Escape) && !r.is_empty() {
-            tiles.extend(r2.clone());
-            // Receive tile from renderer without blocking, should allow other keystrokes to be recognized
-            let finished_tile_result = r.try_recv();
-            match finished_tile_result {
-                Ok(finished_tile) => {
-                    // Now that we have the tile from the renderer, push it into tiles for image
-                    // and push it to display buffer, tone mapping and showing to the screen
-                    //tiles.push(finished_tile.clone());
-                    frame_buffer.splice(
-                        finished_tile.start_index as usize
-                            ..(finished_tile.start_index as usize + finished_tile.num_pixels),
-                        do_tonemapping(finished_tile.pixels),
-                    );
-
-                    //dbg!(finished_tile.num_pixels);
-                    // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
-                    window
-                        .update_with_buffer(&frame_buffer, film.width as usize, film.height as usize)
-                        .unwrap();
-                }
-                Err(_) => {}
-            }
-
-        }
+//        while window.is_open() && !window.is_key_down(Key::Escape) && !r.is_empty() {
+//            //tiles.extend(r2.clone());
+//            // Receive tile from renderer without blocking, should allow other keystrokes to be recognized
+//            let finished_tile_result = r.try_recv();
+//            match finished_tile_result {
+//                Ok(finished_tile) => {
+//                    // Now that we have the tile from the renderer, push it into tiles for image
+//                    // and push it to display buffer, tone mapping and showing to the screen
+//                    //tiles.push(finished_tile.clone());
+//                    frame_buffer.splice(
+//                        finished_tile.start_index as usize
+//                            ..(finished_tile.start_index as usize + finished_tile.num_pixels),
+//                        do_tonemapping(finished_tile.pixels),
+//                    );
+//
+//                    //dbg!(finished_tile.num_pixels);
+//                    // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
+//                    window
+//                        .update_with_buffer(&frame_buffer, film.width as usize, film.height as usize)
+//                        .unwrap();
+//                }
+//                Err(_) => {}
+//            }
+//
+//        }
+        tiles.extend(r);
         info!("Finished running render()");
-        tiles
+        let film_mut = film.borrow_mut();
+        for tile in tiles.clone() {
+            //warn!("{}", tile.start_index);
+            film_mut.write_tile(tile);
+        }
+
     }
 }

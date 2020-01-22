@@ -7,6 +7,7 @@ use std::borrow::BorrowMut;
 use std::error::Error;
 use std::process;
 use std::time::Instant;
+use std::sync::Arc;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
@@ -28,24 +29,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     dbg!(&args);
 
     let start = Instant::now();
-    let mut scene_config: SceneConfig = SceneConfig::parse_args_and_construct_scene(&args)
+    let scene_config: SceneConfig = SceneConfig::parse_args_and_construct_scene(&args)
         .unwrap_or_else(|err| {
             eprintln!("Problem parsing scene file: {}", err);
             process::exit(1);
         });
 
-    let tiles = BaseIntegrator::render(&scene_config, 1, 1);
+    let scene_config_ptr = Arc::new(scene_config);
+    let scene_config_copy = Arc::clone(&scene_config_ptr);
+    BaseIntegrator::render(scene_config_ptr, 1, 1);
 
-    let film_mut = scene_config.film.borrow_mut();
-    for tile in tiles {
-        //warn!("{}", tile.start_index);
-        film_mut.write_tile(tile);
-    }
-
-    let duration = start.elapsed();
+   let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
 
-    scene_config.write_output()?;
+    scene_config_copy.write_output()?;
 
     Ok(())
 }

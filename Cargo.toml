@@ -15,6 +15,7 @@ crossbeam = "0.7"
 scoped-pool = "1.0.0"
 num_cpus = "*"
 minifb = "0.15.1"
+threadpool = "*"
 
 [profile.release]
 #debug = true
