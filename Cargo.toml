@@ -12,7 +12,6 @@ tobj = "*"
 log = "0.4"
 flexi_logger = "^0.11.4"
 crossbeam = "0.7"
-scoped-pool = "1.0.0"
 num_cpus = "*"
 
 [profile.release]
