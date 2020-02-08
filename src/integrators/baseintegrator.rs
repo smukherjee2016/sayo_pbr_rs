@@ -6,6 +6,7 @@ use crate::integrators::Integrator;
 use crate::{SceneCamera, SceneConfig, SceneGeometries, Tile};
 use crossbeam::crossbeam_channel::unbounded;
 use scoped_pool::Pool;
+use std::cell::RefCell;
 
 pub struct BaseIntegrator;
 
@@ -22,8 +23,9 @@ impl Integrator for BaseIntegrator {
         bounces_count: u32,
         camera: &SceneCamera,
         geometries: &SceneGeometries,
-        film: &Film,
+        film: RefCell<Film>,
     ) -> Vec<Tile> {
+        let film = &film.into_inner();
         let mut tiles: Vec<Tile> = vec![];
         let cpus = num_cpus::get();
         info!("Trying with {} cpus", cpus);

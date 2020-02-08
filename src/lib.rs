@@ -16,6 +16,7 @@ use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use crate::integrators::baseintegrator::Integrators;
+use std::cell::RefCell;
 use toml::Value;
 
 pub struct SceneConfig {
@@ -69,7 +70,7 @@ impl SceneConfig {
         }
     }
 
-    pub fn construct_film(parsed_scene_toml: toml::Value) -> Film {
+    pub fn construct_film(parsed_scene_toml: toml::Value) -> RefCell<Film> {
         //Film
         let width = parsed_scene_toml["camera"]["resolution"][0]
             .as_float()
@@ -80,7 +81,7 @@ impl SceneConfig {
         let fov_degrees = parsed_scene_toml["camera"]["fov"].as_float().unwrap() as fp;
         let mut film = Film::default();
         film.new_film(width, height, fov_degrees);
-        film
+        RefCell::new(film)
     }
 
     pub fn construct_scene(

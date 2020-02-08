@@ -1,5 +1,6 @@
 use crate::film::Film;
 use crate::{SceneCamera, SceneConfig, SceneGeometries, Tile};
+use std::cell::RefCell;
 
 pub mod baseintegrator;
 pub mod directlighting;
@@ -11,6 +12,6 @@ pub trait Integrator {
         bounces_count: u32,
         camera: &SceneCamera,
         geometries: &SceneGeometries,
-        film: &Film,
+        film: RefCell<Film>,
     ) -> Vec<Tile>;
 }

@@ -3,7 +3,6 @@ use log::warn;
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::{SceneCamera, SceneConfig, SceneGeometries};
-use std::borrow::BorrowMut;
 use std::error::Error;
 use std::time::Instant;
 
@@ -36,25 +35,25 @@ fn main() -> Result<(), Box<dyn Error>> {
     let scene_geometries =
         SceneGeometries::construct_geometries(scene_filename.clone(), parsed_scene_config.clone());
 
-    let mut film_mut = SceneConfig::construct_film(parsed_scene_config.clone());
+    let film = SceneConfig::construct_film(parsed_scene_config.clone());
     let tiles = BaseIntegrator::render(
         &scene_config,
         1,
         1,
         &scene_camera,
         &scene_geometries,
-        &film_mut,
+        film.clone(),
     );
 
     for tile in tiles {
         //warn!("{}", tile.start_index);
-        film_mut.borrow_mut().write_tile(tile);
+        film.borrow_mut().write_tile(tile);
     }
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
 
-    scene_config.write_output(film_mut)?;
+    scene_config.write_output(film.into_inner())?;
 
     Ok(())
 }
