@@ -1,5 +1,4 @@
 use std::thread;
-use crate::Tile;
 use std::sync::{Arc, Mutex};
 
 

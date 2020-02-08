@@ -5,6 +5,7 @@ use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::{SceneCamera, SceneConfig, SceneGeometries};
 use std::error::Error;
 use std::time::Instant;
+use std::sync::Arc;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
@@ -37,12 +38,12 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let film = SceneConfig::construct_film(parsed_scene_config.clone());
     let tiles = BaseIntegrator::render(
-        &scene_config,
+        Arc::new(scene_config),
         1,
         1,
-        &scene_camera,
-        &scene_geometries,
-        film.clone(),
+        Arc::new(scene_camera),
+        Arc::new(scene_geometries),
+        Arc::new(film.clone()),
     );
 
     for tile in tiles {

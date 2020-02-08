@@ -2,6 +2,8 @@ use crate::common::*;
 use crate::film::Film;
 use crate::{SceneCamera, SceneGeometries, Tile};
 use std::borrow::Borrow;
+use std::sync::Arc;
+use std::cell::RefCell;
 
 pub struct DirectLightingIntegrator;
 
@@ -10,9 +12,9 @@ impl DirectLightingIntegrator {
         start_position_in_film: i32,
         samples_count: u32,
         bounces_count: u32,
-        camera: &SceneCamera,
-        geometries: &SceneGeometries,
-        film: &Film,
+        camera: Arc<SceneCamera>,
+        geometries: Arc<SceneGeometries>,
+        film: Arc<RefCell<Film>>,
     ) -> Tile {
         let mut tile: Tile = Tile {
             start_index: start_position_in_film,
@@ -20,9 +22,8 @@ impl DirectLightingIntegrator {
             pixels: vec![],
         };
         tile.pixels.resize(TILE_SIZE, Spectrum::from(0.0));
-
+        let film = film.as_ref().borrow();
         for i in 0..tile.num_pixels {
-            let film = film.borrow();
             let x = (start_position_in_film + i as i32) % film.width;
             let y = (start_position_in_film + i as i32) / film.width;
 
