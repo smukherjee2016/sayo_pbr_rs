@@ -1,17 +1,16 @@
-use std::thread;
 use std::sync::{Arc, Mutex};
-
+use std::thread;
 
 //https://doc.rust-lang.org/book/ch20-02-multithreaded.html
 
 enum Message {
     NewJob(Job),
-    Terminate
+    Terminate,
 }
 
 pub struct ThreadPool {
-    workers : Vec<Worker>,
-    sender : crossbeam::Sender<Message>,
+    workers: Vec<Worker>,
+    sender: crossbeam::Sender<Message>,
 }
 
 type Job = Box<dyn FnOnce() + Send + 'static>;
@@ -39,16 +38,13 @@ impl ThreadPool {
             //create some threads and store them in the vector
             workers.push(Worker::new(id, Arc::clone(&receiver)));
         }
-        ThreadPool
-        {
-            workers,
-            sender,
-        }
+        ThreadPool { workers, sender }
     }
 
     pub fn execute<F>(&self, f: F)
-        where
-            F : FnOnce() + Send + 'static {
+    where
+        F: FnOnce() + Send + 'static,
+    {
         let job = Box::new(f);
         self.sender.send(Message::NewJob(job)).unwrap();
     }
@@ -56,7 +52,6 @@ impl ThreadPool {
 
 impl Drop for ThreadPool {
     fn drop(&mut self) {
-
         dbg!("Sending terminate message to all workers.");
 
         for _ in &mut self.workers {
@@ -65,7 +60,7 @@ impl Drop for ThreadPool {
 
         dbg!("Shutting down all workers.");
         for worker in &mut self.workers {
-            dbg!("Shutting down worker {}", worker.id);
+            //dbg!("Shutting down worker {}", worker.id);
             if let Some(thread) = worker.thread.take() {
                 thread.join().unwrap();
             }
@@ -81,39 +76,37 @@ impl Drop for ThreadPool {
 */
 
 struct Worker {
-    id : usize,
+    id: usize,
     // Each thread should return a Tile
     // thread : thread::JoinHandle<Arc<Mutex<crossbeam::Receiver<Job>>>>
-    thread : Option<thread::JoinHandle<()>>,
+    thread: Option<thread::JoinHandle<()>>,
 }
 
 impl Worker {
     // we need the closure to loop forever,
     // asking the receiving end of the channel for a job
     // and running the job when it gets one
-    fn new(id : usize, receiver: Arc<Mutex<crossbeam::Receiver<Message>>>) -> Worker {
+    fn new(id: usize, receiver: Arc<Mutex<crossbeam::Receiver<Message>>>) -> Worker {
         let thread = thread::spawn(move || {
             loop {
                 let message = receiver.lock().unwrap().recv().unwrap();
                 match message {
                     Message::NewJob(job) => {
-                        dbg!("Worker {} got a job, executing.", id);
+                        //dbg!("Worker {} got a job, executing.", id);
                         job();
                     }
 
                     Message::Terminate => {
-                        dbg!("Worker {} was told to terminate", id);
+                        //dbg!("Worker {} was told to terminate", id);
                         break;
                     }
                 }
-
             }
-
         });
 
         Worker {
             id,
-            thread : Some(thread),
+            thread: Some(thread),
         }
     }
 }

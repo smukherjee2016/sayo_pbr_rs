@@ -2,10 +2,10 @@ use flexi_logger::{with_thread, Logger};
 use log::warn;
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
-use sayo_pbr_rs::{SceneCamera, SceneConfig, SceneGeometries};
+use sayo_pbr_rs::{write_output, ImageBuffer, SceneCamera, SceneConfig, SceneGeometries};
 use std::error::Error;
-use std::time::Instant;
 use std::sync::Arc;
+use std::time::Instant;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
@@ -30,13 +30,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let scene_config_tuple = SceneConfig::parse_args(&args);
     let scene_filename = scene_config_tuple.0;
     let parsed_scene_config = scene_config_tuple.1;
-    let scene_config =
+    let (scene_config, file_names) =
         SceneConfig::construct_scene(scene_filename.clone(), parsed_scene_config.clone()).unwrap();
     let scene_camera = SceneCamera::construct_camera(parsed_scene_config.clone());
     let scene_geometries =
-        SceneGeometries::construct_geometries(scene_filename.clone(), parsed_scene_config.clone());
+        SceneGeometries::construct_geometries(scene_filename, parsed_scene_config.clone());
 
-    let film = SceneConfig::construct_film(parsed_scene_config.clone());
+    let film = SceneConfig::construct_film(parsed_scene_config);
     let tiles = BaseIntegrator::render(
         Arc::new(scene_config),
         1,
@@ -46,15 +46,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         Arc::new(film.clone()),
     );
 
+    let mut image_buffer = ImageBuffer::new((film.height * film.width) as usize);
     for tile in tiles {
         //warn!("{}", tile.start_index);
-        film.borrow_mut().write_tile(tile);
+        image_buffer.write_tile(tile);
     }
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
 
-    scene_config.write_output(film.into_inner())?;
+    write_output(file_names.out_file, film, image_buffer)?;
 
     Ok(())
 }

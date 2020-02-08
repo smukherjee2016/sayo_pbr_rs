@@ -16,13 +16,15 @@ use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use crate::integrators::baseintegrator::Integrators;
-use std::cell::RefCell;
 use toml::Value;
 
 pub struct SceneConfig {
+    pub integrator: Integrators,
+}
+
+pub struct FileNames {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
-    pub integrator: Integrators,
 }
 
 #[derive(Default)]
@@ -38,6 +40,11 @@ pub struct SceneGeometries {
 
 pub struct SceneCamera {
     pub camera: Box<dyn Camera + Send + Sync>,
+}
+
+#[derive(Default)]
+pub struct ImageBuffer {
+    image: Vec<Spectrum>,
 }
 
 impl SceneConfig {
@@ -70,7 +77,7 @@ impl SceneConfig {
         }
     }
 
-    pub fn construct_film(parsed_scene_toml: toml::Value) -> RefCell<Film> {
+    pub fn construct_film(parsed_scene_toml: toml::Value) -> Film {
         //Film
         let width = parsed_scene_toml["camera"]["resolution"][0]
             .as_float()
@@ -81,13 +88,13 @@ impl SceneConfig {
         let fov_degrees = parsed_scene_toml["camera"]["fov"].as_float().unwrap() as fp;
         let mut film = Film::default();
         film.new_film(width, height, fov_degrees);
-        RefCell::new(film)
+        film
     }
 
     pub fn construct_scene(
         scene_filename: PathBuf,
         parsed_scene_toml: toml::Value,
-    ) -> Result<SceneConfig, Box<dyn Error>> {
+    ) -> Result<(SceneConfig, FileNames), Box<dyn Error>> {
         //Material
 
         //Integrator
@@ -128,20 +135,15 @@ impl SceneConfig {
         dbg!(&output_file_full_path);
         let out_file = PathBuf::from(output_file_full_path);
 
-        Ok(SceneConfig {
-            scene_file_name: scene_filename,
-            out_file,
-            integrator: type_of_integrator,
-        })
-    }
-
-    pub fn write_output(&self, film: Film) -> Result<(), Box<dyn Error>> {
-        let borrowed_film = film;
-        let image = borrowed_film.image.clone();
-        let width = borrowed_film.width;
-        let height = borrowed_film.height;
-
-        utilities::imageutils::write_pfm(self.out_file.clone(), image, width, height)
+        Ok((
+            SceneConfig {
+                integrator: type_of_integrator,
+            },
+            FileNames {
+                scene_file_name: scene_filename,
+                out_file,
+            },
+        ))
     }
 }
 
@@ -273,4 +275,31 @@ impl SceneGeometries {
         }
         SceneGeometries { geometries }
     }
+}
+
+impl ImageBuffer {
+    pub fn new(size: usize) -> ImageBuffer {
+        ImageBuffer {
+            image: vec![Vector3::from(0.5); size],
+        }
+    }
+
+    pub fn write_tile(&mut self, tile: Tile) {
+        let starting_index = tile.start_index as usize;
+        let num_pixels_to_write = tile.num_pixels;
+        self.image[starting_index..(starting_index + num_pixels_to_write)]
+            .clone_from_slice(&tile.pixels[0..num_pixels_to_write]);
+    }
+}
+
+pub fn write_output(
+    out_file: PathBuf,
+    film: Film,
+    image_buffer: ImageBuffer,
+) -> Result<(), Box<dyn Error>> {
+    let borrowed_film = film;
+    let width = borrowed_film.width;
+    let height = borrowed_film.height;
+
+    utilities::imageutils::write_pfm(out_file, image_buffer.image, width, height)
 }

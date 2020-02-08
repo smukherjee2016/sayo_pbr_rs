@@ -3,12 +3,10 @@ use crate::film::Film;
 pub use crate::integrators::directlighting;
 use crate::integrators::directlighting::DirectLightingIntegrator;
 use crate::integrators::Integrator;
+use crate::utilities::threadpool::ThreadPool;
 use crate::{SceneCamera, SceneConfig, SceneGeometries, Tile};
 use crossbeam::crossbeam_channel::unbounded;
-use std::cell::{RefCell, Ref};
-use crate::utilities::threadpool::ThreadPool;
 use std::sync::Arc;
-use std::borrow::Borrow;
 
 pub struct BaseIntegrator;
 
@@ -25,7 +23,7 @@ impl Integrator for BaseIntegrator {
         bounces_count: u32,
         camera: Arc<SceneCamera>,
         geometries: Arc<SceneGeometries>,
-        film: Arc<RefCell<Film>>,
+        film: Arc<Film>,
     ) -> Vec<Tile> {
         let mut tiles: Vec<Tile> = vec![];
         let cpus = num_cpus::get();
@@ -37,8 +35,7 @@ impl Integrator for BaseIntegrator {
             samples_count, bounces_count
         );
         let (s, r) = unbounded();
-        let borrowed_film : Ref<Film>  = film.as_ref().borrow();
-        let pixel_numbers = 0..(borrowed_film.height * borrowed_film.width);
+        let pixel_numbers = 0..(film.height * film.width);
         for i in pixel_numbers.step_by(TILE_SIZE) {
             let sender = s.clone();
             let camera = camera.clone();
