@@ -12,10 +12,10 @@ pub struct Film {
 }
 
 impl Film {
-    pub fn new_film(&mut self, width: i32, height: i32, fovdegrees: fp) {
+    pub fn new_film(&mut self, width: i32, height: i32, fov_degrees: fp) {
         self.distance_to_film = 1.0;
         self.aspect_ratio = fp::from(width) / fp::from(height);
-        self.fov = fovdegrees * std::f64::consts::PI / 180.0;
+        self.fov = fov_degrees * std::f64::consts::PI / 180.0;
 
         self.width = width;
         self.height = height;

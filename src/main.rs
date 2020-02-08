@@ -2,10 +2,9 @@ use flexi_logger::{with_thread, Logger};
 use log::warn;
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
-use sayo_pbr_rs::SceneConfig;
+use sayo_pbr_rs::{SceneCamera, SceneConfig, SceneGeometries};
 use std::borrow::BorrowMut;
 use std::error::Error;
-use std::process;
 use std::time::Instant;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -28,24 +27,34 @@ fn main() -> Result<(), Box<dyn Error>> {
     dbg!(&args);
 
     let start = Instant::now();
-    let mut scene_config: SceneConfig = SceneConfig::parse_args_and_construct_scene(&args)
-        .unwrap_or_else(|err| {
-            eprintln!("Problem parsing scene file: {}", err);
-            process::exit(1);
-        });
+    let scene_config_tuple = SceneConfig::parse_args(&args);
+    let scene_filename = scene_config_tuple.0;
+    let parsed_scene_config = scene_config_tuple.1;
+    let scene_config =
+        SceneConfig::construct_scene(scene_filename.clone(), parsed_scene_config.clone()).unwrap();
+    let scene_camera = SceneCamera::construct_camera(parsed_scene_config.clone());
+    let scene_geometries =
+        SceneGeometries::construct_geometries(scene_filename.clone(), parsed_scene_config.clone());
 
-    let tiles = BaseIntegrator::render(&scene_config, 1, 1);
+    let mut film_mut = SceneConfig::construct_film(parsed_scene_config.clone());
+    let tiles = BaseIntegrator::render(
+        &scene_config,
+        1,
+        1,
+        &scene_camera,
+        &scene_geometries,
+        &film_mut,
+    );
 
-    let film_mut = scene_config.film.borrow_mut();
     for tile in tiles {
         //warn!("{}", tile.start_index);
-        film_mut.write_tile(tile);
+        film_mut.borrow_mut().write_tile(tile);
     }
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
 
-    scene_config.write_output()?;
+    scene_config.write_output(film_mut)?;
 
     Ok(())
 }

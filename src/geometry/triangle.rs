@@ -1,7 +1,6 @@
 use crate::accel::aabb::{AxisAlignedBoundingBox, Boundable};
 use crate::common::*;
 use crate::geometry::Hitable;
-use std::cmp::min;
 use std::path::PathBuf;
 
 pub struct TriangleMesh {

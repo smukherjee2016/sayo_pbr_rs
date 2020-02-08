@@ -16,15 +16,11 @@ use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use crate::integrators::baseintegrator::Integrators;
-use std::borrow::Borrow;
 use toml::Value;
 
 pub struct SceneConfig {
     pub scene_file_name: PathBuf,
     pub out_file: PathBuf,
-    pub film: Film,
-    pub camera: Box<dyn Camera + Send + Sync>,
-    pub geometries: Vec<Box<dyn Hitable + Send + Sync>>,
     pub integrator: Integrators,
 }
 
@@ -35,8 +31,16 @@ pub struct Tile {
     pub pixels: Vec<Spectrum>,
 }
 
+pub struct SceneGeometries {
+    pub geometries: Vec<Box<dyn Hitable + Send + Sync>>,
+}
+
+pub struct SceneCamera {
+    pub camera: Box<dyn Camera + Send + Sync>,
+}
+
 impl SceneConfig {
-    pub fn parse_args_and_construct_scene(args: &[String]) -> Result<SceneConfig, Box<dyn Error>> {
+    pub fn parse_args(args: &[String]) -> (PathBuf, toml::Value) {
         let mut scene_filename = PathBuf::from("");
         for arg in args {
             if arg.contains(".toml") {
@@ -52,12 +56,20 @@ impl SceneConfig {
         }
 
         //Parse scene
-        let scene_file_contents = fs::read_to_string(scene_filename.clone())?;
+        let scene_file_contents = fs::read_to_string(scene_filename.clone()).unwrap();
 
-        let parsed_scene_toml = scene_file_contents.parse::<Value>().unwrap();
+        let parsed_scene_result = scene_file_contents.parse::<Value>();
 
         //dbg!(&parsed_scene_toml);
+        match parsed_scene_result {
+            Ok(parsed_scene_toml) => (scene_filename, parsed_scene_toml),
+            Err(e) => {
+                panic!("Failed to parse scene file with error: {:?}", e);
+            }
+        }
+    }
 
+    pub fn construct_film(parsed_scene_toml: toml::Value) -> Film {
         //Film
         let width = parsed_scene_toml["camera"]["resolution"][0]
             .as_float()
@@ -68,7 +80,72 @@ impl SceneConfig {
         let fov_degrees = parsed_scene_toml["camera"]["fov"].as_float().unwrap() as fp;
         let mut film = Film::default();
         film.new_film(width, height, fov_degrees);
+        film
+    }
 
+    pub fn construct_scene(
+        scene_filename: PathBuf,
+        parsed_scene_toml: toml::Value,
+    ) -> Result<SceneConfig, Box<dyn Error>> {
+        //Material
+
+        //Integrator
+        let type_of_integrator: Integrators;
+        let integrator_string = &parsed_scene_toml["integrator"]["type"]
+            .as_str()
+            .unwrap()
+            .to_ascii_lowercase()
+            .to_string();
+        match integrator_string.as_ref() {
+            "direct_lighting" => {
+                type_of_integrator = Integrators::DirectLighting;
+            }
+
+            "path_tracer_bsdf" => {
+                type_of_integrator = Integrators::PathTracerBSDF;
+            }
+
+            "path_tracer_nee" => {
+                type_of_integrator = Integrators::PathTracerNEE;
+            }
+
+            _ => {
+                warn!(
+                    "Warning: Found unsupported integrator {}, falling back to DirectLighting...",
+                    integrator_string
+                );
+                type_of_integrator = Integrators::DirectLighting;
+            }
+        }
+
+        //Output pfm
+        let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        let output_file_full_path = "sandbox/".to_string() + output_file_name;
+        dbg!(&output_file_full_path);
+        let out_file = PathBuf::from(output_file_full_path);
+
+        Ok(SceneConfig {
+            scene_file_name: scene_filename,
+            out_file,
+            integrator: type_of_integrator,
+        })
+    }
+
+    pub fn write_output(&self, film: Film) -> Result<(), Box<dyn Error>> {
+        let borrowed_film = film;
+        let image = borrowed_film.image.clone();
+        let width = borrowed_film.width;
+        let height = borrowed_film.height;
+
+        utilities::imageutils::write_pfm(self.out_file.clone(), image, width, height)
+    }
+}
+
+impl SceneCamera {
+    pub fn construct_camera(parsed_scene_toml: toml::Value) -> SceneCamera {
         //Camera
         let camera_position: Point3 = Point3 {
             x: parsed_scene_toml["camera"]["transform"]["position"][0]
@@ -125,90 +202,15 @@ impl SceneConfig {
                 ));
             }
         }
-
-        //Geometry
-        let mut geometries: Vec<Box<dyn Hitable + Sync + Send>> = vec![];
-
-        for i in &parsed_scene_toml["primitives"].as_array() {
-            for j in *i {
-                let type_of_geometry = j["type"].as_str().unwrap();
-                //Triangle mesh
-                match type_of_geometry {
-                    "mesh" => {
-                        //Process the file path to ensure the meshes are found
-                        let mut current_directory = PathBuf::from(scene_filename.parent().unwrap());
-                        let mesh_location_and_name = j["file"].as_str().unwrap();
-                        current_directory.push(mesh_location_and_name);
-                        let mesh_absolute_path = current_directory.canonicalize()?;
-                        //dbg!(mesh_absolute_path);
-                        let input_meshes = TriangleMesh::new(mesh_absolute_path);
-                        for input_mesh in input_meshes {
-                            let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
-                            for triangle in triangles {
-                                geometries.push(Box::new(triangle));
-                            }
-                        }
-                    }
-                    _ => {
-                        warn!(
-                            "Warning: found unsupported geometry type {}, skipping...",
-                            type_of_geometry
-                        );
-                    }
-                }
-            }
-        }
-
-        //Material
-
-        //Integrator
-        let type_of_integrator: Integrators;
-        let integrator_string = &parsed_scene_toml["integrator"]["type"]
-            .as_str()
-            .unwrap()
-            .to_ascii_lowercase()
-            .to_string();
-        match integrator_string.as_ref() {
-            "direct_lighting" => {
-                type_of_integrator = Integrators::DirectLighting;
-            }
-
-            "path_tracer_bsdf" => {
-                type_of_integrator = Integrators::PathTracerBSDF;
-            }
-
-            "path_tracer_nee" => {
-                type_of_integrator = Integrators::PathTracerNEE;
-            }
-
-            _ => {
-                warn!(
-                    "Warning: Found unsupported integrator {}, falling back to DirectLighting...",
-                    integrator_string
-                );
-                type_of_integrator = Integrators::DirectLighting;
-            }
-        }
-
-        //Output pfm
-        let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"]
-            .as_str()
-            .unwrap()
-            .to_string();
-        let output_file_full_path = "sandbox/".to_string() + output_file_name;
-        dbg!(&output_file_full_path);
-        let out_file = PathBuf::from(output_file_full_path);
-
-        Ok(SceneConfig {
-            scene_file_name: scene_filename,
-            out_file,
-            film,
-            camera,
-            geometries,
-            integrator: type_of_integrator,
-        })
+        SceneCamera { camera }
     }
 
+    pub fn generate_camera_ray(&self, x: i32, y: i32, film: &Film) -> Ray {
+        self.camera.generate_camera_ray(x, y, film)
+    }
+}
+
+impl SceneGeometries {
     pub fn check_intersection_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
         let mut closest_intersection_info: IntersectionInfo = Default::default();
         let mut t_max = std::f64::INFINITY;
@@ -232,12 +234,42 @@ impl SceneConfig {
         }
     }
 
-    pub fn write_output(&self) -> Result<(), Box<dyn Error>> {
-        let borrowed_film = self.film.borrow();
-        let image = borrowed_film.image.clone();
-        let width = borrowed_film.width;
-        let height = borrowed_film.height;
+    pub fn construct_geometries(
+        scene_filename: PathBuf,
+        parsed_scene_toml: toml::Value,
+    ) -> SceneGeometries {
+        //Geometry
+        let mut geometries: Vec<Box<dyn Hitable + Sync + Send>> = vec![];
 
-        utilities::imageutils::write_pfm(self.out_file.clone(), image, width, height)
+        for i in &parsed_scene_toml["primitives"].as_array() {
+            for j in *i {
+                let type_of_geometry = j["type"].as_str().unwrap();
+                //Triangle mesh
+                match type_of_geometry {
+                    "mesh" => {
+                        //Process the file path to ensure the meshes are found
+                        let mut current_directory = PathBuf::from(scene_filename.parent().unwrap());
+                        let mesh_location_and_name = j["file"].as_str().unwrap();
+                        current_directory.push(mesh_location_and_name);
+                        let mesh_absolute_path = current_directory.canonicalize().unwrap();
+                        //dbg!(mesh_absolute_path);
+                        let input_meshes = TriangleMesh::new(mesh_absolute_path);
+                        for input_mesh in input_meshes {
+                            let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
+                            for triangle in triangles {
+                                geometries.push(Box::new(triangle));
+                            }
+                        }
+                    }
+                    _ => {
+                        warn!(
+                            "Warning: found unsupported geometry type {}, skipping...",
+                            type_of_geometry
+                        );
+                    }
+                }
+            }
+        }
+        SceneGeometries { geometries }
     }
 }
