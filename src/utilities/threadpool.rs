@@ -1,5 +1,6 @@
 use std::sync::{Arc, Mutex};
 use std::thread;
+use log::{info, warn};
 
 //https://doc.rust-lang.org/book/ch20-02-multithreaded.html
 
@@ -52,13 +53,13 @@ impl ThreadPool {
 
 impl Drop for ThreadPool {
     fn drop(&mut self) {
-        dbg!("Sending terminate message to all workers.");
+        warn!("Sending terminate message to all workers.");
 
         for _ in &mut self.workers {
             self.sender.send(Message::Terminate).unwrap();
         }
 
-        dbg!("Shutting down all workers.");
+        warn!("Shutting down all workers.");
         for worker in &mut self.workers {
             //dbg!("Shutting down worker {}", worker.id);
             if let Some(thread) = worker.thread.take() {
@@ -92,12 +93,13 @@ impl Worker {
                 let message = receiver.lock().unwrap().recv().unwrap();
                 match message {
                     Message::NewJob(job) => {
-                        //dbg!("Worker {} got a job, executing.", id);
+                        info!("Worker {} got a job, executing.", id);
                         job();
+                        info!("Worker {} finished job, looking for the next opportunity.", id);
                     }
 
                     Message::Terminate => {
-                        //dbg!("Worker {} was told to terminate", id);
+                        info!("Worker {} was told to terminate", id);
                         break;
                     }
                 }
