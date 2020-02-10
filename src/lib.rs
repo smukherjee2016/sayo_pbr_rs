@@ -133,7 +133,7 @@ impl SceneConfig {
             .unwrap()
             .to_string();
         let output_file_full_path = "sandbox/".to_string() + output_file_name;
-        info!(&output_file_full_path);
+        info!("{}", &output_file_full_path);
         let out_file = PathBuf::from(output_file_full_path);
 
         Ok((

@@ -63,7 +63,7 @@ impl Integrator for BaseIntegrator {
 
         //Set up temp buffer and window
         let mut frame_buffer: Vec<u32> = vec![0; (film.height * film.width) as usize];
-        info!(frame_buffer.len());
+        info!("{}", frame_buffer.len());
         let mut window = Window::new(
             "Renderer?",
             film.width as usize,
@@ -102,7 +102,7 @@ impl Integrator for BaseIntegrator {
         #[allow(clippy::never_loop)]
         while window.is_open() && !window.is_key_down(Key::Escape) {
             let r2 = r.clone();
-            thread::sleep(time::Duration::from_millis(1600));
+            thread::sleep(time::Duration::from_millis(16));
             for finished_tile in r2 {
                 let tile = finished_tile.clone();
                 // Now that we have the tile from the renderer, push it into tiles for image
