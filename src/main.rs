@@ -1,5 +1,5 @@
 use flexi_logger::{with_thread, Logger};
-use log::warn;
+use log::{info, warn};
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::{write_output, ImageBuffer, SceneCamera, SceneConfig, SceneGeometries};
@@ -16,15 +16,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut args: Vec<String> = std::env::args().collect();
 
     let current_dir = std::env::current_dir().unwrap();
-    dbg!(std::fs::canonicalize(current_dir).unwrap());
+    info!(std::fs::canonicalize(current_dir).unwrap());
 
     //current_dir() is the root directory of the project, setting relative paths
     //If no arguments specified, try to use a default scene
     if args.len() == 1 {
-        let scene_file_path = "scenes/simple_cube/simple_cube_scene.toml".to_string();
+        let scene_file_path = "scenes/dragon/dragon_scene.toml".to_string();
         args.push(scene_file_path);
     }
-    dbg!(&args);
+    info!(&args);
 
     let start = Instant::now();
     let scene_config_tuple = SceneConfig::parse_args(&args);

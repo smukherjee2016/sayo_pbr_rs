@@ -1,3 +1,4 @@
+use log::{info, warn};
 use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -27,7 +28,7 @@ pub struct FileNames {
     pub out_file: PathBuf,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Tile {
     pub start_index: i32,
     pub num_pixels: usize,
@@ -68,7 +69,7 @@ impl SceneConfig {
 
         let parsed_scene_result = scene_file_contents.parse::<Value>();
 
-        //dbg!(&parsed_scene_toml);
+        //info!(&parsed_scene_toml);
         match parsed_scene_result {
             Ok(parsed_scene_toml) => (scene_filename, parsed_scene_toml),
             Err(e) => {
@@ -132,7 +133,7 @@ impl SceneConfig {
             .unwrap()
             .to_string();
         let output_file_full_path = "sandbox/".to_string() + output_file_name;
-        dbg!(&output_file_full_path);
+        info!(&output_file_full_path);
         let out_file = PathBuf::from(output_file_full_path);
 
         Ok((
@@ -255,7 +256,7 @@ impl SceneGeometries {
                         let mesh_location_and_name = j["file"].as_str().unwrap();
                         current_directory.push(mesh_location_and_name);
                         let mesh_absolute_path = current_directory.canonicalize().unwrap();
-                        //dbg!(mesh_absolute_path);
+                        //info!(mesh_absolute_path);
                         let input_meshes = TriangleMesh::new(mesh_absolute_path);
                         for input_mesh in input_meshes {
                             let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();

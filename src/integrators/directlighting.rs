@@ -40,7 +40,7 @@ impl DirectLightingIntegrator {
                             //info!("{:?}", pixel_value);
                         }
                         None => {
-                            pixel_value += Vector3::new(0.0, 0.0, 0.0);
+                            pixel_value += Vector3::new(0.0, 1.0, 0.0);
                         }
                     }
                 }
