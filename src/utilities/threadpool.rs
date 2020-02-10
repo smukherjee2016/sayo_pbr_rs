@@ -1,4 +1,4 @@
-use log::{info, warn};
+use log::{info, warn, trace};
 use std::sync::{Arc, Mutex};
 use std::thread;
 
@@ -61,7 +61,7 @@ impl Drop for ThreadPool {
 
         warn!("Shutting down all workers.");
         for worker in &mut self.workers {
-            //info!("Shutting down worker {}", worker.id);
+            trace!("Shutting down worker {}", worker.id);
             if let Some(thread) = worker.thread.take() {
                 thread.join().unwrap();
             }
@@ -92,12 +92,12 @@ impl Worker {
             let message = receiver.lock().unwrap().recv().unwrap();
             match message {
                 Message::NewJob(job) => {
-                    info!("Worker {} got a job, executing.", id);
+                    trace!("Worker {} got a job, executing.", id);
                     job();
                 }
 
                 Message::Terminate => {
-                    info!("Worker {} was told to terminate", id);
+                    trace!("Worker {} was told to terminate", id);
                     break;
                 }
             }
