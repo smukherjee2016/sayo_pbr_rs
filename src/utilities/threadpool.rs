@@ -1,6 +1,6 @@
+use log::{info, warn};
 use std::sync::{Arc, Mutex};
 use std::thread;
-use log::{info, warn};
 
 //https://doc.rust-lang.org/book/ch20-02-multithreaded.html
 
@@ -61,7 +61,7 @@ impl Drop for ThreadPool {
 
         warn!("Shutting down all workers.");
         for worker in &mut self.workers {
-            //dbg!("Shutting down worker {}", worker.id);
+            //info!("Shutting down worker {}", worker.id);
             if let Some(thread) = worker.thread.take() {
                 thread.join().unwrap();
             }
@@ -88,20 +88,17 @@ impl Worker {
     // asking the receiving end of the channel for a job
     // and running the job when it gets one
     fn new(id: usize, receiver: Arc<Mutex<crossbeam::Receiver<Message>>>) -> Worker {
-        let thread = thread::spawn(move || {
-            loop {
-                let message = receiver.lock().unwrap().recv().unwrap();
-                match message {
-                    Message::NewJob(job) => {
-                        info!("Worker {} got a job, executing.", id);
-                        job();
-                        info!("Worker {} finished job, looking for the next opportunity.", id);
-                    }
+        let thread = thread::spawn(move || loop {
+            let message = receiver.lock().unwrap().recv().unwrap();
+            match message {
+                Message::NewJob(job) => {
+                    info!("Worker {} got a job, executing.", id);
+                    job();
+                }
 
-                    Message::Terminate => {
-                        info!("Worker {} was told to terminate", id);
-                        break;
-                    }
+                Message::Terminate => {
+                    info!("Worker {} was told to terminate", id);
+                    break;
                 }
             }
         });
