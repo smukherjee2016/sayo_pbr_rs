@@ -159,6 +159,14 @@ impl Vector3 {
         }
     }
 
+    pub fn max_component_wise(&self, rhs: Vector3) -> Vector3 {
+        Vector3 {
+            x: if self.x >= rhs.x { self.x } else { rhs.x },
+            y: if self.y >= rhs.y { self.y } else { rhs.y },
+            z: if self.z >= rhs.z { self.z } else { rhs.z },
+        }
+    }
+
     pub fn max_dimension(&self) -> i32 {
         let max_dim;
         if self.x > self.y {
@@ -327,6 +335,13 @@ impl Vector2 {
         Vector2 {
             x: scalar_x,
             y: scalar_y,
+        }
+    }
+
+    pub fn max_component_wise(&self, rhs: Vector2) -> Vector2 {
+        Vector2 {
+            x: if self.x >= rhs.x { self.x } else { rhs.x },
+            y: if self.y >= rhs.y { self.y } else { rhs.y },
         }
     }
 }
