@@ -55,7 +55,7 @@ impl Hitable for AxisAlignedBoundingBox {
 //Objects that can show an axis-aligned bounding box around themselves
 //Anything that's boundable must be hitable as well
 pub trait Boundable: Hitable {
-    fn get_bounding_box(&self, t0: fp, t1: fp) -> AxisAlignedBoundingBox;
+    fn get_bounding_box(&self) -> AxisAlignedBoundingBox;
 }
 
 // Return surrounding box of two AABB's

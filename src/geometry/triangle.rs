@@ -19,6 +19,7 @@ pub struct Triangle {
     pub positions: Vec<Point3>,
     pub normals: Vec<Vec3>,
     pub texture_coordinates: Vec<Point2>,
+    pub bounding_box: AxisAlignedBoundingBox,
 }
 
 impl TriangleMesh {
@@ -52,7 +53,7 @@ impl TriangleMesh {
             let index_1_of_triangle = self.indices[3 * v + 1] as usize;
             let index_2_of_triangle = self.indices[3 * v + 2] as usize;
 
-            let triangle = Triangle {
+            let mut triangle = Triangle {
                 positions: vec![
                     Point3::new(
                         fp::from(self.positions[3 * index_0_of_triangle]),
@@ -104,7 +105,11 @@ impl TriangleMesh {
                         fp::from(self.texture_coordinates[2 * index_2_of_triangle + 1]),
                     ),
                 ],
+
+                bounding_box: AxisAlignedBoundingBox::default(),
             };
+            triangle.bounding_box = Triangle::get_bounding_box(&triangle);
+            // info!("AABB of triangle: {:?}", triangle.bounding_box);
             /*
             warn!(" Positions of triangle {} : {} {} {}", v, index_0_of_triangle,
                   index_1_of_triangle, index_2_of_triangle);
@@ -249,7 +254,7 @@ impl Hitable for Triangle {
 }
 
 impl Boundable for Triangle {
-    fn get_bounding_box(&self, t0: fp, t1: fp) -> AxisAlignedBoundingBox {
+    fn get_bounding_box(&self) -> AxisAlignedBoundingBox {
         // Bounding box for triangle = a box with minimum of all coordinates as one corner
         // and maximum of all coordinates as another corner
         let x_min: fp = fp::min(
@@ -279,7 +284,6 @@ impl Boundable for Triangle {
             self.positions[2].z,
         );
         let max_point: Point3 = Point3::new(x_max, y_max, z_max);
-
         AxisAlignedBoundingBox::new_aabb(min_point, max_point)
     }
 }
