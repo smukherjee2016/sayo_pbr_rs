@@ -1,3 +1,5 @@
+//!
+#![warn(rust_2018_idioms)]
 use log::{info, warn};
 use std::error::Error;
 use std::fs;
