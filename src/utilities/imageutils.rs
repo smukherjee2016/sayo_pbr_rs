@@ -33,7 +33,7 @@ pub fn write_pfm(
     std::fs::create_dir_all(PathBuf::from(file_path.parent().unwrap()))?;
     // Open a file in write-only mode, returns `io::Result<File>`
     let file = match File::create(&file_path) {
-        Err(why) => panic!("couldn't create {}: {}", display, why.description()),
+        Err(why) => panic!("couldn't create {}: {}", display, why.to_string()),
         Ok(file) => file,
     };
 
