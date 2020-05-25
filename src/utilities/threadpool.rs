@@ -1,4 +1,4 @@
-use log::{info, warn, trace};
+use log::{info, trace, warn};
 use std::sync::{Arc, Mutex};
 use std::thread;
 

@@ -31,10 +31,15 @@ fn do_tonemapping(input: Vec<Spectrum>) -> Vec<u32> {
         x = Spectrum::from(0.0).max_component_wise(x - Spectrum::from(0.004));
         let ret_color: Spectrum = (x * (Spectrum::from(6.2) * x + Spectrum::from(0.5)))
             / (x * (Spectrum::from(6.2) * x + Spectrum::from(1.7)) + Spectrum::from(0.06));
+        let gamma_corrected_color: Spectrum = Spectrum::new(
+            ret_color.x.powf(2.20),
+            ret_color.y.powf(2.20),
+            ret_color.z.powf(2.20),
+        );
         let final_color: u32 = from_u8_rgb(
-            (ret_color.x * 255.0) as u8,
-            (ret_color.y * 255.0) as u8,
-            (ret_color.z * 255.0) as u8,
+            (gamma_corrected_color.x * 255.0) as u8,
+            (gamma_corrected_color.y * 255.0) as u8,
+            (gamma_corrected_color.z * 255.0) as u8,
         );
         ret.push(final_color);
     }
