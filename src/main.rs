@@ -3,9 +3,11 @@ use log::{info, warn};
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::{write_output, ImageBuffer, SceneCamera, SceneConfig, SceneGeometries};
+use sayo_pbr_rs::accel::bvh_node;
 use std::error::Error;
 use std::sync::Arc;
 use std::time::Instant;
+use sayo_pbr_rs::accel::bvh_node::BVHNode;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
@@ -21,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //current_dir() is the root directory of the project, setting relative paths
     //If no arguments specified, try to use a default scene
     if args.len() == 1 {
-        let scene_file_path = "scenes/simple_cube/simple_cube_scene.toml".to_string();
+        let scene_file_path = "scenes/teapot/teapot_test_scene.toml".to_string();
         args.push(scene_file_path);
     }
     info!("{:?}", &args);
@@ -35,6 +37,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let scene_camera = SceneCamera::construct_camera(parsed_scene_config.clone());
     let scene_geometries =
         SceneGeometries::construct_geometries(scene_filename, parsed_scene_config.clone());
+    let root_bvh = BVHNode::construct_bvh(scene_geometries.geometries.clone());
 
     let film = SceneConfig::construct_film(parsed_scene_config);
     let tiles = BaseIntegrator::render(
@@ -42,7 +45,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         1,
         1,
         Arc::new(scene_camera),
-        Arc::new(scene_geometries),
+        root_bvh,
+        //Arc::new(scene_geometries),
         Arc::new(film.clone()),
     );
 

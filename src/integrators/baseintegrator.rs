@@ -9,6 +9,8 @@ use crossbeam::crossbeam_channel::unbounded;
 use minifb::{Key, Window, WindowOptions};
 use std::sync::Arc;
 use std::{thread, time};
+use crate::accel::aabb::Boundable;
+use crate::accel::bvh_node::BVHNode;
 
 pub struct BaseIntegrator;
 
@@ -52,7 +54,8 @@ impl Integrator for BaseIntegrator {
         samples_count: u32,
         bounces_count: u32,
         camera: Arc<SceneCamera>,
-        geometries: Arc<SceneGeometries>,
+        geometries: Arc<dyn Boundable>,
+        //geometries: Arc<SceneGeometries>,
         film: Arc<Film>,
     ) -> Vec<Tile> {
         let mut tiles: Vec<Tile> = vec![];

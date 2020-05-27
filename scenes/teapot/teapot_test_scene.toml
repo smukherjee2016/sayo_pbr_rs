@@ -4,8 +4,8 @@ media = []
 [camera]
 tonemap = "filmic"
 resolution = [
-  64.0,
-  64.0
+  512.0,
+  512.0
 ]
 reconstruction_filter = "tent"
 type = "pinhole"

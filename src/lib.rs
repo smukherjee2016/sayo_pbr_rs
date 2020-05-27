@@ -4,7 +4,7 @@ use log::{info, warn};
 use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
-mod accel;
+pub mod accel;
 mod camera;
 mod common;
 mod film;
@@ -20,6 +20,8 @@ use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use crate::integrators::baseintegrator::Integrators;
 use toml::Value;
+use crate::accel::aabb::Boundable;
+use std::sync::Arc;
 
 pub struct SceneConfig {
     pub integrator: Integrators,
@@ -38,7 +40,7 @@ pub struct Tile {
 }
 
 pub struct SceneGeometries {
-    pub geometries: Vec<Box<dyn Hitable + Send + Sync>>,
+    pub geometries: Vec<Arc<dyn Boundable>>,
 }
 
 pub struct SceneCamera {
@@ -245,7 +247,7 @@ impl SceneGeometries {
         parsed_scene_toml: toml::Value,
     ) -> SceneGeometries {
         //Geometry
-        let mut geometries: Vec<Box<dyn Hitable + Sync + Send>> = vec![];
+        let mut geometries: Vec<Arc<dyn Boundable>> = vec![];
 
         for i in &parsed_scene_toml["primitives"].as_array() {
             for j in *i {
@@ -263,7 +265,7 @@ impl SceneGeometries {
                         for input_mesh in input_meshes {
                             let triangles: Vec<Triangle> = input_mesh.get_triangles_from_mesh();
                             for triangle in triangles {
-                                geometries.push(Box::new(triangle));
+                                geometries.push(Arc::new(triangle));
                             }
                         }
                     }

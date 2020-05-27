@@ -12,6 +12,7 @@ pub struct TriangleMesh {
     pub material_id: Option<usize>,
 }
 
+#[derive(Clone)]
 pub struct Triangle {
     //TODO Visit this implementation someday after leveling up
     //indices: Vec<u128>,

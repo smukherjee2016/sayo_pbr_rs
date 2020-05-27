@@ -3,6 +3,7 @@ use crate::film::Film;
 use crate::{SceneCamera, SceneGeometries, Tile};
 use std::borrow::Borrow;
 use std::sync::Arc;
+use crate::accel::aabb::Boundable;
 
 pub struct DirectLightingIntegrator;
 
@@ -12,7 +13,8 @@ impl DirectLightingIntegrator {
         samples_count: u32,
         bounces_count: u32,
         camera: Arc<SceneCamera>,
-        geometries: Arc<SceneGeometries>,
+        geometries: Arc<dyn Boundable>,
+        //geometries: Arc<SceneGeometries>,
         film: Arc<Film>,
     ) -> Tile {
         let mut tile: Tile = Tile {
@@ -33,7 +35,7 @@ impl DirectLightingIntegrator {
                     let ray = camera.generate_camera_ray(x, y, &film);
                     //info!("Ray info: {:?}", &ray);
                     let intersection =
-                        geometries.check_intersection_return_closest_hit(ray.clone());
+                        geometries.check_intersection_and_return_closest_hit(ray.clone());
                     match intersection {
                         Some(intersection_info) => {
                             pixel_value += intersection_info.normal;

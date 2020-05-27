@@ -1,8 +1,10 @@
 use crate::common::*;
 use crate::geometry::Hitable;
+use std::rc::Rc;
+use std::sync::Arc;
 
 //Rectangular AABB, defined by two points of its diagonal
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct AxisAlignedBoundingBox {
     pub min: Point3,
     pub max: Point3,
@@ -14,6 +16,11 @@ impl AxisAlignedBoundingBox {
             min: _min,
             max: _max,
         }
+    }
+
+    pub fn area_aabb(self) -> f64 {
+        let extent = self.max - self.min;
+        2.0 * (extent.x * extent.y + extent.y * extent.z + extent.z * extent.x)
     }
 }
 
@@ -58,6 +65,12 @@ pub trait Boundable: Hitable {
     fn get_bounding_box(&self) -> AxisAlignedBoundingBox;
 }
 
+impl Boundable for AxisAlignedBoundingBox {
+    fn get_bounding_box(&self) -> AxisAlignedBoundingBox {
+        self.clone()
+    }
+}
+
 // Return surrounding box of two AABB's
 pub fn surrounding_box(
     a: &AxisAlignedBoundingBox,
@@ -79,4 +92,13 @@ pub fn surrounding_box(
         min: small,
         max: big,
     }
+}
+
+pub fn surrounding_box_primitives(primitives_vector : Vec<Arc<dyn Boundable>>) -> AxisAlignedBoundingBox {
+    let mut ret_aabb = AxisAlignedBoundingBox::default();
+    for primitive in &primitives_vector {
+        let bounding_box_primitive : AxisAlignedBoundingBox = primitive.get_bounding_box();
+        ret_aabb = surrounding_box(&bounding_box_primitive, &ret_aabb);
+    }
+    ret_aabb
 }
