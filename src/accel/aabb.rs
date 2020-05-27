@@ -1,6 +1,5 @@
 use crate::common::*;
 use crate::geometry::Hitable;
-use std::rc::Rc;
 use std::sync::Arc;
 
 //Rectangular AABB, defined by two points of its diagonal
@@ -94,10 +93,12 @@ pub fn surrounding_box(
     }
 }
 
-pub fn surrounding_box_primitives(primitives_vector : Vec<Arc<dyn Boundable>>) -> AxisAlignedBoundingBox {
+pub fn surrounding_box_primitives(
+    primitives_vector: Vec<Arc<dyn Boundable>>,
+) -> AxisAlignedBoundingBox {
     let mut ret_aabb = AxisAlignedBoundingBox::default();
     for primitive in &primitives_vector {
-        let bounding_box_primitive : AxisAlignedBoundingBox = primitive.get_bounding_box();
+        let bounding_box_primitive: AxisAlignedBoundingBox = primitive.get_bounding_box();
         ret_aabb = surrounding_box(&bounding_box_primitive, &ret_aabb);
     }
     ret_aabb

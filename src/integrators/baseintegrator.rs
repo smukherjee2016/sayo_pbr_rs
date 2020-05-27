@@ -1,3 +1,4 @@
+use crate::accel::aabb::Boundable;
 use crate::common::*;
 use crate::film::Film;
 pub use crate::integrators::directlighting;
@@ -9,8 +10,6 @@ use crossbeam::crossbeam_channel::unbounded;
 use minifb::{Key, Window, WindowOptions};
 use std::sync::Arc;
 use std::{thread, time};
-use crate::accel::aabb::Boundable;
-use crate::accel::bvh_node::BVHNode;
 
 pub struct BaseIntegrator;
 

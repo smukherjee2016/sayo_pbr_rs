@@ -1,9 +1,9 @@
+use crate::accel::aabb::Boundable;
 use crate::common::*;
 use crate::film::Film;
 use crate::{SceneCamera, SceneGeometries, Tile};
 use std::borrow::Borrow;
 use std::sync::Arc;
-use crate::accel::aabb::Boundable;
 
 pub struct DirectLightingIntegrator;
 

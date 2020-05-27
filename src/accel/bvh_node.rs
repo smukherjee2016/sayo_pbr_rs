@@ -1,16 +1,14 @@
-use crate::accel::aabb::{AxisAlignedBoundingBox, Boundable, surrounding_box_primitives, surrounding_box};
+use crate::accel::aabb::{
+    surrounding_box, surrounding_box_primitives, AxisAlignedBoundingBox, Boundable,
+};
 use crate::common::*;
 use crate::geometry::Hitable;
 use rand::prelude::*;
-use std::io::Split;
-use crate::accel::bvh_node::SplitAxis::XAxis;
-use std::borrow::Borrow;
-use std::rc::Rc;
 use std::sync::Arc;
 
 pub struct BVHNode {
     aabb: AxisAlignedBoundingBox,
-    left_child:Arc<dyn Boundable>,
+    left_child: Arc<dyn Boundable>,
     right_child: Arc<dyn Boundable>,
 }
 
@@ -23,7 +21,7 @@ enum SplitAxis {
 
 #[derive(Debug)]
 struct SplitCandidate {
-    min_split_axis : SplitAxis,
+    min_split_axis: SplitAxis,
     min_split_index: usize,
     min_split_sah: f64,
 }
@@ -41,56 +39,44 @@ impl BVHNode {
         }
     }
 
-    pub fn calculate_sah(left_vec : Vec<Arc<dyn Boundable>>,
-                     right_vec: Vec<Arc<dyn Boundable>>,
-                     parent_box_area : f64) -> f64 {
+    pub fn calculate_sah(
+        left_vec: Vec<Arc<dyn Boundable>>,
+        right_vec: Vec<Arc<dyn Boundable>>,
+        parent_box_area: f64,
+    ) -> f64 {
         // SAH given by:
         // 2C_b + (Area(left)/Area(parent))(C_o * len(left)) + (Area(right)/Area(parent))(C_o * len(right))
         // C_b = 1, C_o = 1 for now
         let left_aabb_area = surrounding_box_primitives(left_vec.clone()).area_aabb();
         let right_aabb_area = surrounding_box_primitives(right_vec.clone()).area_aabb();
-        let left_vec_size  = left_vec.len() as f64;
+        let left_vec_size = left_vec.len() as f64;
         let right_vec_size = right_vec.len() as f64;
         //warn!("left: {}  right: {}  parent: {}", left_aabb_area, right_aabb_area, parent_box_area);
-        let c_b : f64 = 1.0;
-        let c_o : f64 = 1.0;
+        let c_b: f64 = 1.0;
+        let c_o: f64 = 1.0;
 
-        2.0 * c_b + (left_aabb_area / parent_box_area) * c_o * left_vec_size + (right_aabb_area / parent_box_area) * c_o * right_vec_size
-
+        2.0 * c_b
+            + (left_aabb_area / parent_box_area) * c_o * left_vec_size
+            + (right_aabb_area / parent_box_area) * c_o * right_vec_size
     }
 
-    pub fn construct_bvh(
-        mut geometries: Vec<Arc<dyn Boundable>>,
-    ) -> Arc<dyn Boundable> {
+    pub fn construct_bvh(mut geometries: Vec<Arc<dyn Boundable>>) -> Arc<dyn Boundable> {
         let size_current_hitable_list = geometries.len();
         // warn!("Current list size: {}", size_current_hitable_list);
         match size_current_hitable_list {
-            0 => { panic!("Why is the hitable list zero!"); }
+            0 => {
+                panic!("Why is the hitable list zero!");
+            }
             1 => {
                 let only_node = geometries.remove(0);
                 let aabb = only_node.get_bounding_box();
-                Arc::new(
-                    BVHNode::new(
-                    aabb,
-                    only_node.clone(),
-                    only_node
-                    )
-                )
+                Arc::new(BVHNode::new(aabb, only_node.clone(), only_node))
             }
             2 => {
                 let left = geometries.remove(0);
                 let right = geometries.remove(0);
-                let aabb = surrounding_box(
-                  &left.get_bounding_box(),
-                    &right.get_bounding_box()
-                );
-                Arc::new(
-                    BVHNode::new(
-                        aabb,
-                        left,
-                        right
-                    )
-                )
+                let aabb = surrounding_box(&left.get_bounding_box(), &right.get_bounding_box());
+                Arc::new(BVHNode::new(aabb, left, right))
             }
 
             /*3...4 => {
@@ -217,43 +203,35 @@ impl BVHNode {
                 })
 
             } */
-
             _ => {
-                let random_axis = rand::thread_rng().gen_range(0,3);
+                let random_axis = rand::thread_rng().gen_range(0, 3);
                 match random_axis {
                     0 => {
-                        geometries.sort_by(
-                            | a,b | {
-                                let left_min = a.get_bounding_box().min;
-                                let right_min = b.get_bounding_box().min;
-                                left_min.x.partial_cmp(&right_min.x).unwrap()
-                            }
-                        );
-                    },
+                        geometries.sort_by(|a, b| {
+                            let left_min = a.get_bounding_box().min;
+                            let right_min = b.get_bounding_box().min;
+                            left_min.x.partial_cmp(&right_min.x).unwrap()
+                        });
+                    }
                     1 => {
-                        geometries.sort_by(
-                            | a,b | {
-                                let left_min = a.get_bounding_box().min;
-                                let right_min = b.get_bounding_box().min;
-                                left_min.y.partial_cmp(&right_min.y).unwrap()
-                            }
-                        );
-                    },
+                        geometries.sort_by(|a, b| {
+                            let left_min = a.get_bounding_box().min;
+                            let right_min = b.get_bounding_box().min;
+                            left_min.y.partial_cmp(&right_min.y).unwrap()
+                        });
+                    }
                     2 => {
-                        geometries.sort_by(
-                            | a,b | {
-                                let left_min = a.get_bounding_box().min;
-                                let right_min = b.get_bounding_box().min;
-                                left_min.z.partial_cmp(&right_min.z).unwrap()
-                            }
-                        );
-
-                    },
+                        geometries.sort_by(|a, b| {
+                            let left_min = a.get_bounding_box().min;
+                            let right_min = b.get_bounding_box().min;
+                            left_min.z.partial_cmp(&right_min.z).unwrap()
+                        });
+                    }
                     _ => {}
-
                 }
 
-                let (split_middle_left, split_middle_right) = geometries.split_at(size_current_hitable_list / 2);
+                let (split_middle_left, split_middle_right) =
+                    geometries.split_at(size_current_hitable_list / 2);
                 let split_middle_left_list = split_middle_left.to_vec();
                 let split_middle_right_list = split_middle_right.to_vec();
 
@@ -261,23 +239,14 @@ impl BVHNode {
                 let split_middle_left_tree = BVHNode::construct_bvh(split_middle_left_list);
                 let split_middle_right_tree = BVHNode::construct_bvh(split_middle_right_list);
 
-                Arc::new(
-                    BVHNode {
-                        aabb: parent_box,
-                        left_child: split_middle_left_tree,
-                        right_child: split_middle_right_tree,
-                    }
-
-                )
-
+                Arc::new(BVHNode {
+                    aabb: parent_box,
+                    left_child: split_middle_left_tree,
+                    right_child: split_middle_right_tree,
+                })
             }
-
         }
-
-
     }
-
-
 }
 
 impl Boundable for BVHNode {
@@ -286,7 +255,7 @@ impl Boundable for BVHNode {
     }
 }
 
-impl Hitable for BVHNode  {
+impl Hitable for BVHNode {
     /*
     Check if ray hit left subtree or right subtree or both, and return the closest interseciton if any.
      */
@@ -302,7 +271,7 @@ impl Hitable for BVHNode  {
                     .check_intersection_and_return_closest_hit(ray.clone());
                 let hit_right_subtree = self
                     .right_child
-                    .check_intersection_and_return_closest_hit(ray.clone());
+                    .check_intersection_and_return_closest_hit(ray);
 
                 match (hit_left_subtree, hit_right_subtree) {
                     (None, None) => None,

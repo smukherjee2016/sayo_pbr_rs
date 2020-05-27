@@ -1,8 +1,7 @@
+use crate::accel::aabb::Boundable;
 use crate::film::Film;
 use crate::{SceneCamera, SceneConfig, SceneGeometries, Tile};
 use std::sync::Arc;
-use crate::accel::aabb::Boundable;
-use crate::accel::bvh_node::BVHNode;
 
 pub mod baseintegrator;
 pub mod directlighting;

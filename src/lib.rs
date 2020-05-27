@@ -12,6 +12,7 @@ mod geometry;
 pub mod integrators;
 mod utilities;
 
+use crate::accel::aabb::Boundable;
 use crate::camera::pinholecamera::PinholeCamera;
 use crate::camera::Camera;
 use crate::common::*;
@@ -19,9 +20,8 @@ use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
 use crate::geometry::Hitable;
 use crate::integrators::baseintegrator::Integrators;
-use toml::Value;
-use crate::accel::aabb::Boundable;
 use std::sync::Arc;
+use toml::Value;
 
 pub struct SceneConfig {
     pub integrator: Integrators,
@@ -107,8 +107,7 @@ impl SceneConfig {
         let integrator_string = &parsed_scene_toml["integrator"]["type"]
             .as_str()
             .unwrap()
-            .to_ascii_lowercase()
-            .to_string();
+            .to_ascii_lowercase();
         match integrator_string.as_ref() {
             "direct_lighting" => {
                 type_of_integrator = Integrators::DirectLighting;

@@ -1,13 +1,12 @@
 use flexi_logger::{with_thread, Logger};
 use log::{info, warn};
+use sayo_pbr_rs::accel::bvh_node::BVHNode;
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::{write_output, ImageBuffer, SceneCamera, SceneConfig, SceneGeometries};
-use sayo_pbr_rs::accel::bvh_node;
 use std::error::Error;
 use std::sync::Arc;
 use std::time::Instant;
-use sayo_pbr_rs::accel::bvh_node::BVHNode;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::with_env_or_str("info")
