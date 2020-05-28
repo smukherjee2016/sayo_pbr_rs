@@ -65,7 +65,8 @@ impl BVHNode {
         //warn!("Current list size: {}", size_current_hitable_list);
         match size_current_hitable_list {
             0 => {
-                panic!("Why is the hitable list zero!");
+                warn!("Encountered a 0-length list at depth {}", depth);
+                panic!("Why!");
             }
             1 => {
                 let only_node = geometries.remove(0);
@@ -75,7 +76,7 @@ impl BVHNode {
             2 => {
                 let left = geometries.remove(0);
                 let right = geometries.remove(0);
-                let aabb = surrounding_box(left.get_bounding_box(), right.get_bounding_box());
+                let aabb = surrounding_box(&left.get_bounding_box(), &right.get_bounding_box());
                 Arc::new(BVHNode::new(aabb, left, right))
             }
 
@@ -121,9 +122,9 @@ impl BVHNode {
                 };
 
                 //Parent box and its area will stay the same for all sorted axes
-                let mut parent_box = surrounding_box_primitives(geometries_sorted_x.clone());
-                let mut parent_box_area = parent_box.clone().area_aabb();
-                for counter in  0..(size_current_hitable_list) {
+                let parent_box = surrounding_box_primitives(geometries_sorted_x.clone());
+                let mut parent_box_area = parent_box.area_aabb();
+                for counter in  1..(size_current_hitable_list - 1) {
 
                     let (left, right) = geometries_sorted_x.split_at(counter);
                     let left_vec = left.to_owned();
@@ -141,7 +142,7 @@ impl BVHNode {
 
 
                 //Y Axis
-                for counter in  0..(size_current_hitable_list) {
+                for counter in  1..(size_current_hitable_list - 1) {
                     let (left, right) = geometries_sorted_y.split_at(counter);
                     let left_vec = left.to_owned();
                     let right_vec = right.to_owned();
@@ -156,7 +157,7 @@ impl BVHNode {
                 // warn!("Current list size4: {}", size_current_hitable_list);
                 //Z Axis
                 parent_box_area = surrounding_box_primitives(geometries_sorted_z.clone()).area_aabb();
-                for counter in  0..(size_current_hitable_list) {
+                for counter in  1..(size_current_hitable_list - 1) {
                     let (left, right) = geometries_sorted_z.split_at(counter);
                     let left_vec = left.to_owned();
                     let right_vec = right.to_owned();
@@ -170,8 +171,8 @@ impl BVHNode {
 
                 //warn!("Current list size5: {:?}", min_split_candidate);
 
-                let mut min_left_tree : Vec<Arc<dyn Boundable>> =vec![];
-                let mut min_right_tree : Vec<Arc<dyn Boundable>> = vec![];
+                let min_left_tree : Vec<Arc<dyn Boundable>>;
+                let min_right_tree : Vec<Arc<dyn Boundable>>;
 
                 //After these, min_split_candidate will have minimum value split
                 match min_split_candidate.min_split_axis {
@@ -192,13 +193,14 @@ impl BVHNode {
                     }
                 }
 
-                warn!("Splitting SAH at depth: {} sizes, left: {}, right: {}", depth, min_left_tree.len(), min_right_tree.len());
+                //warn!("Splitting SAH at depth: {} sizes, left: {}, right: {}", depth, min_left_tree.len(), min_right_tree.len());
                 // Split the list of hitables along this SAH split and call construct_bvh with the two subsets of objects
                 let left_tree = BVHNode::construct_bvh(min_left_tree, depth+1);
                 let right_tree = BVHNode::construct_bvh(min_right_tree, depth + 1);
+                let aabb_curent_box = surrounding_box(&left_tree.get_bounding_box(), &right_tree.get_bounding_box());
 
                 Arc::new(BVHNode {
-                    aabb: parent_box,
+                    aabb: aabb_curent_box,
                     left_child: left_tree,
                     right_child: right_tree,
                 })
@@ -237,12 +239,14 @@ impl BVHNode {
                 let split_middle_right_list = split_middle_right.to_vec();
 
                 //warn!("Splitting midway at depth: {} sizes, left: {}, right: {}", depth, split_middle_left_list.len(), split_middle_right_list.len());
-                let parent_box = surrounding_box_primitives(geometries);
+                // let parent_box = surrounding_box_primitives(geometries);
                 let split_middle_left_tree = BVHNode::construct_bvh(split_middle_left_list, depth+1);
                 let split_middle_right_tree = BVHNode::construct_bvh(split_middle_right_list, depth+1);
 
+                let aabb_current_box = surrounding_box(&split_middle_left_tree.get_bounding_box(), &split_middle_right_tree.get_bounding_box());
+
                 Arc::new(BVHNode {
-                    aabb: parent_box,
+                    aabb: aabb_current_box,
                     left_child: split_middle_left_tree,
                     right_child: split_middle_right_tree,
                 })
@@ -267,7 +271,7 @@ impl Hitable for BVHNode {
             .check_intersection_and_return_closest_hit(ray.clone());
         match intersection_info_option {
             None => None,
-            Some(intersection_info) => {
+            Some(_) => {
                 let hit_left_subtree = self
                     .left_child
                     .check_intersection_and_return_closest_hit(ray.clone());

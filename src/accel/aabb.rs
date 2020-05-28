@@ -3,11 +3,21 @@ use crate::geometry::Hitable;
 use std::sync::Arc;
 
 //Rectangular AABB, defined by two points of its diagonal
-#[derive(Default, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub struct AxisAlignedBoundingBox {
     pub min: Point3,
     pub max: Point3,
 }
+
+impl Default for AxisAlignedBoundingBox {
+    fn default() -> Self {
+        AxisAlignedBoundingBox {
+            min: Point3::from(fp::MAX),
+            max: Point3::from(fp::MIN),
+        }
+    }
+}
+
 
 impl AxisAlignedBoundingBox {
     pub fn new_aabb(_min: Point3, _max: Point3) -> AxisAlignedBoundingBox {
@@ -72,8 +82,8 @@ impl Boundable for AxisAlignedBoundingBox {
 
 // Return surrounding box of two AABB's
 pub fn surrounding_box(
-    a: AxisAlignedBoundingBox,
-    b: AxisAlignedBoundingBox,
+    a: &AxisAlignedBoundingBox,
+    b: &AxisAlignedBoundingBox,
 ) -> AxisAlignedBoundingBox {
     let small: Vector3 = Vector3::new(
         fp::min(a.min.x, b.min.x),
@@ -96,10 +106,10 @@ pub fn surrounding_box(
 pub fn surrounding_box_primitives(
     primitives_vector: Vec<Arc<dyn Boundable>>,
 ) -> AxisAlignedBoundingBox {
-    let mut ret_aabb = AxisAlignedBoundingBox::default();
+    let mut ret_aabb = primitives_vector.get(0).unwrap().get_bounding_box();
     for primitive in &primitives_vector {
         let bounding_box_primitive: AxisAlignedBoundingBox = primitive.get_bounding_box();
-        ret_aabb = surrounding_box(bounding_box_primitive, ret_aabb);
+        ret_aabb = surrounding_box(&bounding_box_primitive, &ret_aabb);
     }
     ret_aabb
 }

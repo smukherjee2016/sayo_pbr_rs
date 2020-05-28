@@ -18,7 +18,6 @@ use crate::camera::Camera;
 use crate::common::*;
 use crate::film::Film;
 use crate::geometry::triangle::{Triangle, TriangleMesh};
-use crate::geometry::Hitable;
 use crate::integrators::baseintegrator::Integrators;
 use std::sync::Arc;
 use toml::Value;

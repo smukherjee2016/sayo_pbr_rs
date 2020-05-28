@@ -108,7 +108,7 @@ impl Integrator for BaseIntegrator {
         drop(s);
         #[allow(clippy::never_loop)]
         while window.is_open() && !window.is_key_down(Key::Escape) {
-            let r2 = r.clone();
+            let r2 = r;
             thread::sleep(time::Duration::from_millis(16));
             for finished_tile in r2 {
                 let tile = finished_tile.clone();
