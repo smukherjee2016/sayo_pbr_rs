@@ -59,62 +59,62 @@ impl Hitable for AxisAlignedBoundingBox {
         t_min: fp,
         t_max: fp,
     ) -> Option<IntersectionInfo> {
-        let mut t_min = t_min;
-        let mut t_max = t_max;
-        for a in 0..3 {
-            //let inv_d : fp = 1.0 / ray.d[a];
-            let mut t_0: fp = (self.min[a] - ray.o[a]) * ray.inv_dir[a];
-            let mut t_1: fp = (self.max[a] - ray.o[a]) * ray.inv_dir[a];
-            if ray.inv_dir[a] < 0.0 {
-                swap(&mut t_0, &mut t_1);
-            }
-
-            t_min = if t_0 > t_min { t_0 } else { t_min };
-            t_max = if t_1 < t_max { t_1 } else { t_max };
-            if t_max < t_min {
-                return None;
-            }
-        }
-        let intersection_info = IntersectionInfo {
-            t_intersection: 0.0,
-            point_of_intersection: Point3::from(0.0),
-            normal: Vec3::from(0.0),
-            is_aabb: true,
-        };
-        Some(intersection_info)
-    }
-    // fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
-    //     //https://tavianator.com/fast-branchless-raybounding-box-intersections-part-2-nans/
-    //     //TODO Unrolled the whole loop since indexing not supported yet for Vector3. Will this lead to issues?
-    //     let mut t1: fp = (self.min.x - ray.o.x) * ray.inv_dir.x;
-    //     let mut t2: fp = (self.max.x - ray.o.x) * ray.inv_dir.x;
+    //     let mut t_min = t_min;
+    //     let mut t_max = t_max;
+    //     for a in 0..3 {
+    //         //let inv_d : fp = 1.0 / ray.d[a];
+    //         let mut t_0: fp = (self.min[a] - ray.o[a]) * ray.inv_dir[a];
+    //         let mut t_1: fp = (self.max[a] - ray.o[a]) * ray.inv_dir[a];
+    //         if ray.inv_dir[a] < 0.0 {
+    //             swap(&mut t_0, &mut t_1);
+    //         }
     //
-    //     let mut tmin: fp = fp::min(t1, t2);
-    //     let mut tmax: fp = fp::max(t1, t2);
-    //
-    //     t1 = (self.min.y - ray.o.y) * ray.inv_dir.y;
-    //     t2 = (self.max.y - ray.o.y) * ray.inv_dir.y;
-    //
-    //     tmin = fp::max(tmin, fp::min(fp::min(t1, t2), tmax));
-    //     tmax = fp::min(tmax, fp::max(fp::max(t1, t2), tmin));
-    //
-    //     t1 = (self.min.z - ray.o.z) * ray.inv_dir.z;
-    //     t2 = (self.max.z - ray.o.z) * ray.inv_dir.z;
-    //
-    //     tmin = fp::max(tmin, fp::min(fp::min(t1, t2), tmax));
-    //     tmax = fp::min(tmax, fp::max(fp::max(t1, t2), tmin));
-    //
-    //     if tmax >= fp::max(tmin, 0.0) {
-    //         let intersection_info = IntersectionInfo {
-    //             t_intersection: 0.0,
-    //             point_of_intersection: Point3::from(0.0),
-    //             normal: Vec3::from(0.0),
-    //             is_aabb: true,
-    //         };
-    //         return Some(intersection_info);
+    //         t_min = if t_0 > t_min { t_0 } else { t_min };
+    //         t_max = if t_1 < t_max { t_1 } else { t_max };
+    //         if t_max < t_min {
+    //             return None;
+    //         }
     //     }
-    //     None
+    //     let intersection_info = IntersectionInfo {
+    //         t_intersection: 0.0,
+    //         point_of_intersection: Point3::from(0.0),
+    //         normal: Vec3::from(0.0),
+    //         is_aabb: true,
+    //     };
+    //     Some(intersection_info)
     // }
+    // fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
+    //  //https://tavianator.com/fast-branchless-raybounding-box-intersections-part-2-nans/
+        let mut t_1: fp = (self.min[0] - ray.o[0]) * ray.inv_dir[0];
+        let mut t_2: fp = (self.max[0] - ray.o[0]) * ray.inv_dir[0];
+
+        let mut t_min = fp::min(t_1, t_2);
+        let mut t_max = fp::max(t_1, t_2);
+
+        for i in 1..3 {
+            t_1 = (self.min[i] - ray.o[i]) * ray.inv_dir[i];
+            t_2 = (self.max[i] - ray.o[i]) * ray.inv_dir[i];
+
+            //NaN handling version
+            t_min = fp::max(t_min, fp::min(fp::min(t_1, t_2), t_max));
+            t_max = fp::min(t_max, fp::max(fp::max(t_1, t_2), t_min));
+
+            //Non-NAN handling version
+            //t_min = fp::max(t_min, fp::min(t_1, t_2));
+            //t_max = fp::min(t_max, fp::max(t_1, t_2));
+        }
+        if t_max > fp::max(t_min, 0.0) {
+                let intersection_info = IntersectionInfo {
+                    t_intersection: 0.0,
+                    point_of_intersection: Point3::from(0.0),
+                    normal: Vec3::from(0.0),
+                    is_aabb: true,
+                };
+                return Some(intersection_info);
+        }
+        return None;
+    }
+
 }
 
 //Objects that can show an axis-aligned bounding box around themselves
