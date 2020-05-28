@@ -36,9 +36,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let scene_camera = SceneCamera::construct_camera(parsed_scene_config.clone());
     let scene_geometries =
         SceneGeometries::construct_geometries(scene_filename, parsed_scene_config.clone());
-    let root_bvh = BVHNode::construct_bvh(scene_geometries.geometries.clone());
-
     let film = SceneConfig::construct_film(parsed_scene_config);
+    let duration_init = start.elapsed();
+    warn!("Time to init scene: {:?}", duration_init);
+    let root_bvh = BVHNode::construct_bvh(scene_geometries.geometries.clone(), 0);
+    let duration_bvh = start.elapsed();
+    warn!("Time to create BVH: {:?}", duration_bvh);
     let tiles = BaseIntegrator::render(
         Arc::new(scene_config),
         1,
