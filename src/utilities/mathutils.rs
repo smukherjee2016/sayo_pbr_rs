@@ -1,5 +1,6 @@
 use core::ops;
 pub use f64 as fp;
+use std::ops::Index;
 
 pub type Spectrum = Vector3;
 pub type Point3 = Vector3;
@@ -17,6 +18,31 @@ pub struct Vector3 {
 pub struct Vector2 {
     pub x: fp,
     pub y: fp,
+}
+
+impl Index<i32> for Vector3 {
+    type Output = fp;
+
+    fn index(&self, index: i32) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => {panic!("Invalid index {} to Vector3!", index);}
+        }
+    }
+}
+
+impl Index<i32> for Vector2 {
+    type Output = fp;
+
+    fn index(&self, index: i32) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            _ => {panic!("Invalid index {} to Vector3!", index);}
+        }
+    }
 }
 
 impl ops::Sub for Vector3 {
@@ -185,13 +211,18 @@ impl Vector3 {
         max_dim
     }
 
-    pub fn permute(&self, x: i32, y: i32, z: i32) -> Vector3 {
-        let original_vector_elements: Vec<fp> = vec![self.x, self.y, self.z];
-
+    pub fn permute(&self, new_x: i32, new_y: i32, new_z: i32) -> Vector3 {
+        // let original_vector_elements: Vec<fp> = vec![self.x, self.y, self.z];
+        //
+        // Vector3 {
+        //     x: *original_vector_elements.get(x as usize).unwrap(),
+        //     y: *original_vector_elements.get(y as usize).unwrap(),
+        //     z: *original_vector_elements.get(z as usize).unwrap(),
+        // }
         Vector3 {
-            x: *original_vector_elements.get(x as usize).unwrap(),
-            y: *original_vector_elements.get(y as usize).unwrap(),
-            z: *original_vector_elements.get(z as usize).unwrap(),
+            x : self[new_x],
+            y: self[new_y],
+            z: self[new_z],
         }
     }
 
