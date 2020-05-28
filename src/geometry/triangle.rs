@@ -1,8 +1,8 @@
 use crate::accel::aabb::{AxisAlignedBoundingBox, Boundable};
 use crate::common::*;
 use crate::geometry::Hitable;
-use std::path::PathBuf;
 use std::cmp::min;
+use std::path::PathBuf;
 
 pub struct TriangleMesh {
     //Same as tobj::Mesh

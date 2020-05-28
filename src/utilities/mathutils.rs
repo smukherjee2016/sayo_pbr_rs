@@ -28,7 +28,9 @@ impl Index<i32> for Vector3 {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
-            _ => {panic!("Invalid index {} to Vector3!", index);}
+            _ => {
+                panic!("Invalid index {} to Vector3!", index);
+            }
         }
     }
 }
@@ -40,7 +42,9 @@ impl Index<i32> for Vector2 {
         match index {
             0 => &self.x,
             1 => &self.y,
-            _ => {panic!("Invalid index {} to Vector3!", index);}
+            _ => {
+                panic!("Invalid index {} to Vector3!", index);
+            }
         }
     }
 }
@@ -220,7 +224,7 @@ impl Vector3 {
         //     z: *original_vector_elements.get(z as usize).unwrap(),
         // }
         Vector3 {
-            x : self[new_x],
+            x: self[new_x],
             y: self[new_y],
             z: self[new_z],
         }
