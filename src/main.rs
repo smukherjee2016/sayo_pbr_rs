@@ -22,12 +22,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     //current_dir() is the root directory of the project, setting relative paths
     //If no arguments specified, try to use a default scene
     if args.len() == 1 {
+        //let scene_file_path = "scenes/dragon/dragon_scene.toml".to_string();
         let scene_file_path = "scenes/teapot/teapot_test_scene.toml".to_string();
+        //let scene_file_path = "scenes/simple_cube/simple_cube_scene.toml".to_string();
         args.push(scene_file_path);
     }
     info!("{:?}", &args);
 
-    let start = Instant::now();
+    let mut start = Instant::now();
     let scene_config_tuple = SceneConfig::parse_args(&args);
     let scene_filename = scene_config_tuple.0;
     let parsed_scene_config = scene_config_tuple.1;
@@ -42,6 +44,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let root_bvh = BVHNode::construct_bvh(scene_geometries.geometries.clone(), 0);
     let duration_bvh = start.elapsed();
     warn!("Time to create BVH: {:?}", duration_bvh);
+    start = Instant::now();
     let tiles = BaseIntegrator::render(
         Arc::new(scene_config),
         1,
