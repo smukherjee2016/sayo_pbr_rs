@@ -49,9 +49,9 @@ impl BVHNode {
         // C_b = 1, C_o = 1 for now
         // C_b = Cost of ray-BB intersection
         // C_o = Cost of a ray-geometry intersection
-        // Ray-AABB intersection, 8c16t: 200ns max
-        // Ray-triangle intersection, 8c16t: 400-500ns max
-        // So setting C_o to be 2x C_b
+        // Ray-AABB intersection, 8c16t: 0-200ns max
+        // Ray-triangle intersection, 8c16t: 100-500ns max
+        // So setting C_o to be 2x C_b preliminarily. Need to do more testing though.
         let left_aabb_area = surrounding_box_primitives(left_vec.clone()).area_aabb();
         let right_aabb_area = surrounding_box_primitives(right_vec.clone()).area_aabb();
         let left_vec_size = left_vec.len() as f64;
