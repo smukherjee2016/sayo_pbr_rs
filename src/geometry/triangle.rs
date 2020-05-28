@@ -141,6 +141,7 @@ impl Hitable for Triangle {
         3-step transformation to transform the triangle and the ray to ray-triangle intersection coordinate system s.t. ray's origin is at (0,0,0):
         a translation, a permutation and a shear.
         */
+        // Ray-triangle intersection max 400-500ns on success
         //1. Translate triangle
         let mut p0t: Point3 = self.positions[0] - ray.o;
         let mut p1t: Point3 = self.positions[1] - ray.o;
@@ -258,7 +259,6 @@ impl Hitable for Triangle {
             normal: geometric_normal,
             is_aabb: false,
         };
-
         Some(intersection_info)
     }
 }

@@ -47,13 +47,18 @@ impl BVHNode {
         // SAH given by:
         // 2C_b + (Area(left)/Area(parent))(C_o * len(left)) + (Area(right)/Area(parent))(C_o * len(right))
         // C_b = 1, C_o = 1 for now
+        // C_b = Cost of ray-BB intersection
+        // C_o = Cost of a ray-geometry intersection
+        // Ray-AABB intersection, 8c16t: 200ns max
+        // Ray-triangle intersection, 8c16t: 400-500ns max
+        // So setting C_o to be 2x C_b
         let left_aabb_area = surrounding_box_primitives(left_vec.clone()).area_aabb();
         let right_aabb_area = surrounding_box_primitives(right_vec.clone()).area_aabb();
         let left_vec_size = left_vec.len() as f64;
         let right_vec_size = right_vec.len() as f64;
         //warn!("left: {}  right: {}  parent: {}", left_aabb_area, right_aabb_area, parent_box_area);
         let c_b: f64 = 1.0;
-        let c_o: f64 = 1.0;
+        let c_o: f64 = 2.0;
 
         2.0 * c_b
             + (left_aabb_area / parent_box_area) * c_o * left_vec_size

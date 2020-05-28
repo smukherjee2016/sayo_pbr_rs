@@ -85,6 +85,8 @@ impl Hitable for AxisAlignedBoundingBox {
         // }
         // fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
         //  //https://tavianator.com/fast-branchless-raybounding-box-intersections-part-2-nans/
+        // Ray-AABB intersection, 8c16t: 200ns max
+        // let start = Instant::now();
         let mut t_1: fp = (self.min[0] - ray.o[0]) * ray.inv_dir[0];
         let mut t_2: fp = (self.max[0] - ray.o[0]) * ray.inv_dir[0];
 
@@ -103,6 +105,7 @@ impl Hitable for AxisAlignedBoundingBox {
             //t_min = fp::max(t_min, fp::min(t_1, t_2));
             //t_max = fp::min(t_max, fp::max(t_1, t_2));
         }
+        //warn!("Time elapsed for AABB intersection: {:?}", start.elapsed());
         if t_max > fp::max(t_min, 0.0) {
             let intersection_info = IntersectionInfo {
                 t_intersection: 0.0,
