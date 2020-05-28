@@ -87,34 +87,169 @@ impl BVHNode {
                 Arc::new(BVHNode::new(aabb, left, right))
             }
 
-            3...128 => {
-                // Sort list_of_hitables according to X, Y, Z  axes and put in three different Vectors
-                let mut geometries_sorted_x = geometries.to_vec();
-                let mut geometries_sorted_y = geometries.to_vec();
-                let mut geometries_sorted_z = geometries.to_vec();
+            // 3...32 => {
+            //     // Sort list_of_hitables according to X, Y, Z  axes and put in three different Vectors
+            //     let mut geometries_sorted_x = geometries.to_vec();
+            //     let mut geometries_sorted_y = geometries.to_vec();
+            //     let mut geometries_sorted_z = geometries.to_vec();
+            //
+            //     geometries_sorted_x.sort_by(|a, b| {
+            //         let left_min = a.get_bounding_box().min;
+            //         let right_min = b.get_bounding_box().min;
+            //         left_min.x.partial_cmp(&right_min.x).unwrap()
+            //     });
+            //
+            //     geometries_sorted_y.sort_by(|a, b| {
+            //         let left_min = a.get_bounding_box().min;
+            //         let right_min = b.get_bounding_box().min;
+            //         left_min.y.partial_cmp(&right_min.y).unwrap()
+            //     });
+            //     geometries_sorted_z.sort_by(|a, b| {
+            //         let left_min = a.get_bounding_box().min;
+            //         let right_min = b.get_bounding_box().min;
+            //         left_min.z.partial_cmp(&right_min.z).unwrap()
+            //     });
+            //
+            //     // warn!("Current list size 2: {}", size_current_hitable_list);
+            //
+            //     // Generate all bounding boxes along X, Y, Z axes using sweeping AABB
+            //     // Generate all possible splits from these all possible bounding boxes
+            //     // Calculate SAH of all possible splits and find the minimum SAH split
+            //     let mut min_split_candidate: SplitCandidate = SplitCandidate {
+            //         min_split_axis: SplitAxis::XAxis,
+            //         min_split_index: 0,
+            //         min_split_sah: f64::MAX,
+            //     };
+            //
+            //     //Parent box and its area will stay the same for all sorted axes.
+            //     let parent_box = surrounding_box_primitives(geometries_sorted_x.clone());
+            //     let mut parent_box_area = parent_box.area_aabb();
+            //
+            //     //Do X Axis
+            //     for counter in 1..(size_current_hitable_list - 1) {
+            //         let (left, right) = geometries_sorted_x.split_at(counter);
+            //         let left_vec = left.to_owned();
+            //         let right_vec = right.to_owned();
+            //         let current_sah: f64 = BVHNode::calculate_sah(
+            //             left_vec.clone(),
+            //             right_vec.clone(),
+            //             parent_box_area,
+            //         );
+            //
+            //         if current_sah < min_split_candidate.min_split_sah {
+            //             min_split_candidate.min_split_axis = SplitAxis::XAxis;
+            //             min_split_candidate.min_split_sah = current_sah;
+            //             min_split_candidate.min_split_index = counter;
+            //         }
+            //     }
+            //
+            //     //Y Axis
+            //     for counter in 1..(size_current_hitable_list - 1) {
+            //         let (left, right) = geometries_sorted_y.split_at(counter);
+            //         let left_vec = left.to_owned();
+            //         let right_vec = right.to_owned();
+            //         let current_sah: f64 = BVHNode::calculate_sah(
+            //             left_vec.clone(),
+            //             right_vec.clone(),
+            //             parent_box_area,
+            //         );
+            //         if current_sah < min_split_candidate.min_split_sah {
+            //             min_split_candidate.min_split_axis = SplitAxis::YAxis;
+            //             min_split_candidate.min_split_sah = current_sah;
+            //             min_split_candidate.min_split_index = counter;
+            //         }
+            //     }
+            //
+            //     // warn!("Current list size4: {}", size_current_hitable_list);
+            //     //Z Axis
+            //     parent_box_area =
+            //         surrounding_box_primitives(geometries_sorted_z.clone()).area_aabb();
+            //     for counter in 1..(size_current_hitable_list - 1) {
+            //         let (left, right) = geometries_sorted_z.split_at(counter);
+            //         let left_vec = left.to_owned();
+            //         let right_vec = right.to_owned();
+            //         let current_sah: f64 = BVHNode::calculate_sah(
+            //             left_vec.clone(),
+            //             right_vec.clone(),
+            //             parent_box_area,
+            //         );
+            //         if current_sah < min_split_candidate.min_split_sah {
+            //             min_split_candidate.min_split_axis = SplitAxis::ZAxis;
+            //             min_split_candidate.min_split_sah = current_sah;
+            //             min_split_candidate.min_split_index = counter;
+            //         }
+            //     }
+            //
+            //     //warn!("Current list size5: {:?}", min_split_candidate);
+            //
+            //     let min_left_tree: Vec<Arc<dyn Boundable>>;
+            //     let min_right_tree: Vec<Arc<dyn Boundable>>;
+            //
+            //     //After these, min_split_candidate will have minimum value split
+            //     match min_split_candidate.min_split_axis {
+            //         SplitAxis::XAxis => {
+            //             let (min_left, min_right) =
+            //                 geometries_sorted_x.split_at(min_split_candidate.min_split_index);
+            //             min_left_tree = min_left.to_vec();
+            //             min_right_tree = min_right.to_vec();
+            //         }
+            //         SplitAxis::YAxis => {
+            //             let (min_left, min_right) =
+            //                 geometries_sorted_y.split_at(min_split_candidate.min_split_index);
+            //             min_left_tree = min_left.to_vec();
+            //             min_right_tree = min_right.to_vec();
+            //         }
+            //         SplitAxis::ZAxis => {
+            //             let (min_left, min_right) =
+            //                 geometries_sorted_z.split_at(min_split_candidate.min_split_index);
+            //             min_left_tree = min_left.to_vec();
+            //             min_right_tree = min_right.to_vec();
+            //         }
+            //     }
+            //
+            //     //warn!("Splitting SAH at depth: {} sizes, left: {}, right: {}", depth, min_left_tree.len(), min_right_tree.len());
+            //     // Split the list of hitables along this SAH split and call construct_bvh with the two subsets of objects
+            //     let left_tree = BVHNode::construct_bvh(min_left_tree, depth + 1);
+            //     let right_tree = BVHNode::construct_bvh(min_right_tree, depth + 1);
+            //     let aabb_curent_box = surrounding_box(
+            //         &left_tree.get_bounding_box(),
+            //         &right_tree.get_bounding_box(),
+            //     );
+            //
+            //     Arc::new(BVHNode {
+            //         aabb: aabb_curent_box,
+            //         left_child: left_tree,
+            //         right_child: right_tree,
+            //     })
+            // }
+            3...32 => {
+                let parent_box = surrounding_box_primitives(geometries.clone());
+                let longest_axis = parent_box.longest_axis();
+                match longest_axis {
+                    0 => {
+                        geometries.sort_by(|a, b| {
+                            let left_min = a.get_bounding_box().min;
+                            let right_min = b.get_bounding_box().min;
+                            left_min.x.partial_cmp(&right_min.x).unwrap()
+                        });
+                    }
+                    1 => {
+                        geometries.sort_by(|a, b| {
+                            let left_min = a.get_bounding_box().min;
+                            let right_min = b.get_bounding_box().min;
+                            left_min.y.partial_cmp(&right_min.y).unwrap()
+                        });
+                    }
+                    2 => {
+                        geometries.sort_by(|a, b| {
+                            let left_min = a.get_bounding_box().min;
+                            let right_min = b.get_bounding_box().min;
+                            left_min.z.partial_cmp(&right_min.z).unwrap()
+                        });
+                    }
+                    _ => {}
+                }
 
-                geometries_sorted_x.sort_by(|a, b| {
-                    let left_min = a.get_bounding_box().min;
-                    let right_min = b.get_bounding_box().min;
-                    left_min.x.partial_cmp(&right_min.x).unwrap()
-                });
-
-                geometries_sorted_y.sort_by(|a, b| {
-                    let left_min = a.get_bounding_box().min;
-                    let right_min = b.get_bounding_box().min;
-                    left_min.y.partial_cmp(&right_min.y).unwrap()
-                });
-                geometries_sorted_z.sort_by(|a, b| {
-                    let left_min = a.get_bounding_box().min;
-                    let right_min = b.get_bounding_box().min;
-                    left_min.z.partial_cmp(&right_min.z).unwrap()
-                });
-
-                // warn!("Current list size 2: {}", size_current_hitable_list);
-
-                // Generate all bounding boxes along X, Y, Z axes using sweeping AABB
-                // Generate all possible splits from these all possible bounding boxes
-                // Calculate SAH of all possible splits and find the minimum SAH split
                 let mut min_split_candidate: SplitCandidate = SplitCandidate {
                     min_split_axis: SplitAxis::XAxis,
                     min_split_index: 0,
@@ -122,12 +257,12 @@ impl BVHNode {
                 };
 
                 //Parent box and its area will stay the same for all sorted axes.
-                let parent_box = surrounding_box_primitives(geometries_sorted_x.clone());
+                let parent_box = surrounding_box_primitives(geometries.clone());
                 let mut parent_box_area = parent_box.area_aabb();
 
                 //Do X Axis
                 for counter in 1..(size_current_hitable_list - 1) {
-                    let (left, right) = geometries_sorted_x.split_at(counter);
+                    let (left, right) = geometries.split_at(counter);
                     let left_vec = left.to_owned();
                     let right_vec = right.to_owned();
                     let current_sah: f64 = BVHNode::calculate_sah(
@@ -143,69 +278,12 @@ impl BVHNode {
                     }
                 }
 
-                //Y Axis
-                for counter in 1..(size_current_hitable_list - 1) {
-                    let (left, right) = geometries_sorted_y.split_at(counter);
-                    let left_vec = left.to_owned();
-                    let right_vec = right.to_owned();
-                    let current_sah: f64 = BVHNode::calculate_sah(
-                        left_vec.clone(),
-                        right_vec.clone(),
-                        parent_box_area,
-                    );
-                    if current_sah < min_split_candidate.min_split_sah {
-                        min_split_candidate.min_split_axis = SplitAxis::YAxis;
-                        min_split_candidate.min_split_sah = current_sah;
-                        min_split_candidate.min_split_index = counter;
-                    }
-                }
-
-                // warn!("Current list size4: {}", size_current_hitable_list);
-                //Z Axis
-                parent_box_area =
-                    surrounding_box_primitives(geometries_sorted_z.clone()).area_aabb();
-                for counter in 1..(size_current_hitable_list - 1) {
-                    let (left, right) = geometries_sorted_z.split_at(counter);
-                    let left_vec = left.to_owned();
-                    let right_vec = right.to_owned();
-                    let current_sah: f64 = BVHNode::calculate_sah(
-                        left_vec.clone(),
-                        right_vec.clone(),
-                        parent_box_area,
-                    );
-                    if current_sah < min_split_candidate.min_split_sah {
-                        min_split_candidate.min_split_axis = SplitAxis::ZAxis;
-                        min_split_candidate.min_split_sah = current_sah;
-                        min_split_candidate.min_split_index = counter;
-                    }
-                }
-
-                //warn!("Current list size5: {:?}", min_split_candidate);
-
                 let min_left_tree: Vec<Arc<dyn Boundable>>;
                 let min_right_tree: Vec<Arc<dyn Boundable>>;
-
-                //After these, min_split_candidate will have minimum value split
-                match min_split_candidate.min_split_axis {
-                    SplitAxis::XAxis => {
-                        let (min_left, min_right) =
-                            geometries_sorted_x.split_at(min_split_candidate.min_split_index);
-                        min_left_tree = min_left.to_vec();
-                        min_right_tree = min_right.to_vec();
-                    }
-                    SplitAxis::YAxis => {
-                        let (min_left, min_right) =
-                            geometries_sorted_y.split_at(min_split_candidate.min_split_index);
-                        min_left_tree = min_left.to_vec();
-                        min_right_tree = min_right.to_vec();
-                    }
-                    SplitAxis::ZAxis => {
-                        let (min_left, min_right) =
-                            geometries_sorted_z.split_at(min_split_candidate.min_split_index);
-                        min_left_tree = min_left.to_vec();
-                        min_right_tree = min_right.to_vec();
-                    }
-                }
+                let (min_left, min_right) =
+                    geometries.split_at(min_split_candidate.min_split_index);
+                min_left_tree = min_left.to_vec();
+                min_right_tree = min_right.to_vec();
 
                 //warn!("Splitting SAH at depth: {} sizes, left: {}, right: {}", depth, min_left_tree.len(), min_right_tree.len());
                 // Split the list of hitables along this SAH split and call construct_bvh with the two subsets of objects
