@@ -2,6 +2,7 @@ use crate::accel::aabb::{AxisAlignedBoundingBox, Boundable};
 use crate::common::*;
 use crate::geometry::Hitable;
 use std::path::PathBuf;
+use std::cmp::min;
 
 pub struct TriangleMesh {
     //Same as tobj::Mesh
@@ -109,7 +110,7 @@ impl TriangleMesh {
 
                 bounding_box: AxisAlignedBoundingBox::default(),
             };
-            triangle.bounding_box = Triangle::get_bounding_box(&triangle);
+            triangle.bounding_box = Triangle::set_bounding_box(&triangle);
             // info!("AABB of triangle: {:?}", triangle.bounding_box);
             /*
             warn!(" Positions of triangle {} : {} {} {}", v, index_0_of_triangle,
@@ -254,10 +255,11 @@ impl Hitable for Triangle {
     }
 }
 
-impl Boundable for Triangle {
-    fn get_bounding_box(&self) -> AxisAlignedBoundingBox {
+impl Triangle {
+    fn set_bounding_box(&self) -> AxisAlignedBoundingBox {
         // Bounding box for triangle = a box with minimum of all coordinates as one corner
         // and maximum of all coordinates as another corner
+        //!("Calculating BB for Triangle with positions {:?} {:?} {:?}", self.positions[0], self.positions[1], self.positions[2]);
         let x_min: fp = fp::min(
             fp::min(self.positions[0].x, self.positions[1].x),
             self.positions[2].x,
@@ -285,6 +287,12 @@ impl Boundable for Triangle {
             self.positions[2].z,
         );
         let max_point: Point3 = Point3::new(x_max, y_max, z_max);
+        //warn!("BB limits of triangle : {:?} {:?}", min_point, max_point);
         AxisAlignedBoundingBox::new_aabb(min_point, max_point)
+    }
+}
+impl Boundable for Triangle {
+    fn get_bounding_box(&self) -> AxisAlignedBoundingBox {
+        self.bounding_box.clone()
     }
 }
