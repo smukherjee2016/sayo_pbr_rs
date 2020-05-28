@@ -44,7 +44,7 @@ impl AxisAlignedBoundingBox {
                 1
             }
         } else if max_z > max_x {
-            1
+            2
         } else {
             0
         }
