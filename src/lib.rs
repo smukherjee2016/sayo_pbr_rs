@@ -251,7 +251,7 @@ impl SceneGeometries {
     ) -> SceneGeometries {
         //Geometry
         let mut geometries: Vec<Arc<dyn Boundable>> = vec![];
-
+        let mut num_triangles: usize = 0;
         for i in &parsed_scene_toml["primitives"].as_array() {
             for j in *i {
                 let type_of_geometry = j["type"].as_str().unwrap();
@@ -271,6 +271,7 @@ impl SceneGeometries {
                                 geometries.push(Arc::new(triangle));
                             }
                         }
+                        num_triangles += geometries.len()
                     }
                     _ => {
                         warn!(
@@ -281,6 +282,7 @@ impl SceneGeometries {
                 }
             }
         }
+        warn!("Total no. of triangles: {}", num_triangles);
         SceneGeometries { geometries }
     }
 }
