@@ -56,6 +56,8 @@ impl Integrator for BaseIntegrator {
         geometries: Arc<dyn Boundable>,
         //geometries: Arc<SceneGeometries>,
         film: Arc<Film>,
+        t_min: fp,
+        t_max: fp,
     ) -> Vec<Tile> {
         let mut tiles: Vec<Tile> = vec![];
         let cpus = num_cpus::get();
@@ -97,6 +99,8 @@ impl Integrator for BaseIntegrator {
                         camera,
                         geometries,
                         film,
+                        t_min,
+                        t_max,
                     );
                     sender.send(tile).unwrap();
                 }

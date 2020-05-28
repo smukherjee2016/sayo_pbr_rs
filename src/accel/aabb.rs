@@ -40,23 +40,27 @@ impl AxisAlignedBoundingBox {
         let max_z: fp = self.max.z - self.min.z;
         if max_y > max_x {
             if max_z > max_y {
-                return 2;
+                2
             } else {
-                return 1;
+                1
             }
         } else if max_z > max_x {
-            return 1;
+            1
         } else {
-            return 0;
+            0
         }
     }
 }
 
 impl Hitable for AxisAlignedBoundingBox {
-    fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
-        let mut t_min = 0.0;
-        let mut t_max = fp::MAX;
-
+    fn check_intersection_and_return_closest_hit(
+        &self,
+        ray: Ray,
+        t_min: fp,
+        t_max: fp,
+    ) -> Option<IntersectionInfo> {
+        let mut t_min = t_min;
+        let mut t_max = t_max;
         for a in 0..3 {
             //let inv_d : fp = 1.0 / ray.d[a];
             let mut t_0: fp = (self.min[a] - ray.o[a]) * ray.inv_dir[a];

@@ -1,4 +1,5 @@
 use crate::accel::aabb::Boundable;
+use crate::common::*;
 use crate::film::Film;
 use crate::{SceneCamera, SceneConfig, SceneGeometries, Tile};
 use std::sync::Arc;
@@ -15,5 +16,7 @@ pub trait Integrator {
         geometries: Arc<dyn Boundable>,
         //geometries: Arc<SceneGeometries>,
         film: Arc<Film>,
+        t_min: fp,
+        t_max: fp,
     ) -> Vec<Tile>;
 }

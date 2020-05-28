@@ -16,6 +16,8 @@ impl DirectLightingIntegrator {
         geometries: Arc<dyn Boundable>,
         //geometries: Arc<SceneGeometries>,
         film: Arc<Film>,
+        t_min: fp,
+        t_max: fp,
     ) -> Tile {
         let mut tile: Tile = Tile {
             start_index: start_position_in_film,
@@ -34,8 +36,11 @@ impl DirectLightingIntegrator {
                     //Core Integrator code goes here
                     let ray = camera.generate_camera_ray(x, y, &film);
                     //info!("Ray info: {:?}", &ray);
-                    let intersection =
-                        geometries.check_intersection_and_return_closest_hit(ray.clone());
+                    let intersection = geometries.check_intersection_and_return_closest_hit(
+                        ray.clone(),
+                        t_min,
+                        t_max,
+                    );
                     match intersection {
                         Some(intersection_info) => {
                             pixel_value += intersection_info.normal;

@@ -273,19 +273,26 @@ impl Hitable for BVHNode {
     /*
     Check if ray hit left subtree or right subtree or both, and return the closest interseciton if any.
      */
-    fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
-        let intersection_info_option = self
-            .aabb
-            .check_intersection_and_return_closest_hit(ray.clone());
+    fn check_intersection_and_return_closest_hit(
+        &self,
+        ray: Ray,
+        t_min: fp,
+        t_max: fp,
+    ) -> Option<IntersectionInfo> {
+        let intersection_info_option =
+            self.aabb
+                .check_intersection_and_return_closest_hit(ray.clone(), t_min, t_max);
         match intersection_info_option {
             None => None,
             Some(_) => {
-                let hit_left_subtree = self
-                    .left_child
-                    .check_intersection_and_return_closest_hit(ray.clone());
+                let hit_left_subtree = self.left_child.check_intersection_and_return_closest_hit(
+                    ray.clone(),
+                    t_min,
+                    t_max,
+                );
                 let hit_right_subtree = self
                     .right_child
-                    .check_intersection_and_return_closest_hit(ray);
+                    .check_intersection_and_return_closest_hit(ray, t_min, t_max);
 
                 match (hit_left_subtree, hit_right_subtree) {
                     (None, None) => None,

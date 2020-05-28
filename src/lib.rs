@@ -6,7 +6,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 pub mod accel;
 mod camera;
-mod common;
+pub mod common;
 mod film;
 mod geometry;
 pub mod integrators;
@@ -217,14 +217,19 @@ impl SceneCamera {
 }
 
 impl SceneGeometries {
-    pub fn check_intersection_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
+    pub fn check_intersection_return_closest_hit(
+        &self,
+        ray: Ray,
+        t_min: fp,
+        t_max: fp,
+    ) -> Option<IntersectionInfo> {
         let mut closest_intersection_info: IntersectionInfo = Default::default();
         let mut t_max = std::f64::INFINITY;
         let mut hit_something: bool = false;
 
         for geometry in &self.geometries {
             if let Some(intersection_info) =
-                geometry.check_intersection_and_return_closest_hit(ray.clone())
+                geometry.check_intersection_and_return_closest_hit(ray.clone(), t_min, t_max)
             {
                 if intersection_info.t_intersection < t_max {
                     hit_something = true;

@@ -1,7 +1,6 @@
 use crate::accel::aabb::{AxisAlignedBoundingBox, Boundable};
 use crate::common::*;
 use crate::geometry::Hitable;
-use std::cmp::min;
 use std::path::PathBuf;
 
 pub struct TriangleMesh {
@@ -131,7 +130,12 @@ impl TriangleMesh {
 }
 
 impl Hitable for Triangle {
-    fn check_intersection_and_return_closest_hit(&self, ray: Ray) -> Option<IntersectionInfo> {
+    fn check_intersection_and_return_closest_hit(
+        &self,
+        ray: Ray,
+        t_min: fp,
+        t_max: fp,
+    ) -> Option<IntersectionInfo> {
         //Follow pbrt's watertight ray-triangle intersection
         /*
         3-step transformation to transform the triangle and the ray to ray-triangle intersection coordinate system s.t. ray's origin is at (0,0,0):
@@ -209,6 +213,10 @@ impl Hitable for Triangle {
         let b1: fp = e1 * inv_det;
         let b2: fp = e2 * inv_det;
         let t: fp = t_scaled * inv_det;
+
+        if !(t > t_min && t < t_max) {
+            return None;
+        }
 
         //7. Compute triangle partial derivatives for uv and hit point calculation
         //dpdu: Shading tangent

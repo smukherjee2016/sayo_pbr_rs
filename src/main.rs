@@ -1,6 +1,7 @@
 use flexi_logger::{with_thread, Logger};
 use log::{info, warn};
 use sayo_pbr_rs::accel::bvh_node::BVHNode;
+use sayo_pbr_rs::common::*;
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::{write_output, ImageBuffer, SceneCamera, SceneConfig, SceneGeometries};
@@ -53,6 +54,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         root_bvh,
         //Arc::new(scene_geometries),
         Arc::new(film.clone()),
+        1e-5,
+        fp::MAX,
     );
 
     let mut image_buffer = ImageBuffer::new((film.height * film.width) as usize);
