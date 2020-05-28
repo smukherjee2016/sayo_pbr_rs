@@ -1,4 +1,3 @@
-use crate::accel;
 use crate::accel::bvh_node::{BVHNode, SplitAxis};
 use crate::common::*;
 use crate::geometry::Hitable;
@@ -56,8 +55,8 @@ impl Hitable for AxisAlignedBoundingBox {
     fn check_intersection_and_return_closest_hit(
         &self,
         ray: Ray,
-        t_min: fp,
-        t_max: fp,
+        _t_min: fp,
+        _t_max: fp,
     ) -> Option<IntersectionInfo> {
         //     let mut t_min = t_min;
         //     let mut t_max = t_max;

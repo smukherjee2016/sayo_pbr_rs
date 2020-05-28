@@ -224,9 +224,8 @@ impl SceneGeometries {
         t_max: fp,
     ) -> Option<IntersectionInfo> {
         let mut closest_intersection_info: IntersectionInfo = Default::default();
-        let mut t_max = std::f64::INFINITY;
         let mut hit_something: bool = false;
-
+        let mut t_max = t_max;
         for geometry in &self.geometries {
             if let Some(intersection_info) =
                 geometry.check_intersection_and_return_closest_hit(ray.clone(), t_min, t_max)

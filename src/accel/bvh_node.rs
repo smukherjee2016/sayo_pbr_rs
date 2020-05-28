@@ -3,7 +3,6 @@ use crate::accel::aabb::{
 };
 use crate::common::*;
 use crate::geometry::Hitable;
-use rand::prelude::*;
 use std::sync::Arc;
 
 pub struct BVHNode {
