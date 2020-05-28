@@ -72,8 +72,8 @@ impl Boundable for AxisAlignedBoundingBox {
 
 // Return surrounding box of two AABB's
 pub fn surrounding_box(
-    a: &AxisAlignedBoundingBox,
-    b: &AxisAlignedBoundingBox,
+    a: AxisAlignedBoundingBox,
+    b: AxisAlignedBoundingBox,
 ) -> AxisAlignedBoundingBox {
     let small: Vector3 = Vector3::new(
         fp::min(a.min.x, b.min.x),
@@ -99,7 +99,7 @@ pub fn surrounding_box_primitives(
     let mut ret_aabb = AxisAlignedBoundingBox::default();
     for primitive in &primitives_vector {
         let bounding_box_primitive: AxisAlignedBoundingBox = primitive.get_bounding_box();
-        ret_aabb = surrounding_box(&bounding_box_primitive, &ret_aabb);
+        ret_aabb = surrounding_box(bounding_box_primitive, ret_aabb);
     }
     ret_aabb
 }

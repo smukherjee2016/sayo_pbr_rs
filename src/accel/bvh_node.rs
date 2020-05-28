@@ -60,9 +60,9 @@ impl BVHNode {
             + (right_aabb_area / parent_box_area) * c_o * right_vec_size
     }
 
-    pub fn construct_bvh(mut geometries: Vec<Arc<dyn Boundable>>) -> Arc<dyn Boundable> {
+    pub fn construct_bvh(mut geometries: Vec<Arc<dyn Boundable>>, depth: usize) -> Arc<dyn Boundable> {
         let size_current_hitable_list = geometries.len();
-        // warn!("Current list size: {}", size_current_hitable_list);
+        //warn!("Current list size: {}", size_current_hitable_list);
         match size_current_hitable_list {
             0 => {
                 panic!("Why is the hitable list zero!");
@@ -75,11 +75,11 @@ impl BVHNode {
             2 => {
                 let left = geometries.remove(0);
                 let right = geometries.remove(0);
-                let aabb = surrounding_box(&left.get_bounding_box(), &right.get_bounding_box());
+                let aabb = surrounding_box(left.get_bounding_box(), right.get_bounding_box());
                 Arc::new(BVHNode::new(aabb, left, right))
             }
 
-            /*3...4 => {
+            3...1000 => {
 
                 // Sort list_of_hitables according to X, Y, Z  axes and put in three different Vectors
                 let mut geometries_sorted_x = geometries.to_vec();
@@ -192,9 +192,10 @@ impl BVHNode {
                     }
                 }
 
+                warn!("Splitting SAH at depth: {} sizes, left: {}, right: {}", depth, min_left_tree.len(), min_right_tree.len());
                 // Split the list of hitables along this SAH split and call construct_bvh with the two subsets of objects
-                let left_tree = BVHNode::construct_bvh(min_left_tree);
-                let right_tree = BVHNode::construct_bvh(min_right_tree);
+                let left_tree = BVHNode::construct_bvh(min_left_tree, depth+1);
+                let right_tree = BVHNode::construct_bvh(min_right_tree, depth + 1);
 
                 Arc::new(BVHNode {
                     aabb: parent_box,
@@ -202,7 +203,7 @@ impl BVHNode {
                     right_child: right_tree,
                 })
 
-            } */
+            }
             _ => {
                 let random_axis = rand::thread_rng().gen_range(0, 3);
                 match random_axis {
@@ -235,9 +236,10 @@ impl BVHNode {
                 let split_middle_left_list = split_middle_left.to_vec();
                 let split_middle_right_list = split_middle_right.to_vec();
 
+                //warn!("Splitting midway at depth: {} sizes, left: {}, right: {}", depth, split_middle_left_list.len(), split_middle_right_list.len());
                 let parent_box = surrounding_box_primitives(geometries);
-                let split_middle_left_tree = BVHNode::construct_bvh(split_middle_left_list);
-                let split_middle_right_tree = BVHNode::construct_bvh(split_middle_right_list);
+                let split_middle_left_tree = BVHNode::construct_bvh(split_middle_left_list, depth+1);
+                let split_middle_right_tree = BVHNode::construct_bvh(split_middle_right_list, depth+1);
 
                 Arc::new(BVHNode {
                     aabb: parent_box,
