@@ -1,7 +1,6 @@
 use crate::accel::bvh_node::{BVHNode, SplitAxis};
 use crate::common::*;
 use crate::geometry::Hitable;
-use std::mem::swap;
 use std::sync::Arc;
 
 //Rectangular AABB, defined by two points of its diagonal
@@ -114,7 +113,7 @@ impl Hitable for AxisAlignedBoundingBox {
             };
             return Some(intersection_info);
         }
-        return None;
+        None
     }
 }
 
