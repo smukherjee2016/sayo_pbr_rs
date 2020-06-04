@@ -60,7 +60,7 @@ impl Integrator for BaseIntegrator {
         t_max: fp,
     ) -> Vec<Tile> {
         let mut tiles: Vec<Tile> = vec![];
-        let cpus = num_cpus::get();
+        let cpus = num_cpus::get() - 1;
         info!("Trying with {} cpus", cpus);
         let pool = ThreadPool::new(cpus);
 
@@ -71,17 +71,17 @@ impl Integrator for BaseIntegrator {
         let (s, r) = unbounded();
 
         //Set up temp buffer and window
-        // let mut frame_buffer: Vec<u32> = vec![0; (film.height * film.width) as usize];
-        // info!("{}", frame_buffer.len());
-        // let mut window = Window::new(
-        //     "Renderer?",
-        //     film.width as usize,
-        //     film.height as usize,
-        //     WindowOptions::default(),
-        // )
-        // .unwrap_or_else(|e| {
-        //     panic!("{}", e);
-        // });
+        let mut frame_buffer: Vec<u32> = vec![0; (film.height * film.width) as usize];
+        info!("{}", frame_buffer.len());
+        let mut window = Window::new(
+            "Renderer?",
+            film.width as usize,
+            film.height as usize,
+            WindowOptions::default(),
+        )
+        .unwrap_or_else(|e| {
+            panic!("{}", e);
+        });
 
         let pixel_numbers = 0..(film.height * film.width);
         for i in pixel_numbers.step_by(TILE_SIZE) {
@@ -110,31 +110,31 @@ impl Integrator for BaseIntegrator {
             //warn!("{:?}", tile.pixels);
         }
         drop(s);
-        // #[allow(clippy::never_loop)]
-        // while window.is_open() && !window.is_key_down(Key::Escape) {
-        //     let r2 = r;
-        //     thread::sleep(time::Duration::from_millis(16));
-        //     for finished_tile in r2 {
-        //         let tile = finished_tile.clone();
-        //         // Now that we have the tile from the renderer, push it into tiles for image
-        //         // and push it to display buffer, tone mapping and showing to the screen
-        //         //tiles.push(finished_tile.clone());
-        //         frame_buffer.splice(
-        //             finished_tile.start_index as usize
-        //                 ..(finished_tile.start_index as usize + finished_tile.num_pixels),
-        //             do_tonemapping(finished_tile.pixels),
-        //         );
-        //
-        //         //info!(finished_tile.num_pixels);
-        //         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
-        //         window
-        //             .update_with_buffer(&frame_buffer, film.width as usize, film.height as usize)
-        //             .unwrap();
-        //         tiles.push(tile);
-        //     }
-        //     break;
-        // }
-        tiles.extend(r);
+        #[allow(clippy::never_loop)]
+        while window.is_open() && !window.is_key_down(Key::Escape) {
+            let r2 = r;
+            thread::sleep(time::Duration::from_millis(16));
+            for finished_tile in r2 {
+                let tile = finished_tile.clone();
+                // Now that we have the tile from the renderer, push it into tiles for image
+                // and push it to display buffer, tone mapping and showing to the screen
+                //tiles.push(finished_tile.clone());
+                frame_buffer.splice(
+                    finished_tile.start_index as usize
+                        ..(finished_tile.start_index as usize + finished_tile.num_pixels),
+                    do_tonemapping(finished_tile.pixels),
+                );
+
+                //info!(finished_tile.num_pixels);
+                // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
+                window
+                    .update_with_buffer(&frame_buffer, film.width as usize, film.height as usize)
+                    .unwrap();
+                tiles.push(tile);
+            }
+            break;
+        }
+        //tiles.extend(r);
         info!("Finished running render()");
         tiles
     }
