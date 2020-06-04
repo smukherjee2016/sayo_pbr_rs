@@ -258,7 +258,7 @@ impl BVHNode {
 
                 //Parent box and its area will stay the same for all sorted axes.
                 let parent_box = surrounding_box_primitives(geometries.clone());
-                let mut parent_box_area = parent_box.area_aabb();
+                let parent_box_area = parent_box.area_aabb();
 
                 //Do X Axis
                 for counter in 1..(size_current_hitable_list - 1) {
