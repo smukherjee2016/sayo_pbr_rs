@@ -26,7 +26,7 @@ pub struct Triangle {
 impl TriangleMesh {
     pub fn new(mesh_name_and_path: PathBuf) -> Vec<TriangleMesh> {
         //Load in the .obj file. It might have multiple models(meshes) in it
-        let obj_mesh = tobj::load_obj(mesh_name_and_path.as_path());
+        let obj_mesh = tobj::load_obj(mesh_name_and_path.as_path(), true);
         assert!(obj_mesh.is_ok());
         let (models, materials) = obj_mesh.unwrap();
         let mut meshes: Vec<TriangleMesh> = Vec::new();

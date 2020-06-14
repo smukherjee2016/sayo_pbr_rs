@@ -10,8 +10,8 @@ toml = "*"
 byteorder = "1" #for writing pfm file
 tobj = "*"
 log = "0.4"
-flexi_logger = "^0.11.4"
-crossbeam = "0.7"
+flexi_logger = {version = "*", default_features = false}
+crossbeam = "*"
 num_cpus = "*"
 minifb = "*"
 rand = "*"
