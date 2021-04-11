@@ -11,7 +11,7 @@ enum Message {
 
 pub struct ThreadPool {
     workers: Vec<Worker>,
-    sender: crossbeam::Sender<Message>,
+    sender: crossbeam::channel::Sender<Message>,
 }
 
 type Job = Box<dyn FnOnce() + Send + 'static>;
@@ -27,7 +27,7 @@ impl ThreadPool {
     pub fn new(size: usize) -> ThreadPool {
         assert!(size > 0);
 
-        let (sender, receiver) = crossbeam::unbounded();
+        let (sender, receiver) = crossbeam::channel::unbounded();
         // To share ownership across multiple threads and allow the threads
         // to mutate the value, we need to use Arc<Mutex<T>>.
         // The Arc type will let multiple workers own the receiver,
@@ -87,7 +87,7 @@ impl Worker {
     // we need the closure to loop forever,
     // asking the receiving end of the channel for a job
     // and running the job when it gets one
-    fn new(id: usize, receiver: Arc<Mutex<crossbeam::Receiver<Message>>>) -> Worker {
+    fn new(id: usize, receiver: Arc<Mutex<crossbeam::channel::Receiver<Message>>>) -> Worker {
         let thread = thread::spawn(move || loop {
             let message = receiver.lock().unwrap().recv().unwrap();
             match message {

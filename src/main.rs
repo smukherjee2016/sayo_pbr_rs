@@ -1,6 +1,6 @@
 use flexi_logger::{with_thread, Logger};
 use log::{info, warn};
-use sayo_pbr_rs::accel::bvh_node::BVHNode;
+use sayo_pbr_rs::accel::bvh_node::BvhNode;
 use sayo_pbr_rs::common::*;
 use sayo_pbr_rs::integrators::baseintegrator::*;
 use sayo_pbr_rs::integrators::Integrator;
@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let film = SceneConfig::construct_film(parsed_scene_config);
     let duration_init = start.elapsed();
     warn!("Time to init scene: {:?}", duration_init);
-    let root_bvh = BVHNode::construct_bvh(scene_geometries.geometries.clone(), 0);
+    let root_bvh = BvhNode::construct_bvh(scene_geometries.geometries.clone(), 0);
     let duration_bvh = start.elapsed();
     warn!("Time to create BVH: {:?}", duration_bvh);
     start = Instant::now();

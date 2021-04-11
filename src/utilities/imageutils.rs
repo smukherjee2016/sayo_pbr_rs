@@ -41,7 +41,7 @@ pub fn write_pfm(
     //PFM Header
     writeln!(buffer, "PF")?;
     writeln!(buffer, "{} {}", width, height)?;
-    writeln!(buffer, "{}", -1.0 as f32)?;
+    writeln!(buffer, "{}", -1.0_f32)?;
 
     for i in 0..(height) {
         for j in 0..(width) {

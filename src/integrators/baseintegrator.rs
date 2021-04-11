@@ -5,8 +5,8 @@ pub use crate::integrators::directlighting;
 use crate::integrators::directlighting::DirectLightingIntegrator;
 use crate::integrators::Integrator;
 use crate::utilities::threadpool::ThreadPool;
-use crate::{SceneCamera, SceneConfig, SceneGeometries, Tile};
-use crossbeam::crossbeam_channel::unbounded;
+use crate::{SceneCamera, SceneConfig, Tile};
+use crossbeam::channel::unbounded;
 use minifb::{Key, Window, WindowOptions};
 use std::sync::Arc;
 use std::{thread, time};
@@ -15,8 +15,8 @@ pub struct BaseIntegrator;
 
 pub enum Integrators {
     DirectLighting,
-    PathTracerBSDF,
-    PathTracerNEE,
+    PathTracerBsdf,
+    PathTracerNee,
 }
 
 //TODO: Move Window class and this method to its separate file
@@ -104,8 +104,8 @@ impl Integrator for BaseIntegrator {
                     );
                     sender.send(tile).unwrap();
                 }
-                Integrators::PathTracerBSDF => {}
-                Integrators::PathTracerNEE => {}
+                Integrators::PathTracerBsdf => {}
+                Integrators::PathTracerNee => {}
             });
             //warn!("{:?}", tile.pixels);
         }

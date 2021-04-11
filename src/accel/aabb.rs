@@ -1,4 +1,3 @@
-use crate::accel::bvh_node::{BVHNode, SplitAxis};
 use crate::common::*;
 use crate::geometry::Hitable;
 use std::sync::Arc;

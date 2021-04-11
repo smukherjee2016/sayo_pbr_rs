@@ -44,11 +44,15 @@ fn make_basis_vectors(pinhole_camera: &mut PinholeCamera) {
 
 impl Camera for PinholeCamera {
     fn new(origin_: Point3, look_at: Point3, up_: Vec3) -> Self {
-        let mut phc: PinholeCamera = PinholeCamera::default();
-
-        phc.origin = origin_;
-        phc.look_at = look_at;
-        phc.up = up_;
+        let mut phc: PinholeCamera = PinholeCamera {
+            origin : origin_,
+            look_at,
+            up : up_,
+            direction_to_look_at: Default::default(),
+            c_x: Default::default(),
+            c_y: Default::default(),
+            c_z: Default::default()
+        };
 
         make_basis_vectors(&mut phc);
 

@@ -5,7 +5,7 @@ use crate::common::*;
 use crate::geometry::Hitable;
 use std::sync::Arc;
 
-pub struct BVHNode {
+pub struct BvhNode {
     aabb: AxisAlignedBoundingBox,
     left_child: Arc<dyn Boundable>,
     right_child: Arc<dyn Boundable>,
@@ -25,13 +25,13 @@ struct SplitCandidate {
     min_split_sah: f64,
 }
 
-impl BVHNode {
+impl BvhNode {
     fn new(
         aabb: AxisAlignedBoundingBox,
         left_child: Arc<dyn Boundable>,
         right_child: Arc<dyn Boundable>,
-    ) -> BVHNode {
-        BVHNode {
+    ) -> BvhNode {
+        BvhNode {
             aabb,
             left_child,
             right_child,
@@ -78,13 +78,13 @@ impl BVHNode {
             1 => {
                 let only_node = geometries.remove(0);
                 let aabb = only_node.get_bounding_box();
-                Arc::new(BVHNode::new(aabb, only_node.clone(), only_node))
+                Arc::new(BvhNode::new(aabb, only_node.clone(), only_node))
             }
             2 => {
                 let left = geometries.remove(0);
                 let right = geometries.remove(0);
                 let aabb = surrounding_box(&left.get_bounding_box(), &right.get_bounding_box());
-                Arc::new(BVHNode::new(aabb, left, right))
+                Arc::new(BvhNode::new(aabb, left, right))
             }
 
             // 3...32 => {
@@ -222,7 +222,7 @@ impl BVHNode {
             //         right_child: right_tree,
             //     })
             // }
-            3...32 => {
+            3..=32 => {
                 let parent_box = surrounding_box_primitives(geometries.clone());
                 let longest_axis = parent_box.longest_axis();
                 match longest_axis {
@@ -265,7 +265,7 @@ impl BVHNode {
                     let (left, right) = geometries.split_at(counter);
                     let left_vec = left.to_owned();
                     let right_vec = right.to_owned();
-                    let current_sah: f64 = BVHNode::calculate_sah(
+                    let current_sah: f64 = BvhNode::calculate_sah(
                         left_vec.clone(),
                         right_vec.clone(),
                         parent_box_area,
@@ -287,14 +287,14 @@ impl BVHNode {
 
                 //warn!("Splitting SAH at depth: {} sizes, left: {}, right: {}", depth, min_left_tree.len(), min_right_tree.len());
                 // Split the list of hitables along this SAH split and call construct_bvh with the two subsets of objects
-                let left_tree = BVHNode::construct_bvh(min_left_tree, depth + 1);
-                let right_tree = BVHNode::construct_bvh(min_right_tree, depth + 1);
+                let left_tree = BvhNode::construct_bvh(min_left_tree, depth + 1);
+                let right_tree = BvhNode::construct_bvh(min_right_tree, depth + 1);
                 let aabb_curent_box = surrounding_box(
                     &left_tree.get_bounding_box(),
                     &right_tree.get_bounding_box(),
                 );
 
-                Arc::new(BVHNode {
+                Arc::new(BvhNode {
                     aabb: aabb_curent_box,
                     left_child: left_tree,
                     right_child: right_tree,
@@ -335,16 +335,16 @@ impl BVHNode {
 
                 //warn!("Splitting along longest axis at depth: {} sizes, left: {}, right: {}", depth, split_middle_left_list.len(), split_middle_right_list.len());
                 let split_middle_left_tree =
-                    BVHNode::construct_bvh(split_middle_left_list, depth + 1);
+                    BvhNode::construct_bvh(split_middle_left_list, depth + 1);
                 let split_middle_right_tree =
-                    BVHNode::construct_bvh(split_middle_right_list, depth + 1);
+                    BvhNode::construct_bvh(split_middle_right_list, depth + 1);
 
                 let aabb_current_box = surrounding_box(
                     &split_middle_left_tree.get_bounding_box(),
                     &split_middle_right_tree.get_bounding_box(),
                 );
 
-                Arc::new(BVHNode {
+                Arc::new(BvhNode {
                     aabb: aabb_current_box,
                     left_child: split_middle_left_tree,
                     right_child: split_middle_right_tree,
@@ -354,13 +354,13 @@ impl BVHNode {
     }
 }
 
-impl Boundable for BVHNode {
+impl Boundable for BvhNode {
     fn get_bounding_box(&self) -> AxisAlignedBoundingBox {
         self.aabb.clone()
     }
 }
 
-impl Hitable for BVHNode {
+impl Hitable for BvhNode {
     /*
     Check if ray hit left subtree or right subtree or both, and return the closest interseciton if any.
      */

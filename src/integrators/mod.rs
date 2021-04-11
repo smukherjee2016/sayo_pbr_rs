@@ -1,7 +1,7 @@
 use crate::accel::aabb::Boundable;
 use crate::common::*;
 use crate::film::Film;
-use crate::{SceneCamera, SceneConfig, SceneGeometries, Tile};
+use crate::{SceneCamera, SceneConfig, Tile};
 use std::sync::Arc;
 
 pub mod baseintegrator;

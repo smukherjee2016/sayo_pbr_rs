@@ -266,7 +266,7 @@ pub fn coordinate_system(in_vec: Vector3, v2: &mut Vector3, v3: &mut Vector3) {
                     + in_vec_normalized.z * in_vec_normalized.z,
             ));
     }
-    *v3 = in_vec_normalized.cross(v2.clone());
+    *v3 = in_vec_normalized.cross(*v2);
 }
 
 impl ops::Sub for Vector2 {

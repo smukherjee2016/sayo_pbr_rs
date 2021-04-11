@@ -62,7 +62,7 @@ impl SceneConfig {
 
         //Error cases
         if scene_filename.to_str() == Some("") {
-            panic!(
+            std::panic::panic_any(
                 "No scene configuration file specified or something else went wrong!".to_string()
             );
         }
@@ -113,11 +113,11 @@ impl SceneConfig {
             }
 
             "path_tracer_bsdf" => {
-                type_of_integrator = Integrators::PathTracerBSDF;
+                type_of_integrator = Integrators::PathTracerBsdf;
             }
 
             "path_tracer_nee" => {
-                type_of_integrator = Integrators::PathTracerNEE;
+                type_of_integrator = Integrators::PathTracerNee;
             }
 
             _ => {
