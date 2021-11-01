@@ -17,4 +17,5 @@ minifb = "0.19.3"
 rand = "0.8.3"
 
 [profile.release]
-#debug = true
+debug = 1
+incremental = true
