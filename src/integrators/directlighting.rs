@@ -8,6 +8,7 @@ use std::sync::Arc;
 pub struct DirectLightingIntegrator;
 
 impl DirectLightingIntegrator {
+    #[allow(clippy::too_many_arguments)]
     pub fn integrate(
         start_position_in_film: i32,
         samples_count: u32,
@@ -34,7 +35,7 @@ impl DirectLightingIntegrator {
             for _j in 0..samples_count {
                 for _k in 0..bounces_count {
                     //Core Integrator code goes here
-                    let ray = camera.generate_camera_ray(x, y, &film);
+                    let ray = camera.generate_camera_ray(x, y, film);
                     //info!("Ray info: {:?}", &ray);
                     let intersection = geometries.check_intersection_and_return_closest_hit(
                         ray.clone(),

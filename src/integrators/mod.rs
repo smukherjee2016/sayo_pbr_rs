@@ -8,6 +8,7 @@ pub mod baseintegrator;
 pub mod directlighting;
 
 pub trait Integrator {
+    #[allow(clippy::too_many_arguments)]
     fn render(
         scene: Arc<SceneConfig>,
         samples_count: u32,

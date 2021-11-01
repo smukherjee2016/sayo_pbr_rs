@@ -205,12 +205,10 @@ impl Vector3 {
             } else {
                 max_dim = 2;
             }
+        } else if self.y > self.z {
+            max_dim = 1;
         } else {
-            if self.y > self.z {
-                max_dim = 1;
-            } else {
-                max_dim = 2;
-            }
+            max_dim = 2;
         }
         max_dim
     }

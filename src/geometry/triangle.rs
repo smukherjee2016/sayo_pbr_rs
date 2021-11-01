@@ -28,7 +28,7 @@ impl TriangleMesh {
         //Load in the .obj file. It might have multiple models(meshes) in it
         let obj_mesh = tobj::load_obj(mesh_name_and_path.as_path(), true);
         assert!(obj_mesh.is_ok());
-        let (models, materials) = obj_mesh.unwrap();
+        let (models, _materials) = obj_mesh.unwrap();
         let mut meshes: Vec<TriangleMesh> = Vec::new();
         for model in models {
             let mesh = TriangleMesh {
@@ -242,12 +242,15 @@ impl Hitable for Triangle {
             let inv_det_uv: fp = 1.0 / determinant;
             dpdu = (dp02 * duv12.y - dp12 * duv02.x) * inv_det_uv;
             dpdv = (dp02 * -duv12.y + dp12 * duv02.x) * inv_det_uv;
+            // To remove compiler warning of unused variable
+            let _dpdu = dpdu;
+            let _dpdv = dpdv;
         }
 
         //8. Find point of intersection and texture coordinates at given point
         let p_hit: Point3 =
             self.positions[0] * b0 + self.positions[1] * b1 + self.positions[2] * b2;
-        let uv_hit: Point2 = self.texture_coordinates[0] * b0
+        let _uv_hit: Point2 = self.texture_coordinates[0] * b0
             + self.texture_coordinates[1] * b1
             + self.texture_coordinates[2] * b2;
         let mut geometric_normal: Vector3 = dp02.cross(dp12).normalize();
