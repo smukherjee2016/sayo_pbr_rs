@@ -8,13 +8,14 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 toml = "0.5.8"
 byteorder = "1.4.3"
-tobj = "2.0.4"
+tobj = "3.2.0"
 log = "0.4.14"
-flexi_logger = { version = "0.17.1", default_features = false }
-crossbeam = "0.8.0"
+flexi_logger = { version = "0.19.6", default_features = false }
+crossbeam = "0.8.1"
 num_cpus = "1.13.0"
 minifb = "0.19.3"
-rand = "0.8.3"
+rand = "0.8.4"
+tev_client = "0.5.1"
 
 [profile.release]
 debug = 1

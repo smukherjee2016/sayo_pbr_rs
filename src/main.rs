@@ -10,7 +10,7 @@ use std::sync::Arc;
 use std::time::Instant;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    Logger::with_env_or_str("info")
+    Logger::try_with_env_or_str("info")?
         .format(with_thread)
         .start()
         .unwrap();
