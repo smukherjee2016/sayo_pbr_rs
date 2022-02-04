@@ -7,6 +7,7 @@ use std::fs::File;
 use std::io::{BufWriter, Write};
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 struct PfmInfo {
     image: Vec<Spectrum>,
     width: i32,
@@ -14,6 +15,7 @@ struct PfmInfo {
 }
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 struct PfmPixel {
     r: f32,
     g: f32,
@@ -33,7 +35,7 @@ pub fn write_pfm(
     std::fs::create_dir_all(PathBuf::from(file_path.parent().unwrap()))?;
     // Open a file in write-only mode, returns `io::Result<File>`
     let file = match File::create(&file_path) {
-        Err(why) => panic!("couldn't create {}: {}", display, why.to_string()),
+        Err(why) => panic!("couldn't create {}: {}", display, why),
         Ok(file) => file,
     };
 
