@@ -4,12 +4,13 @@ use crate::film::Film;
 pub use crate::integrators::directlighting;
 use crate::integrators::directlighting::DirectLightingIntegrator;
 use crate::integrators::Integrator;
-use crate::utilities::threadpool::ThreadPool;
-use crate::{SceneCamera, SceneConfig, Tile};
-use crossbeam::channel::unbounded;
-use minifb::{Key, Window, WindowOptions};
+
+use crate::{SceneCamera, SceneConfig};
+
+use ndarray::parallel::prelude::*;
+use ndarray::Array2;
+
 use std::sync::Arc;
-use std::{thread, time};
 
 pub struct BaseIntegrator;
 
@@ -58,42 +59,34 @@ impl Integrator for BaseIntegrator {
         film: Arc<Film>,
         t_min: fp,
         t_max: fp,
-    ) -> Vec<Tile> {
-        let mut tiles: Vec<Tile> = vec![];
-        let cpus = num_cpus::get() - 1;
-        info!("Trying with {} cpus", cpus);
-        let pool = ThreadPool::new(cpus);
+    ) -> Array2<Spectrum> {
+        let scene_data: Vec<Spectrum> = vec![
+            Vector3 {
+                x: 0.0,
+                y: 0.0,
+                z: 0.0
+            };
+            (film.height * film.width) as usize
+        ];
+        let mut frame_buffer2 =
+            Array2::from_shape_vec((film.height as usize, film.width as usize), scene_data)
+                .unwrap();
+        let tiles: Vec<_> = frame_buffer2
+            .exact_chunks_mut([16, 16])
+            .into_iter()
+            .collect();
 
-        info!(
-            "Beginning rendering with {} spp and {} bounces",
-            samples_count, bounces_count
-        );
-        let (s, r) = unbounded();
-
-        //Set up temp buffer and window
-        let mut frame_buffer: Vec<u32> = vec![0; (film.height * film.width) as usize];
-        info!("{}", frame_buffer.len());
-        let mut window = Window::new(
-            "Renderer?",
-            film.width as usize,
-            film.height as usize,
-            WindowOptions::default(),
-        )
-        .unwrap_or_else(|e| {
-            panic!("{}", e);
-        });
-
-        let pixel_numbers = 0..(film.height * film.width);
-        for i in pixel_numbers.step_by(TILE_SIZE) {
-            let sender = s.clone();
-            let camera = camera.clone();
-            let geometries = geometries.clone();
-            let scene = scene.clone();
-            let film = film.clone();
-            pool.execute(move || match scene.integrator {
+        tiles
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, tile)| match scene.integrator {
                 Integrators::DirectLighting => {
-                    let tile: Tile = DirectLightingIntegrator::integrate(
-                        i,
+                    let camera = camera.clone();
+                    let geometries = geometries.clone();
+                    let film = film.clone();
+                    DirectLightingIntegrator::integrate(
+                        tile,
+                        i as i32,
                         samples_count,
                         bounces_count,
                         camera,
@@ -102,40 +95,12 @@ impl Integrator for BaseIntegrator {
                         t_min,
                         t_max,
                     );
-                    sender.send(tile).unwrap();
                 }
                 Integrators::PathTracerBsdf => {}
                 Integrators::PathTracerNee => {}
             });
-            //warn!("{:?}", tile.pixels);
-        }
-        drop(s);
-        #[allow(clippy::never_loop)]
-        while window.is_open() && !window.is_key_down(Key::Escape) {
-            let r2 = r;
-            thread::sleep(time::Duration::from_millis(16));
-            for finished_tile in r2 {
-                let tile = finished_tile.clone();
-                // Now that we have the tile from the renderer, push it into tiles for image
-                // and push it to display buffer, tone mapping and showing to the screen
-                //tiles.push(finished_tile.clone());
-                frame_buffer.splice(
-                    finished_tile.start_index as usize
-                        ..(finished_tile.start_index as usize + finished_tile.num_pixels),
-                    do_tonemapping(finished_tile.pixels),
-                );
+        //info!("frame_buffer2: {:?}", frame_buffer2);
 
-                //info!(finished_tile.num_pixels);
-                // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
-                window
-                    .update_with_buffer(&frame_buffer, film.width as usize, film.height as usize)
-                    .unwrap();
-                tiles.push(tile);
-            }
-            break;
-        }
-        //tiles.extend(r);
-        info!("Finished running render()");
-        tiles
+        frame_buffer2
     }
 }

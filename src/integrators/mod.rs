@@ -1,7 +1,9 @@
+use ndarray::Array2;
+
 use crate::accel::aabb::Boundable;
 use crate::common::*;
 use crate::film::Film;
-use crate::{SceneCamera, SceneConfig, Tile};
+use crate::{SceneCamera, SceneConfig};
 use std::sync::Arc;
 
 pub mod baseintegrator;
@@ -19,5 +21,5 @@ pub trait Integrator {
         film: Arc<Film>,
         t_min: fp,
         t_max: fp,
-    ) -> Vec<Tile>;
+    ) -> Array2<Spectrum>;
 }

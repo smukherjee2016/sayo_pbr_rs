@@ -1,6 +1,7 @@
 //!
 #![warn(rust_2018_idioms)]
 use log::{info, warn};
+use ndarray::Array2;
 use std::error::Error;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -63,7 +64,7 @@ impl SceneConfig {
         //Error cases
         if scene_filename.to_str() == Some("") {
             std::panic::panic_any(
-                "No scene configuration file specified or something else went wrong!".to_string()
+                "No scene configuration file specified or something else went wrong!".to_string(),
             );
         }
 
@@ -102,32 +103,25 @@ impl SceneConfig {
         //Material
 
         //Integrator
-        let type_of_integrator: Integrators;
         let integrator_string = &parsed_scene_toml["integrator"]["type"]
             .as_str()
             .unwrap()
             .to_ascii_lowercase();
-        match integrator_string.as_ref() {
-            "direct_lighting" => {
-                type_of_integrator = Integrators::DirectLighting;
-            }
+        let type_of_integrator: Integrators = match integrator_string.as_ref() {
+            "direct_lighting" => Integrators::DirectLighting,
 
-            "path_tracer_bsdf" => {
-                type_of_integrator = Integrators::PathTracerBsdf;
-            }
+            "path_tracer_bsdf" => Integrators::PathTracerBsdf,
 
-            "path_tracer_nee" => {
-                type_of_integrator = Integrators::PathTracerNee;
-            }
+            "path_tracer_nee" => Integrators::PathTracerNee,
 
             _ => {
                 warn!(
                     "Warning: Found unsupported integrator {}, falling back to DirectLighting...",
                     integrator_string
                 );
-                type_of_integrator = Integrators::DirectLighting;
+                Integrators::DirectLighting
             }
-        }
+        };
 
         //Output pfm
         let output_file_name = &parsed_scene_toml["renderer"]["hdr_output_file"]
@@ -190,24 +184,22 @@ impl SceneCamera {
         };
 
         let type_of_camera = &parsed_scene_toml["camera"]["type"].as_str().unwrap();
-        let camera: Box<dyn Camera + Send + Sync>;
-        match *type_of_camera {
-            "pinhole" => {
-                camera = Box::new(PinholeCamera::new(
-                    camera_position,
-                    camera_look_at,
-                    camera_up,
-                ));
-            }
+
+        let camera: Box<dyn Camera + Send + Sync> = match *type_of_camera {
+            "pinhole" => Box::new(PinholeCamera::new(
+                camera_position,
+                camera_look_at,
+                camera_up,
+            )),
             _ => {
                 warn!("Warning: unknown or unsupported camera type, trying to fall back to pinhole camera");
-                camera = Box::new(PinholeCamera::new(
+                Box::new(PinholeCamera::new(
                     camera_position,
                     camera_look_at,
                     camera_up,
-                ));
+                ))
             }
-        }
+        };
         SceneCamera { camera }
     }
 
@@ -289,15 +281,12 @@ impl SceneGeometries {
 impl ImageBuffer {
     pub fn new(size: usize) -> ImageBuffer {
         ImageBuffer {
-            image: vec![Vector3::from(0.5); size],
+            image: vec![Vector3::from(0.1); size],
         }
     }
 
-    pub fn write_tile(&mut self, tile: Tile) {
-        let starting_index = tile.start_index as usize;
-        let num_pixels_to_write = tile.num_pixels;
-        self.image[starting_index..(starting_index + num_pixels_to_write)]
-            .clone_from_slice(&tile.pixels[0..num_pixels_to_write]);
+    pub fn write_tile(&mut self, image: Array2<Spectrum>) {
+        self.image = image.into_raw_vec();
     }
 }
 

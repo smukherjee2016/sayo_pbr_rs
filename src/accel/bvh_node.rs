@@ -278,12 +278,10 @@ impl BvhNode {
                     }
                 }
 
-                let min_left_tree: Vec<Arc<dyn Boundable>>;
-                let min_right_tree: Vec<Arc<dyn Boundable>>;
                 let (min_left, min_right) =
                     geometries.split_at(min_split_candidate.min_split_index);
-                min_left_tree = min_left.to_vec();
-                min_right_tree = min_right.to_vec();
+                let min_left_tree: Vec<Arc<dyn Boundable>> = min_left.to_vec();
+                let min_right_tree: Vec<Arc<dyn Boundable>> = min_right.to_vec();
 
                 //warn!("Splitting SAH at depth: {} sizes, left: {}, right: {}", depth, min_left_tree.len(), min_right_tree.len());
                 // Split the list of hitables along this SAH split and call construct_bvh with the two subsets of objects

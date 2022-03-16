@@ -1,5 +1,6 @@
 use flexi_logger::{with_thread, Logger};
 use log::{info, warn};
+use ndarray::Array2;
 use sayo_pbr_rs::accel::bvh_node::BvhNode;
 use sayo_pbr_rs::common::*;
 use sayo_pbr_rs::integrators::baseintegrator::*;
@@ -46,7 +47,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let duration_bvh = start.elapsed();
     warn!("Time to create BVH: {:?}", duration_bvh);
     start = Instant::now();
-    let tiles = BaseIntegrator::render(
+    let tiles: Array2<Spectrum> = BaseIntegrator::render(
         Arc::new(scene_config),
         1,
         1,
@@ -59,10 +60,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
 
     let mut image_buffer = ImageBuffer::new((film.height * film.width) as usize);
-    for tile in tiles {
-        //warn!("{}", tile.start_index);
-        image_buffer.write_tile(tile);
-    }
+    image_buffer.write_tile(tiles);
 
     let duration = start.elapsed();
     warn!("Total time taken: {:?}", duration);
