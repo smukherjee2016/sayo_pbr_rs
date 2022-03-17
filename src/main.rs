@@ -8,7 +8,10 @@ use sayo_pbr_rs::integrators::Integrator;
 use sayo_pbr_rs::{write_output, ImageBuffer, SceneCamera, SceneConfig, SceneGeometries};
 use std::error::Error;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::time::Instant;
+use tev_client::PacketCreateImage;
+use tev_client::TevClient;
 
 fn main() -> Result<(), Box<dyn Error>> {
     Logger::try_with_env_or_str("info")?
@@ -25,11 +28,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     //If no arguments specified, try to use a default scene
     if args.len() == 1 {
         //let scene_file_path = "scenes/dragon/dragon_scene.toml".to_string();
+        args.push("--release".to_string());
         let scene_file_path = "scenes/teapot/teapot_test_scene.toml".to_string();
         //let scene_file_path = "scenes/simple_cube/simple_cube_scene.toml".to_string();
         args.push(scene_file_path);
     }
     info!("{:?}", &args);
+
+    let mut tev_client = TevClient::spawn_path_default()?;
 
     let mut start = Instant::now();
     let scene_config_tuple = SceneConfig::parse_args(&args);
@@ -46,6 +52,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     let root_bvh = BvhNode::construct_bvh(scene_geometries.geometries.clone(), 0);
     let duration_bvh = start.elapsed();
     warn!("Time to create BVH: {:?}", duration_bvh);
+
+    // Initalize tev client
+    tev_client.send(PacketCreateImage {
+        image_name: "test",
+        grab_focus: false,
+        width: film.width as u32,
+        height: film.height as u32,
+        channel_names: &["R", "G", "B"],
+    })?;
+
     start = Instant::now();
     let tiles: Array2<Spectrum> = BaseIntegrator::render(
         Arc::new(scene_config),
@@ -57,6 +73,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         Arc::new(film.clone()),
         1e-5,
         fp::MAX,
+        Arc::new(Mutex::new(tev_client)),
     );
 
     let mut image_buffer = ImageBuffer::new((film.height * film.width) as usize);

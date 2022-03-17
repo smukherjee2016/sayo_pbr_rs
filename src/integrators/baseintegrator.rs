@@ -4,13 +4,14 @@ use crate::film::Film;
 pub use crate::integrators::directlighting;
 use crate::integrators::directlighting::DirectLightingIntegrator;
 use crate::integrators::Integrator;
+use tev_client::TevClient;
 
 use crate::{SceneCamera, SceneConfig};
 
 use ndarray::parallel::prelude::*;
 use ndarray::Array2;
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 pub struct BaseIntegrator;
 
@@ -59,6 +60,7 @@ impl Integrator for BaseIntegrator {
         film: Arc<Film>,
         t_min: fp,
         t_max: fp,
+        tev_client: Arc<Mutex<TevClient>>,
     ) -> Array2<Spectrum> {
         let scene_data: Vec<Spectrum> = vec![
             Vector3 {
@@ -84,6 +86,7 @@ impl Integrator for BaseIntegrator {
                     let camera = camera.clone();
                     let geometries = geometries.clone();
                     let film = film.clone();
+                    let tev_client = tev_client.clone();
                     DirectLightingIntegrator::integrate(
                         tile,
                         i as i32,
@@ -94,6 +97,7 @@ impl Integrator for BaseIntegrator {
                         film,
                         t_min,
                         t_max,
+                        tev_client,
                     );
                 }
                 Integrators::PathTracerBsdf => {}

@@ -1,10 +1,11 @@
 use ndarray::Array2;
+use tev_client::TevClient;
 
 use crate::accel::aabb::Boundable;
 use crate::common::*;
 use crate::film::Film;
 use crate::{SceneCamera, SceneConfig};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 pub mod baseintegrator;
 pub mod directlighting;
@@ -21,5 +22,6 @@ pub trait Integrator {
         film: Arc<Film>,
         t_min: fp,
         t_max: fp,
+        tev_client: Arc<Mutex<TevClient>>,
     ) -> Array2<Spectrum>;
 }

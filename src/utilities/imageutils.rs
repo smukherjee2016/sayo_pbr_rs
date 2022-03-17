@@ -47,7 +47,8 @@ pub fn write_pfm(
 
     for i in 0..(height) {
         for j in 0..(width) {
-            let pixelvalue: &Spectrum = &pixels[(i * width + j) as usize];
+            // Grab the pixel with y-coordinate flipped since renderer uses bottom-left as origin and image uses top-left as origin
+            let pixelvalue: &Spectrum = &pixels[((height - i - 1) * width + j) as usize];
             let r = pixelvalue.x as f32;
             let g = pixelvalue.y as f32;
             let b = pixelvalue.z as f32;

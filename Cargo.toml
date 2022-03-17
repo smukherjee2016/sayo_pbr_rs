@@ -12,10 +12,8 @@ tobj = "3.2.0"
 log = "0.4.14"
 flexi_logger = { version = "0.19.6", default_features = false }
 crossbeam = "0.8.1"
-num_cpus = "1.13.0"
-minifb = "0.19.3"
 rand = "0.8.4"
-tev_client = "0.5.1"
+tev_client = "0.5.2"
 rayon = "1.5.1"
 ndarray = { version = "0.15.4", features = ["rayon"] }
 
