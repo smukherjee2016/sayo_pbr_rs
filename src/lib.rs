@@ -204,7 +204,8 @@ impl SceneCamera {
     }
 
     pub fn generate_camera_ray(&self, x: i32, y: i32, film: &Film) -> Ray {
-        self.camera.generate_camera_ray(x, y, film)
+        self.camera
+            .generate_camera_ray(x, film.height - y - 1, film)
     }
 }
 
