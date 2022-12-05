@@ -21,6 +21,7 @@ pub enum Integrators {
     PathTracerNee,
 }
 
+/*
 //TODO: Move Window class and this method to its separate file
 fn from_u8_rgb(r: u8, g: u8, b: u8) -> u32 {
     let (r, g, b) = (r as u32, g as u32, b as u32);
@@ -48,6 +49,7 @@ fn do_tonemapping(input: Vec<Spectrum>) -> Vec<u32> {
     }
     ret
 }
+*/
 
 impl Integrator for BaseIntegrator {
     fn render(
