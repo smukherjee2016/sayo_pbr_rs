@@ -6,16 +6,17 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-toml = "0.5.9"
+toml = "0.7.4"
 byteorder = "1.4.3"
-tobj = "3.2.3"
+tobj = "4.0.0"
 log = "0.4.17"
-flexi_logger = { version = "0.23.0", default_features = false }
+flexi_logger = { version = "0.25.5", default_features = false }
 crossbeam = "0.8.2"
 rand = "0.8.5"
 tev_client = "0.5.2"
 rayon = "1.5.3"
 ndarray = { version = "0.15.6", features = ["rayon"] }
+cargo-watch = "8.4.0"
 
 [profile.release]
 debug = 1

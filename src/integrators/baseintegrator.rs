@@ -21,12 +21,14 @@ pub enum Integrators {
     PathTracerNee,
 }
 
+#[allow(dead_code)]
 //TODO: Move Window class and this method to its separate file
 fn from_u8_rgb(r: u8, g: u8, b: u8) -> u32 {
     let (r, g, b) = (r as u32, g as u32, b as u32);
     (r << 16) | (g << 8) | b
 }
 
+#[allow(dead_code)]
 fn do_tonemapping(input: Vec<Spectrum>) -> Vec<u32> {
     let mut ret: Vec<u32> = Vec::with_capacity(input.len());
     for element in &input {

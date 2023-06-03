@@ -37,8 +37,8 @@ impl DirectLightingIntegrator {
 
         for x_local in 0..16 {
             for y_local in 0..16 {
-                let y = x_offset * 16 + x_local as i32;
-                let x = y_offset * 16 + y_local as i32;
+                let y = x_offset * 16 + x_local;
+                let x = y_offset * 16 + y_local;
 
                 let mut pixel_value: Spectrum = Spectrum::default();
                 for _j in 0..samples_count {
